@@ -1,0 +1,151 @@
+body {
+  margin: 0px;
+}
+
+
+.titulo-personalizado{
+    font-family: 'Everista'; 
+  src: url('assets/fonts/Everista.ttf') format('woff2') ; 
+  font-weight: normal;
+  font-style: normal;
+
+}
+
+.btn-toggle::after {
+  display: inline-block;
+  content: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='rgba%280,0,0,.5%29' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 14l6-6-6-6'/%3e%3c/svg%3e");
+  transition: transform 0.35s ease;
+  margin-left: auto;
+}
+
+.btn-toggle[aria-expanded="true"]::after {
+  transform: rotate(90deg);
+}
+
+.card-desenho {
+  background-color: #4f8fcf;
+  border: black;
+  border-radius: 26px;
+  height: 180px;
+  
+}
+
+.card-informacoes{
+    padding: 10px 14px 10px 14px;
+    color: white;
+    text-align: center;
+}
+
+.numero-total{
+    text-align: start;
+    margin: 0px;
+ text-align: center;
+}
+
+.card-informacoes small{
+   padding: 0px;
+   font-size: smaller;
+}
+
+
+
+#campo-busca{
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="gray" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>');
+    background-repeat: no-repeat;
+    background-position: 10px center;
+    background-size: 20px;
+    padding-left: 40px;
+    border-radius: 10px;
+}
+
+
+
+.card-hero {
+    height: 200px;
+    width: 100%;
+    background-color: #2B5FED;
+    border-radius: 26px;
+    display: flex;
+    justify-content: center; 
+    align-items: center;     
+    margin: 0 auto;
+    /* background-image: url(assets/img/frota-1.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center; 
+    opacity: 70%;
+    */
+    /* imagem no fundo do card quando tivermos uma imagem melhor */
+    
+}
+
+.card-hero-content{
+    display: flex;
+    justify-self: center;
+    color: white;
+    text-align: center;
+    font-size: 110px;
+    font-family: 'Everista';
+}
+
+.card img {
+    transform: scale(1.01);
+    border: none;
+}
+
+.preview-container {
+    position: relative;
+    display: inline-block;
+    margin: 10px;
+}
+.btn-remove {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: red;
+    color: white;
+    border-radius: 50%;
+    cursor: pointer;
+    padding: 2px 8px;
+    font-size: 12px;
+}
+
+.preview-container {
+    position: relative;
+    display: inline-block;
+    margin: 10px;
+    border: 1px solid #ddd;
+    padding: 5px;
+}
+.btn-remove {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: #dc3545;
+    color: white;
+    border-radius: 50%;
+    cursor: pointer;
+    padding: 2px 8px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+
+body {
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Texto branco no item ativo da sidebar do admin.
+   O .link-body-emphasis do Bootstrap usa !important na cor,
+   então precisamos de outro !important com specificidade maior pra vencer. */
+.nav-pills .link-body-emphasis.active {
+    color: #fff !important;
+}
+
+/* Trava o body das telas do admin em 100vh e impede que ele role.
+   Assim a sidebar (que também é 100vh) fica parada, e só o <main>
+   -- que tem overflow-y: auto -- rola por dentro. */
+body.d-flex.flex-nowrap {
+    height: 100vh;
+    overflow: hidden;
+}

@@ -1,0 +1,95 @@
+.card-principal {
+  width: 100%;
+  background-color: white;
+  border-color: #e0e0e0;
+  border-radius: 22px;
+  border: #e0e0e0 solid;
+  border-width: 1px;
+  margin: auto;
+  box-shadow: 0 4px 12px #e6e6e6;
+}
+
+.card-principal-conteudo {
+  padding: 10px 18px 10px 18px;
+}
+
+.botao-voltar {
+  background-color: transparent;
+  border: none;
+  background: none;
+  color: black;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.botao-voltar:hover {
+  background-color: #e5e5e5;
+}
+
+i {
+  padding: 4px;
+  display: inline-block;
+}
+
+.form-control,
+.form-select {
+  border-radius: 12px;
+}
+
+.upload-area {
+  border: 1.5px dashed #d1d1d1;
+  border-radius: 12px;
+  background-color: #fafafa;
+  transition: all 0.2s ease-in-out;
+}
+
+.upload-area:hover {
+  border-color: #a5a5a5;
+  background-color: #f0f0f0;
+  cursor: pointer;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.btn-outline-secondary {
+  border-color: #d1d1d1;
+  color: #333;
+  font-weight: 500;
+}
+
+
+
+/* Tags */
+
+/* Estilo do container para parecer um input do Bootstrap focado */
+.tag-container:focus-within {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Estilo das Tags (Pills) */
+.tag-item {
+    background-color: #e4e6e7; /* Cor idêntica à imagem */
+    color: #4a4a4a;
+    padding: 2px 10px;
+    border-radius: 12px;
+    margin: 3px;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    border: 1px solid #d1d3d4;
+}
+
+.tag-item i {
+    cursor: pointer;
+    margin-left: 8px;
+    font-size: 12px;
+    color: #888;
+}
+
+.tag-item i:hover {
+    color: #333;
+}

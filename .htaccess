@@ -1,0 +1,14 @@
+DirectorySlash Off
+
+RewriteEngine On
+
+# valdirtur.com/frota -> frota/frota.php (a listagem)
+RewriteRule ^frota/?$ frota/frota.php [L]
+
+# valdirtur.com/pacotes -> pacotes/pacotes.php (a listagem)
+RewriteRule ^pacotes/?$ pacotes/pacotes.php [L]
+
+# Remove o .php de qualquer página (frota/veiculo, pacotes/pacote, admin/..., etc.)
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^(.*)$ $1.php [NC,L]

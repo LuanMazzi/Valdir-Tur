@@ -48,7 +48,8 @@ $resultado = mysqli_query($conexao, $sql);
                 <p class="text-center text-muted">Nenhum pacote disponível no momento.</p>
             <?php else: ?>
                 <?php while ($pacote = mysqli_fetch_array($resultado)): ?>
-                    <a href="/ValdirTur/pacotes/pacote?id=<?= $pacote['idPacote'] ?>" class="col text-decoration-none text-reset">
+                    <a href="/ValdirTur/pacotes/pacote?id=<?= $pacote['idPacote'] ?>"
+                        class="col text-decoration-none text-reset">
                         <div class="card h-100">
                             <img src="<?= $pacote['midia'] ? '/ValdirTur/assets/uploads/' . htmlspecialchars($pacote['midia']) : '/ValdirTur/assets/img/pacote-padrao.jpg' ?>"
                                 class="card-img-top" alt="<?= htmlspecialchars($pacote['nomePacote']) ?>"
@@ -56,7 +57,8 @@ $resultado = mysqli_query($conexao, $sql);
                             <div class="card-body d-flex flex-column">
                                 <h5 class="card-title"><?= htmlspecialchars($pacote['nomePacote']) ?></h5>
                                 <p class="card-text"><?= htmlspecialchars($pacote['descricaoCurta']) ?></p>
-                                <p class="fw-bold mt-auto mb-0">a partir de R$ <?= number_format((float) $pacote['preco'], 2, ',', '.') ?> por pessoa</p>
+                                <p class="fw-bold mt-auto mb-0">a partir de R$
+                                    <?= number_format((float) $pacote['preco'], 2, ',', '.') ?> por pessoa</p>
                             </div>
                         </div>
                     </a>
@@ -66,6 +68,12 @@ $resultado = mysqli_query($conexao, $sql);
     </div>
 
     <br>
+
+    <?php if (isset($_GET['mensagem'])) { ?>
+        <div class=" container alert alert-warning mt-3" role="alert">
+            <i class="bi bi-check-square-fill"></i> <?= $_GET['mensagem'] ?>
+        </div>
+    <?php } ?>
 
     <a href="login.php" class="btn btn-primary"> login </a>
 

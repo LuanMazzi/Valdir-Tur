@@ -25,10 +25,6 @@ if (isset($_POST['salvar'])) {
     $capacidadeSegundoAndar  = mysqli_real_escape_string($conexao, $_POST['capacidadeSegundoAndar'] ?? '');
     $descricao               = mysqli_real_escape_string($conexao, $_POST['descricao'] ?? '');
     $tags                    = mysqli_real_escape_string($conexao, $_POST['tags'] ?? '');
-    $marcaChassi             = mysqli_real_escape_string($conexao, $_POST['marcaChassi'] ?? '');
-    $modeloChassi            = mysqli_real_escape_string($conexao, $_POST['modeloChassi'] ?? '');
-    $marcaCarroceria         = mysqli_real_escape_string($conexao, $_POST['marcaCarroceria'] ?? '');
-    $modeloCarroceria        = mysqli_real_escape_string($conexao, $_POST['modeloCarroceria'] ?? '');
     $ano                     = mysqli_real_escape_string($conexao, $_POST['ano'] ?? '');
     $placa                   = mysqli_real_escape_string($conexao, strtoupper($_POST['placa'] ?? ''));
     $tipoLeito               = mysqli_real_escape_string($conexao, $_POST['tipoLeito'] ?? '');
@@ -59,8 +55,6 @@ if (isset($_POST['salvar'])) {
         // Campos opcionais: se vier vazio, grava NULL no banco em vez de string vazia
         $capacidadePrimeiroAndarSql = $capacidadePrimeiroAndar === '' ? "NULL" : "'$capacidadePrimeiroAndar'";
         $capacidadeSegundoAndarSql  = $capacidadeSegundoAndar === '' ? "NULL" : "'$capacidadeSegundoAndar'";
-        $marcaCarroceriaSql         = $marcaCarroceria === '' ? "NULL" : "'$marcaCarroceria'";
-        $modeloCarroceriaSql        = $modeloCarroceria === '' ? "NULL" : "'$modeloCarroceria'";
         $tipoLeitoSql               = $tipoLeito === '' ? "NULL" : "'$tipoLeito'";
         $leitoPrimeiroAndarSql      = $leitoPrimeiroAndar === '' ? "NULL" : "'$leitoPrimeiroAndar'";
         $leitoSegundoAndarSql       = $leitoSegundoAndar === '' ? "NULL" : "'$leitoSegundoAndar'";
@@ -75,10 +69,6 @@ if (isset($_POST['salvar'])) {
             $novaMidiaSql
             `descricao` = '$descricao',
             `tags` = '$tags',
-            `marcaChassi` = '$marcaChassi',
-            `modeloChassi` = '$modeloChassi',
-            `marcaCarroceria` = $marcaCarroceriaSql,
-            `modeloCarroceria` = $modeloCarroceriaSql,
             `ano` = '$ano',
             `placa` = '$placa',
             `tipoLeito` = $tipoLeitoSql,
@@ -164,32 +154,6 @@ $veiculo = mysqli_fetch_array($resultado);
                                             <?= $veiculo['midia'] ? htmlspecialchars($veiculo['midia']) . ' (clique para trocar)' : 'Clique para selecionar' ?>
                                         </span>
                                     </label>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label class="form-label pt-2">Marca do Chassi</label>
-                                    <input class="form-control" type="text" name="marcaChassi"
-                                        value="<?= htmlspecialchars($veiculo['marcaChassi']) ?>" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label pt-2">Modelo do Chassi</label>
-                                    <input class="form-control" type="text" name="modeloChassi"
-                                        value="<?= htmlspecialchars($veiculo['modeloChassi']) ?>" required>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label class="form-label pt-2">Marca da Carroceria</label>
-                                    <input class="form-control" type="text" name="marcaCarroceria"
-                                        value="<?= htmlspecialchars($veiculo['marcaCarroceria'] ?? '') ?>">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label pt-2">Modelo da Carroceria</label>
-                                    <input class="form-control" type="text" name="modeloCarroceria"
-                                        value="<?= htmlspecialchars($veiculo['modeloCarroceria'] ?? '') ?>">
                                 </div>
                             </div>
 

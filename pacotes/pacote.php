@@ -67,7 +67,7 @@ if ($pacote && $pacote['duracaoViagem']) {
                     <h4 class="mb-3">Detalhes da viagem</h4>
                     <div class="row g-3">
                         <div class="col-md-4">
-                            <strong>Local de Saída</strong><br><?= htmlspecialchars($pacote['localSaida']) ?>
+                            <strong>Local de Saída</strong><br><?= htmlspecialchars($pacote['locaisEmbarque']) ?>
                         </div>
                         <div class="col-md-4">
                             <strong>Duração</strong><br><?= htmlspecialchars($duracaoTexto) ?>

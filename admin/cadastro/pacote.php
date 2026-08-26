@@ -34,7 +34,7 @@ if (isset($_POST["salvar"])) {
     // Captura dos dados
     $nomePacote       = mysqli_real_escape_string($conexao, $_POST['nomePacote'] ?? '');
     $destino          = mysqli_real_escape_string($conexao, $_POST['destino'] ?? '');
-    $localSaida       = mysqli_real_escape_string($conexao, $_POST['localSaida'] ?? '');
+    $locaisEmbarque       = mysqli_real_escape_string($conexao, $_POST['locaisEmbarque'] ?? '');
     $dataSaida        = mysqli_real_escape_string($conexao, $_POST['dataHoraSaida'] ?? '');
     $dataRetorno      = mysqli_real_escape_string($conexao, $_POST['dataHoraRetorno'] ?? '');
     $preco            = mysqli_real_escape_string($conexao, $_POST['preco'] ?? '');
@@ -49,10 +49,10 @@ if (isset($_POST["salvar"])) {
 
     // Inserção no Banco
     $sql = "INSERT INTO `tbpacote` (
-        `nomePacote`, `destino`, `localSaida`, `dataHoraSaida`, `dataHoraRetorno`,
+        `nomePacote`, `destino`, `locaisEmbarque`, `dataHoraSaida`, `dataHoraRetorno`,
         `preco`, `duracaoViagem`, `descricaoCurta`, `descricaoLonga`, `vagasDisponiveis`, `pacoteParceiro`, `midia`, `status`, `juros`, `qtdParcelas`
     ) VALUES (
-        '$nomePacote', '$destino', '$localSaida', '$dataSaida', '$dataRetorno',
+        '$nomePacote', '$destino', '$locaisEmbarque', '$dataSaida', '$dataRetorno',
         '$preco', '$duracao', '$descricaoCurta', '$descricaoLonga', '$vagasDisponiveis', '$pacoteParceiro', '$nomeMidia', '$status', '$juros', '$parcelas'
     )";
 
@@ -118,7 +118,7 @@ if (isset($_POST["salvar"])) {
                             <input type="datetime-local" class="form-control" id="dataHoraSaida" name="dataHoraSaida" required>
 
                             <label class="py-2">Local de Saída</label>
-                            <input class="form-control" type="text" name="localSaida" placeholder="Rodoviária" required>
+                            <input class="form-control" type="text" name="locaisEmbarque" placeholder="Rodoviária" required>
 
                             <label class="form-label pt-2">Data e Hora de Retorno</label>
                             <input type="datetime-local" class="form-control" id="dataHoraRetorno" name="dataHoraRetorno" required>

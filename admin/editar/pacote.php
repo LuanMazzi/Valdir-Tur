@@ -19,7 +19,7 @@ if (isset($_POST['salvar'])) {
     $id               = mysqli_real_escape_string($conexao, $_POST['id'] ?? '');
     $nomePacote       = mysqli_real_escape_string($conexao, $_POST['nomePacote'] ?? '');
     $destino          = mysqli_real_escape_string($conexao, $_POST['destino'] ?? '');
-    $localSaida       = mysqli_real_escape_string($conexao, $_POST['localSaida'] ?? '');
+    $locaisEmbarque       = mysqli_real_escape_string($conexao, $_POST['locaisEmbarque'] ?? '');
     $dataSaida        = mysqli_real_escape_string($conexao, $_POST['dataHoraSaida'] ?? '');
     $dataRetorno      = mysqli_real_escape_string($conexao, $_POST['dataHoraRetorno'] ?? '');
     $preco            = mysqli_real_escape_string($conexao, $_POST['preco'] ?? '');
@@ -52,7 +52,7 @@ if (isset($_POST['salvar'])) {
     $sql = "UPDATE `tbpacote` SET
         `nomePacote` = '$nomePacote',
         `destino` = '$destino',
-        `localSaida` = '$localSaida',
+        `locaisEmbarque` = '$locaisEmbarque',
         `dataHoraSaida` = '$dataSaida',
         `dataHoraRetorno` = '$dataRetorno',
         `preco` = '$preco',
@@ -160,8 +160,8 @@ if ($pacote['duracaoViagem']) {
                                 value="<?= $dataSaidaInput ?>" required>
 
                             <label class="py-2">Local de Saída</label>
-                            <input class="form-control" type="text" name="localSaida"
-                                value="<?= htmlspecialchars($pacote['localSaida']) ?>" required>
+                            <input class="form-control" type="text" name="locaisEmbarque"
+                                value="<?= htmlspecialchars($pacote['locaisEmbarque']) ?>" required>
 
                             <label class="form-label pt-2">Data e Hora de Retorno</label>
                             <input type="datetime-local" class="form-control" id="dataHoraRetorno" name="dataHoraRetorno"

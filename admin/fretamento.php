@@ -28,16 +28,16 @@ if (isset($_POST['salvar'])) {
     $consumoCombustivel     = mysqli_real_escape_string($conexao, $_POST['consumoCombustivel'] ?? '');
     $qtdKm                  = mysqli_real_escape_string($conexao, $_POST['qtdKm'] ?? '0');
     $preco                  = mysqli_real_escape_string($conexao, $_POST['preco'] ?? '0');
-    $qntdPassageiros        = mysqli_real_escape_string($conexao, $_POST['qntdPassageiros'] ?? '0');
+    $qtdPassageiros        = mysqli_real_escape_string($conexao, $_POST['qtdPassageiros'] ?? '0');
     $status                 = mysqli_real_escape_string($conexao, $_POST['status'] ?? '');
 
 
     $sql = "INSERT INTO `tbFretamento` (
         `idVeiculo`, `idCliente`, `idFuncionario`, `cidadeOrigem`, `locaisEmbarque`, `dataHoraSaida`,
-        `destino`, `dataHoraRetorno`, `valorCombustivel`, `qtdKm`, `consumoCombustivel`, `preco`, `qntdPassageiros`, `status`
+        `destino`, `dataHoraRetorno`, `valorCombustivel`, `qtdKm`, `consumoCombustivel`, `preco`, `qtdPassageiros`, `status`
     ) VALUES (
         '$idVeiculo', '$idCliente', '$idFuncionario', '$cidadeOrigem', '$locaisEmbarque', '$dataHoraSaida',
-        '$destino', '$dataHoraRetorno', '$valorCombustivel', '$qtdKm', '$consumoCombustivel','$preco', '$qntdPassageiros', '$status'
+        '$destino', '$dataHoraRetorno', '$valorCombustivel', '$qtdKm', '$consumoCombustivel','$preco', '$qtdPassageiros', '$status'
     )";
 
     if (mysqli_query($conexao, $sql)) {
@@ -128,7 +128,7 @@ $resultadoFuncionarios = mysqli_query($conexao, "SELECT * FROM tbFuncionario WHE
                             <input class="form-control" type="text" name="locaisEmbarque" placeholder="Rodoviária, Praça Central..." required>
 
                             <label class="form-label pt-2">Quantidade de Passageiros</label>
-                            <input class="form-control" type="number" name="qntdPassageiros" min="0" placeholder="40" required>
+                            <input class="form-control" type="number" name="qtdPassageiros" min="0" placeholder="40" required>
 
                             <div class="row">
                                 <div class="col-md-6">

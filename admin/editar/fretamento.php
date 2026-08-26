@@ -28,7 +28,7 @@ if (isset($_POST['salvar'])) {
     $valorCombustivel = mysqli_real_escape_string($conexao, $_POST['valorCombustivel'] ?? '0');
     $qtdKm            = mysqli_real_escape_string($conexao, $_POST['qtdKm'] ?? '0');
     $preco            = mysqli_real_escape_string($conexao, $_POST['preco'] ?? '0');
-    $qntdPassageiros  = mysqli_real_escape_string($conexao, $_POST['qntdPassageiros'] ?? '0');
+    $qtdPassageiros  = mysqli_real_escape_string($conexao, $_POST['qtdPassageiros'] ?? '0');
     $status           = mysqli_real_escape_string($conexao, $_POST['status'] ?? '');
 
     $sql = "UPDATE `tbFretamento` SET
@@ -43,7 +43,7 @@ if (isset($_POST['salvar'])) {
         `valorCombustivel` = '$valorCombustivel',
         `qtdKm` = '$qtdKm',
         `preco` = '$preco',
-        `qntdPassageiros` = '$qntdPassageiros',
+        `qtdPassageiros` = '$qtdPassageiros',
         `status` = '$status'
         WHERE `idFretamento` = '$id'";
 
@@ -156,8 +156,8 @@ $resultadoFuncionarios = mysqli_query($conexao, "SELECT * FROM tbFuncionario WHE
                                 value="<?= htmlspecialchars($fretamento['locaisEmbarque']) ?>" required>
 
                             <label class="form-label pt-2">Quantidade de Passageiros</label>
-                            <input class="form-control" type="number" name="qntdPassageiros" min="0"
-                                value="<?= htmlspecialchars($fretamento['qntdPassageiros']) ?>" required>
+                            <input class="form-control" type="number" name="qtdPassageiros" min="0"
+                                value="<?= htmlspecialchars($fretamento['qtdPassageiros']) ?>" required>
 
                             <div class="row">
                                 <div class="col-md-6">

@@ -21,7 +21,7 @@ if (isset($_POST["entrar"])) {
             $_SESSION['admin'] = true;
             header("Location: /ValdirTur/admin/adminvt.php");
         } else { 
-            $mensagem = "Usuário ou senha inválidos."; 
+            $mensagem = "Usuário e/ou senha inválidos."; 
             header("Location: index.php?mensagem=$mensagem"); 
             
         } 

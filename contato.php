@@ -15,10 +15,7 @@ if (isset($_POST['enviar'])) {
     $numero_whatsapp = "5544984641251"; 
 
     // 3. Montagem da mensagem
-    $texto = "Olá, recebi um novo contato:%0A";
-    $texto .= "Nome: $nome%0A";
-    $texto .= "E-mail: $email%0A";
-    $texto .= "Mensagem: $mensagem";
+    $texto = "Olá, sou $nome." . " E-mail: $email. " . "Mensagem: $mensagem";
 
     // 4. URL de redirecionamento
     $url = "https://wa.me/{$numero_whatsapp}?text={$texto}";
@@ -38,8 +35,8 @@ if (isset($_POST['enviar'])) {
 <body>
     <?php include 'includes/header.php'; ?>
 
-    <section method="POST" class="container py-5">
-        <div class="col-lg-12">
+    <section class="container py-5">
+        <form method="POST" class="col-lg-12">
             <div class="card-principal">
                 <div class="card-principal-conteudo">
 
@@ -66,7 +63,7 @@ if (isset($_POST['enviar'])) {
 
                 </div>
             </div>
-        </div>
+        </form>
     </section>
 
     <?php include 'includes/footer.php'; ?>

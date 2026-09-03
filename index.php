@@ -22,6 +22,12 @@ $resultado = mysqli_query($conexao, $sql);
 
     <br>
 
+    <?php if (isset($_GET['mensagem'])) { ?>
+        <div class=" container alert alert-danger mt-3" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> <?= $_GET['mensagem'] ?>
+        </div>
+    <?php } ?>
+
     <div class="container card overflow-hidden p-0 shadow-sm">
         <div class="row align-items-center g-0">
             <div class="col-md-9 p-4 p-lg-5">
@@ -69,11 +75,6 @@ $resultado = mysqli_query($conexao, $sql);
 
     <br>
 
-    <?php if (isset($_GET['mensagem'])) { ?>
-        <div class=" container alert alert-warning mt-3" role="alert">
-            <i class="bi bi-check-square-fill"></i> <?= $_GET['mensagem'] ?>
-        </div>
-    <?php } ?>
 
     <a href="login.php" class="btn btn-primary"> login </a>
 

@@ -25,7 +25,7 @@
       <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
         <li><a href="/ValdirTur/index.php" class="nav-link px-2 text-secondary">Início</a></li>
         <li><a href="/ValdirTur/frota/frota.php" class="nav-link px-2 text-dark">Frota</a></li>
-        <li><a href="/ValdirTur/pages/frota.php" class="nav-link px-2 text-dark">Viagens</a></li>
+        <li><a href="/ValdirTur/pacotes/pacotes.php" class="nav-link px-2 text-dark">Pacotes</a></li>
         <li><a href="/ValdirTur/contato.php" class="nav-link px-2 text-dark">Contato</a></li>
 
 

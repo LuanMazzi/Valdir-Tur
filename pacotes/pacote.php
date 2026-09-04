@@ -38,12 +38,46 @@ if ($pacote && $pacote['duracaoViagem']) {
 
         <?php else: ?>
 
+            <?php $listaMidia = midiaLista($pacote['midia']); ?>
+
             <div class="card overflow-hidden shadow-sm" style="border-radius: 26px;">
 
-                <?php if ($pacote['midia']): ?>
-                    <img src="/ValdirTur/assets/uploads/<?= htmlspecialchars($pacote['midia']) ?>"
-                        class="w-100" alt="<?= htmlspecialchars($pacote['nomePacote']) ?>"
-                        style="height: 400px; object-fit: cover;">
+                <?php if ($listaMidia): ?>
+                    <div id="carouselMidiaPacote" class="carousel slide">
+                        <?php if (count($listaMidia) > 1): ?>
+                            <div class="carousel-indicators">
+                                <?php foreach ($listaMidia as $i => $arquivo): ?>
+                                    <button type="button" data-bs-target="#carouselMidiaPacote" data-bs-slide-to="<?= $i ?>"
+                                        <?= $i === 0 ? 'class="active" aria-current="true"' : '' ?>></button>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endif; ?>
+
+                        <div class="carousel-inner">
+                            <?php foreach ($listaMidia as $i => $arquivo): ?>
+                                <div class="carousel-item <?= $i === 0 ? 'active' : '' ?>" style="height: 400px;">
+                                    <?php if (midiaEhVideo($arquivo)): ?>
+                                        <video class="d-block w-100 h-100" style="object-fit: cover;" controls>
+                                            <source src="/ValdirTur/assets/uploads/<?= htmlspecialchars($arquivo) ?>">
+                                        </video>
+                                    <?php else: ?>
+                                        <img src="/ValdirTur/assets/uploads/<?= htmlspecialchars($arquivo) ?>"
+                                            class="d-block w-100 h-100" style="object-fit: cover;"
+                                            alt="<?= htmlspecialchars($pacote['nomePacote']) ?>">
+                                    <?php endif; ?>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+
+                        <?php if (count($listaMidia) > 1): ?>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselMidiaPacote" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon"></span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#carouselMidiaPacote" data-bs-slide="next">
+                                <span class="carousel-control-next-icon"></span>
+                            </button>
+                        <?php endif; ?>
+                    </div>
                 <?php else: ?>
                     <div class="w-100 d-flex align-items-center justify-content-center bg-light text-secondary" style="height: 400px;">
                         <i class="bi bi-image" style="font-size: 4rem;"></i>

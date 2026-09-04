@@ -27,38 +27,7 @@ if (!isset($_SESSION['admin'])) {
 <div class="row g-4 mt-2"> 
     
     <!-- Card 1 -->
-    <div class="col-md-4">
-        <div class="card-desenho h-100">
-            <div class="card-informacoes">
-                <p><strong>Fretamentos do mês</strong></p>
-                <h1 class="numero-total">0</h1>
-                <small>Nenhum fretamento esse mês.</small>
-            </div>
-        </div>
-    </div>
-
-    <!-- Card 2 -->
-    <div class="col-md-4">
-        <div class="card-desenho h-100">
-            <div class="card-informacoes">
-                <p><strong>Viagens Ativas</strong></p>
-                <h1 class="numero-total">3</h1>
-                <small>Ônibus em trânsito agora.</small>
-            </div>
-        </div>
-    </div>
-
-    <!-- Card 3 -->
-    <div class="col-md-4">
-        <div class="card-desenho h-100">
-            <div class="card-informacoes">
-                <p><strong>Manutenção</strong></p>
-                <h1 class="numero-total">1</h1>
-                <small>Veículo em revisão técnica.</small>
-            </div>
-        </div>
-    </div>
-    
+        
 
 </div>
         </div>

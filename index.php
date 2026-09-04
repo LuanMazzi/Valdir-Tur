@@ -57,7 +57,8 @@ $resultado = mysqli_query($conexao, $sql);
                     <a href="/ValdirTur/pacotes/pacote?id=<?= $pacote['idPacote'] ?>"
                         class="col text-decoration-none text-reset">
                         <div class="card h-100">
-                            <img src="<?= $pacote['midia'] ? '/ValdirTur/assets/uploads/' . htmlspecialchars($pacote['midia']) : '/ValdirTur/assets/img/pacote-padrao.jpg' ?>"
+                            <?php $imgCapa = midiaPrimeiraImagem($pacote['midia']); ?>
+                            <img src="<?= $imgCapa ? '/ValdirTur/assets/uploads/' . htmlspecialchars($imgCapa) : '/ValdirTur/assets/img/pacote-padrao.jpg' ?>"
                                 class="card-img-top" alt="<?= htmlspecialchars($pacote['nomePacote']) ?>"
                                 style="height: 200px; object-fit: cover;">
                             <div class="card-body d-flex flex-column">

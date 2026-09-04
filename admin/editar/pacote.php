@@ -32,21 +32,34 @@ if (isset($_POST['salvar'])) {
     $juros            = (int) ($_POST['juros'] ?? 0);
     $parcelas         = (int) (($_POST['parcelas'] ?? '') !== '' ? $_POST['parcelas'] : 1);
 
-    // Upload de mídia (opcional). Só troca se enviarem um arquivo novo.
+    // Upload de mídia (opcional, vários arquivos). Só troca se enviarem
+    // arquivo(s) novo(s) — nesse caso, substitui a lista inteira anterior.
     $extensoesPermitidas = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4', 'mov', 'avi', 'webm'];
     $novaMidiaSql = ""; // se continuar vazio, o UPDATE não mexe na coluna `midia`
+    $nomesMidia = [];
+    $diretorio  = __DIR__ . '/../../assets/uploads/';
 
-    if (isset($_FILES['midia']) && $_FILES['midia']['error'] === UPLOAD_ERR_OK) {
-        $nomeOriginal = basename($_FILES['midia']['name']);
-        $extensao = strtolower(pathinfo($nomeOriginal, PATHINFO_EXTENSION));
+    if (isset($_FILES['midia']) && is_array($_FILES['midia']['name'])) {
+        foreach ($_FILES['midia']['name'] as $i => $nomeOriginal) {
+            if ($_FILES['midia']['error'][$i] !== UPLOAD_ERR_OK || $nomeOriginal === '') {
+                continue;
+            }
 
-        if (in_array($extensao, $extensoesPermitidas, true)) {
-            $nomeSeguro = preg_replace('/[^A-Za-z0-9_\-\.]/', '_', $nomeOriginal);
-            $nomeMidia  = time() . "_" . $nomeSeguro;
-            $diretorio  = __DIR__ . '/../../assets/uploads/';
-            move_uploaded_file($_FILES['midia']['tmp_name'], $diretorio . $nomeMidia);
-            $novaMidiaSql = "`midia` = '$nomeMidia',";
+            $extensao = strtolower(pathinfo($nomeOriginal, PATHINFO_EXTENSION));
+
+            if (!in_array($extensao, $extensoesPermitidas, true)) {
+                continue;
+            }
+
+            $nomeSeguro = preg_replace('/[^A-Za-z0-9_\-\.]/', '_', basename($nomeOriginal));
+            $nomeSalvo  = time() . "_" . $i . "_" . $nomeSeguro;
+            move_uploaded_file($_FILES['midia']['tmp_name'][$i], $diretorio . $nomeSalvo);
+            $nomesMidia[] = $nomeSalvo;
         }
+    }
+
+    if ($nomesMidia) {
+        $novaMidiaSql = "`midia` = '" . implode(',', $nomesMidia) . "',";
     }
 
     $sql = "UPDATE `tbpacote` SET
@@ -138,16 +151,13 @@ if ($pacote['duracaoViagem']) {
                             <label class="py-2">Descrição Longa</label>
                             <textarea class="form-control" name="descricaoLonga" id="descricaoLonga" rows="5" required><?= htmlspecialchars($pacote['descricaoLonga']) ?></textarea>
 
-                            <label class="py-1">Conteúdo (Imagem ou Vídeo)</label>
-                            <div class="upload-container">
-                                <div class="upload-area d-flex flex-wrap align-items-center justify-content-center p-3">
-                                    <input type="file" name="midia" id="fileUpload" class="d-none" accept="image/*,video/*">
-                                    <label for="fileUpload" class="text-center w-100 py-4 cursor-pointer border border-secondary border-dashed">
-                                        <i class="bi bi-cloud-arrow-up"></i>
-                                        <span class="d-block text-secondary">
-                                            <?= $pacote['midia'] ? htmlspecialchars($pacote['midia']) . ' (clique para trocar)' : 'Clique para selecionar' ?>
-                                        </span>
-                                    </label>
+                            <div class="mb-3">
+                                <label for="fileUpload" class="form-label py-1">Conteúdo (Imagens ou Vídeos)</label>
+                                <input class="form-control" type="file" name="midia[]" id="fileUpload" accept="image/*,video/*" multiple>
+                                <div class="form-text">
+                                    <?php $qtdMidiaAtual = count(midiaLista($pacote['midia'])); ?>
+                                    <?= $qtdMidiaAtual ? "Atualmente: {$qtdMidiaAtual} arquivo(s). " : '' ?>
+                                    Selecionar novos arquivos substitui todos os atuais. Deixe em branco pra manter.
                                 </div>
                             </div>
 

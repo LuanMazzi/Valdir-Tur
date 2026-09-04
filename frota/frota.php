@@ -43,7 +43,8 @@ $resultado = mysqli_query($conexao, $sql);
                             </div>
                         </div>
                         <div class="col-md-7">
-                            <img src="<?= $veiculo['midia'] ? '/ValdirTur/assets/uploads/' . htmlspecialchars($veiculo['midia']) : '/ValdirTur/assets/img/veiculo-padrao.jpg' ?>"
+                            <?php $imgCapa = midiaPrimeiraImagem($veiculo['midia']); ?>
+                            <img src="<?= $imgCapa ? '/ValdirTur/assets/uploads/' . htmlspecialchars($imgCapa) : '/ValdirTur/assets/img/veiculo-padrao.jpg' ?>"
                                 class="img-fluid w-100 h-100" alt="<?= htmlspecialchars($veiculo['nomeIdentificacao']) ?>"
                                 style="height: 100%; min-height: 300px; object-fit: cover; display: block;">
                         </div>

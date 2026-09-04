@@ -32,23 +32,33 @@ if (isset($_POST['salvar'])) {
     $leitoSegundoAndar       = mysqli_real_escape_string($conexao, $_POST['leitoSegundoAndar'] ?? '');
     $status                  = mysqli_real_escape_string($conexao, $_POST['status']);
 
-    // Upload de mídia (opcional, um único arquivo)
-    $nomeMidia = null;
+    // Upload de mídia (opcional, vários arquivos). Cada nome salvo vira um item
+    // da lista separada por vírgula guardada na coluna `midia`.
     $extensoesPermitidas = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4', 'mov', 'avi', 'webm'];
+    $nomesMidia = [];
+    $diretorio  = __DIR__ . '/../assets/uploads/';
 
-    if (isset($_FILES['midia']) && $_FILES['midia']['error'] === UPLOAD_ERR_OK) {
-        $nomeOriginal = basename($_FILES['midia']['name']);
-        $extensao = strtolower(pathinfo($nomeOriginal, PATHINFO_EXTENSION));
+    if (isset($_FILES['midia']) && is_array($_FILES['midia']['name'])) {
+        foreach ($_FILES['midia']['name'] as $i => $nomeOriginal) {
+            if ($_FILES['midia']['error'][$i] !== UPLOAD_ERR_OK || $nomeOriginal === '') {
+                continue;
+            }
 
-        if (in_array($extensao, $extensoesPermitidas, true)) {
-            $nomeSeguro = preg_replace('/[^A-Za-z0-9_\-\.]/', '_', $nomeOriginal);
-            $nomeMidia  = time() . "_" . $nomeSeguro;
-            $diretorio  = __DIR__ . '/../assets/uploads/';
-            move_uploaded_file($_FILES['midia']['tmp_name'], $diretorio . $nomeMidia);
-        } else {
-            $erro = "Tipo de arquivo não permitido. Envie imagem ou vídeo.";
+            $extensao = strtolower(pathinfo($nomeOriginal, PATHINFO_EXTENSION));
+
+            if (!in_array($extensao, $extensoesPermitidas, true)) {
+                $erro = "Tipo de arquivo não permitido. Envie apenas imagens ou vídeos.";
+                break;
+            }
+
+            $nomeSeguro = preg_replace('/[^A-Za-z0-9_\-\.]/', '_', basename($nomeOriginal));
+            $nomeSalvo  = time() . "_" . $i . "_" . $nomeSeguro;
+            move_uploaded_file($_FILES['midia']['tmp_name'][$i], $diretorio . $nomeSalvo);
+            $nomesMidia[] = $nomeSalvo;
         }
     }
+
+    $nomeMidia = $nomesMidia ? implode(',', $nomesMidia) : null;
 
     if ($erro === "") {
         // Campos opcionais: se vier vazio, grava NULL no banco em vez de string vazia
@@ -126,15 +136,10 @@ if (isset($_POST['salvar'])) {
                                 <textarea class="form-control" name="descricao" id="descricao" rows="3"></textarea>
                             </div>
 
-                            <label class="py-1">Mídia (Imagem ou Vídeo)</label>
-                            <div class="upload-container">
-                                <div class="upload-area d-flex flex-wrap align-items-center justify-content-center p-3">
-                                    <input type="file" name="midia" id="fileUpload" class="d-none" accept="image/*,video/*">
-                                    <label for="fileUpload" class="text-center w-100 py-4 cursor-pointer border border-secondary border-dashed">
-                                        <i class="bi bi-cloud-arrow-up"></i>
-                                        <span class="d-block text-secondary" id="fileUploadLabel">Clique para selecionar</span>
-                                    </label>
-                                </div>
+                            <div class="mb-3">
+                                <label for="fileUpload" class="form-label py-1">Mídia (Imagens ou Vídeos)</label>
+                                <input class="form-control" type="file" name="midia[]" id="fileUpload" accept="image/*,video/*" multiple>
+                                <div class="form-text">Você pode selecionar várias imagens e vídeos de uma vez.</div>
                             </div>
 
 

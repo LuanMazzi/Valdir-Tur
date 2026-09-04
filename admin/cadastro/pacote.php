@@ -17,19 +17,29 @@ if (isset($_GET['sucesso'])) {
 if (isset($_POST["salvar"])) {
     $diretorio = __DIR__ . '/../../assets/uploads/';
 
-    // Processamento de upload (um arquivo só, a coluna `midia` guarda um nome de arquivo)
+    // Processamento de upload (vários arquivos). Os nomes salvos viram uma
+    // lista separada por vírgula guardada na coluna `midia`.
     $extensoesPermitidas = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4', 'mov', 'avi', 'webm'];
-    $nomeMidia = "";
-    if (isset($_FILES['midia']) && $_FILES['midia']['error'] === UPLOAD_ERR_OK) {
-        $nomeOriginal = basename($_FILES['midia']['name']);
-        $extensao = strtolower(pathinfo($nomeOriginal, PATHINFO_EXTENSION));
+    $nomesMidia = [];
+    if (isset($_FILES['midia']) && is_array($_FILES['midia']['name'])) {
+        foreach ($_FILES['midia']['name'] as $i => $nomeOriginal) {
+            if ($_FILES['midia']['error'][$i] !== UPLOAD_ERR_OK || $nomeOriginal === '') {
+                continue;
+            }
 
-        if (in_array($extensao, $extensoesPermitidas, true)) {
-            $nomeSeguro = preg_replace('/[^A-Za-z0-9_\-\.]/', '_', $nomeOriginal);
-            $nomeMidia = time() . "_" . $nomeSeguro;
-            move_uploaded_file($_FILES['midia']['tmp_name'], $diretorio . $nomeMidia);
+            $extensao = strtolower(pathinfo($nomeOriginal, PATHINFO_EXTENSION));
+
+            if (!in_array($extensao, $extensoesPermitidas, true)) {
+                continue;
+            }
+
+            $nomeSeguro = preg_replace('/[^A-Za-z0-9_\-\.]/', '_', basename($nomeOriginal));
+            $nomeSalvo  = time() . "_" . $i . "_" . $nomeSeguro;
+            move_uploaded_file($_FILES['midia']['tmp_name'][$i], $diretorio . $nomeSalvo);
+            $nomesMidia[] = $nomeSalvo;
         }
     }
+    $nomeMidia = implode(',', $nomesMidia);
 
     // Captura dos dados
     $nomePacote       = mysqli_real_escape_string($conexao, $_POST['nomePacote'] ?? '');
@@ -100,15 +110,10 @@ if (isset($_POST["salvar"])) {
                             <label class="py-2">Descrição Longa</label>
                             <textarea class="form-control" name="descricaoLonga" id="descricaoLonga" rows="5" placeholder="Detalhes completos da viagem" required></textarea>
 
-                            <label class="py-1">Conteúdo (Imagem ou Vídeo)</label>
-                            <div class="upload-container">
-                                <div class="upload-area d-flex flex-wrap align-items-center justify-content-center p-3">
-                                    <input type="file" name="midia" id="fileUpload" class="d-none" accept="image/*,video/*">
-                                    <label for="fileUpload" class="text-center w-100 py-4 cursor-pointer border border-secondary border-dashed">
-                                        <i class="bi bi-cloud-arrow-up"></i>
-                                        <span class="d-block text-secondary">Clique para selecionar</span>
-                                    </label>
-                                </div>
+                            <div class="mb-3">
+                                <label for="fileUpload" class="form-label py-1">Conteúdo (Imagens ou Vídeos)</label>
+                                <input class="form-control" type="file" name="midia[]" id="fileUpload" accept="image/*,video/*" multiple>
+                                <div class="form-text">Você pode selecionar várias imagens e vídeos de uma vez.</div>
                             </div>
 
                             <label class="py-2">Destino</label>
@@ -262,47 +267,6 @@ if (isset($_POST["salvar"])) {
             atualizarParceiro();
         });
         qualParceriaInput.addEventListener('input', atualizarParceiro);
-
-        document.getElementById('fileUpload').addEventListener('change', function(e) {
-            const uploadArea = document.querySelector('.upload-area');
-            const file = e.target.files[0];
-
-            if (file) {
-                const existing = uploadArea.querySelector('.preview-container');
-                if (existing) existing.remove();
-
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const div = document.createElement('div');
-                    div.className = 'preview-container';
-
-                    let media;
-                    if (file.type.startsWith('video/')) {
-                        media = document.createElement('video');
-                        media.controls = true;
-                    } else {
-                        media = document.createElement('img');
-                    }
-                    media.src = event.target.result;
-                    media.style.width = '120px';
-                    media.style.height = '120px';
-                    media.style.objectFit = 'cover';
-
-                    const btn = document.createElement('span');
-                    btn.innerHTML = 'X';
-                    btn.className = 'btn-remove';
-                    btn.onclick = function() {
-                        div.remove();
-                        document.getElementById('fileUpload').value = "";
-                    };
-
-                    div.appendChild(media);
-                    div.appendChild(btn);
-                    uploadArea.appendChild(div);
-                }
-                reader.readAsDataURL(file);
-            }
-        });
     </script>
     <script src="/ValdirTur/assets/js/protecao-form.js"></script>
     </main>

@@ -49,7 +49,8 @@ $resultado = mysqli_query($conexao, $sql);
                             </div>
                         </div>
                         <div class="col-md-7">
-                            <img src="<?= $pacote['midia'] ? '/ValdirTur/assets/uploads/' . htmlspecialchars($pacote['midia']) : '/ValdirTur/assets/img/pacote-padrao.jpg' ?>"
+                            <?php $imgCapa = midiaPrimeiraImagem($pacote['midia']); ?>
+                            <img src="<?= $imgCapa ? '/ValdirTur/assets/uploads/' . htmlspecialchars($imgCapa) : '/ValdirTur/assets/img/pacote-padrao.jpg' ?>"
                                 class="img-fluid w-100 h-100" alt="<?= htmlspecialchars($pacote['nomePacote']) ?>"
                                 style="height: 100%; min-height: 300px; object-fit: cover; display: block;">
                         </div>

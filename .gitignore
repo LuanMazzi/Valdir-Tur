@@ -1,8 +1,8 @@
-.env
-.htaccess
-.vscode/
-node_modules/
+# .env
+# .htaccess
+# .vscode/
+# node_modules/
 vendor/
-*.log
-scriptddl.sql
-assets/uploads/*
+# *.log
+# scriptddl.sql
+# assets/uploads/*

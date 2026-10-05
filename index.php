@@ -64,7 +64,7 @@ $resultado = mysqli_query($conexao, $sql);
                             <div class="card-body d-flex flex-column">
                                 <h5 class="card-title"><?= htmlspecialchars($pacote['nomePacote']) ?></h5>
                                 <p class="card-text"><?= htmlspecialchars($pacote['descricaoCurta']) ?></p>
-                                <p class="fw-bold mt-auto mb-0">a partir de R$
+                                <p class="fw-bold mt-auto mb-0">A partir de R$
                                     <?= number_format((float) $pacote['preco'], 2, ',', '.') ?> por pessoa</p>
                             </div>
                         </div>

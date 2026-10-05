@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+# Áreas restritas / internas
+Disallow: /ValdirTur/admin/
+Disallow: /ValdirTur/config/
+Disallow: /ValdirTur/includes/
+Disallow: /ValdirTur/vendor/
+Disallow: /ValdirTur/login
+Disallow: /ValdirTur/login-antigo
+Disallow: /ValdirTur/logout
+Disallow: /ValdirTur/scriptddl.sql
+
+Sitemap: http://localhost/ValdirTur/sitemap.xml

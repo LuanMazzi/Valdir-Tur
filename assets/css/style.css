@@ -2,7 +2,6 @@ body {
   margin: 0px;
 }
 
-
 .titulo-personalizado{
     font-family: 'Everista'; 
   src: url('assets/fonts/Everista.ttf') format('woff2') ; 
@@ -46,8 +45,6 @@ body {
    padding: 0px;
    font-size: smaller;
 }
-
-
 
 #campo-busca{
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="gray" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>');

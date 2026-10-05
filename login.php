@@ -37,15 +37,24 @@ if (isset($_POST["entrar"])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
     <title>Valdir Tur</title> 
     <link rel="stylesheet" href="/ValdirTur/vendor/bootstrap/css/bootstrap.min.css"> 
+    <link rel="stylesheet" href="/ValdirTur/assets/css/style.css">
     <link rel="icon" type="image/x-icon" href="/ValdirTur/assets/icons/logo-menor.png"> 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style> 
         .card-login { border-radius: 30px; } 
         .card-login .form-control { border-radius: 10px; } 
     </style> 
 </head> 
-<body> 
+<body class="bg-light"> 
+
+
+<div class="m-3">
+    <a href="/ValdirTur/index.php"> <i class="bi bi-arrow-left"></i> Voltar ao ínicio</a>
+</div>
+
     <script src="/ValdirTur/vendor/bootstrap/js/bootstrap.bundle.min.js"></script> 
-    <div class="d-flex justify-content-center align-items-center min-vh-100 bg-light"> 
+    <div class="d-flex justify-content-center align-items-center min-vh-100 "> 
+        
         <div class="container"> 
             <div class="row justify-content-center"> 
                 <div class="col-12 col-sm-10 col-md-8 col-lg-5"> 

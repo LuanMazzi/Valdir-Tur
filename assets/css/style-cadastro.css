@@ -60,7 +60,14 @@ i {
   font-weight: 500;
 }
 
+.form-control::placeholder {
+    color: #adb5bd;   /* cinza mais claro */
+    opacity: 1;       /* Firefox reduz a opacidade por conta própria; isso padroniza */
+}
 
+input[type="datetime-local"]:invalid {
+    color: #adb5bd;
+}
 
 /* Tags */
 

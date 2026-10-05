@@ -26,9 +26,8 @@
         <div class="col mb-3">
             <h5>TERMOS & COMPROMISSOS</h5>
             <ul class="nav flex-column">
-                <li class="nav-item mb-2"><a href="/ValdirTur/index.php" class="nav-link p-0 text-body-secondary">Termos de uso</a></li>
-                <li class="nav-item mb-2"><a href="/ValdirTur/frota/frota.php" class="nav-link p-0 text-body-secondary">Política de Privacidade</a></li>
-                
+                <li class="nav-item mb-2"><a href="/ValdirTur/politicas/termos-de-uso.php" class="nav-link p-0 text-body-secondary">Termos de uso</a></li>
+                <li class="nav-item mb-2"><a href="/ValdirTur/politicas/politica-de-privacidade.php" class="nav-link p-0 text-body-secondary">Política de Privacidade</a></li>
             </ul>
         </div>
 

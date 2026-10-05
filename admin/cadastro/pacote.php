@@ -110,7 +110,7 @@ if (isset($_POST["salvar"])) {
                             <textarea class="form-control" name="descricaoLonga" id="descricaoLonga" rows="5" placeholder="Detalhes completos da viagem" required></textarea>
 
                             <div class="mb-3">
-                                <label for="fileUpload" class="form-label py-1">Conteúdo (Imagens ou Vídeos)</label>
+                                <label for="fileUpload" class="py-2">Conteúdo (Imagens ou Vídeos)</label>
                                 <input class="form-control" type="file" name="midia[]" id="fileUpload" accept="image/*,video/*" multiple>
                                 <div class="form-text">Você pode selecionar várias imagens e vídeos de uma vez.</div>
                             </div>

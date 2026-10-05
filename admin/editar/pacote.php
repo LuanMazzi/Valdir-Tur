@@ -130,7 +130,7 @@ if ($pacote['duracaoViagem']) {
                 <div class="alert alert-danger"><?= htmlspecialchars($erro) ?></div>
             <?php endif; ?>
 
-            <!-- Campo escondido: carrega o ID do pacote junto no POST -->
+        
             <input type="hidden" name="id" value="<?= $pacote['idPacote'] ?>">
 
             <div class="row">
@@ -149,7 +149,7 @@ if ($pacote['duracaoViagem']) {
                             <textarea class="form-control" name="descricaoLonga" id="descricaoLonga" rows="5" required><?= htmlspecialchars($pacote['descricaoLonga']) ?></textarea>
 
                             <div class="mb-3">
-                                <label for="fileUpload" class="form-label py-1">Conteúdo (Imagens ou Vídeos)</label>
+                                <label for="fileUpload" class="py-2">Conteúdo (Imagens ou Vídeos)</label>
                                 <input class="form-control" type="file" name="midia[]" id="fileUpload" accept="image/*,video/*" multiple>
                                 <div class="form-text">
                                     <?php $qtdMidiaAtual = count(midiaLista($pacote['midia'])); ?>
@@ -233,7 +233,6 @@ if ($pacote['duracaoViagem']) {
                                     value="<?= $pacote['pacoteParceiro'] !== 'Não' ? htmlspecialchars($pacote['pacoteParceiro']) : '' ?>">
                             </div>
 
-                            <!-- Campo real enviado pro banco: "Não" ou o nome do parceiro -->
                             <input type="hidden" name="pacoteParceiro" id="pacoteParceiroHidden" value="<?= htmlspecialchars($pacote['pacoteParceiro']) ?>">
                         </div>
                     </div>
@@ -247,7 +246,7 @@ if ($pacote['duracaoViagem']) {
     </section>
 
     <script>
-        // Se a pessoa trocar as datas manualmente, recalcula a duração (mesma lógica do cadastro)
+
         const inputSaida = document.getElementById('dataHoraSaida');
         const inputRetorno = document.getElementById('dataHoraRetorno');
         const displayDuracao = document.getElementById('duracao_display');
@@ -277,7 +276,7 @@ if ($pacote['duracaoViagem']) {
         inputSaida.addEventListener('change', calcularDuracao);
         inputRetorno.addEventListener('change', calcularDuracao);
 
-        // Valor da parcela: (preço + juros%) / parcelas
+
         const inputPreco = document.getElementById('preco');
         const inputJuros = document.getElementById('juros');
         const inputParcelas = document.getElementById('parcelas');
@@ -299,9 +298,8 @@ if ($pacote['duracaoViagem']) {
         inputPreco.addEventListener('input', calcularParcela);
         inputJuros.addEventListener('input', calcularParcela);
         inputParcelas.addEventListener('input', calcularParcela);
-        calcularParcela(); // já mostra o valor calculado assim que a página carrega
-
-        // Pacote de Parceria: por trás, tudo vira um valor só ("Não" ou o nome do parceiro)
+        calcularParcela(); 
+        
         const selectParceria = document.getElementById('selectParceria');
         const qualParceria = document.getElementById('qualParceria');
         const qualParceriaInput = document.getElementById('qualParceriaInput');

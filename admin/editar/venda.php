@@ -13,7 +13,7 @@ $erro = "";
 $sucesso = false;
 $id = $_POST['id'] ?? $_GET['id'] ?? '';
 
-// Se o formulário foi enviado, faz o UPDATE
+
 if (isset($_POST['salvar'])) {
 
     $id                = mysqli_real_escape_string($conexao, $_POST['id'] ?? '');
@@ -29,7 +29,7 @@ if (isset($_POST['salvar'])) {
     $juros             = mysqli_real_escape_string($conexao, ($_POST['juros'] ?? '') !== '' ? $_POST['juros'] : '0');
     $status            = mysqli_real_escape_string($conexao, $_POST['status'] ?? '');
 
-    // idPacote e idFretamento são opcionais (e mutuamente exclusivos), então manda NULL quando não vier valor
+
     $idPacoteSql = $idPacote === '' ? 'NULL' : "'$idPacote'";
     $idFretamentoSql = $idFretamento === '' ? 'NULL' : "'$idFretamento'";
 
@@ -48,23 +48,23 @@ if (isset($_POST['salvar'])) {
         WHERE `idVenda` = '$id'";
 
     if (mysqli_query($conexao, $sql)) {
-        $sucesso = true; // sucesso, segue e recarrega os dados atualizados abaixo
+        $sucesso = true; 
     } else {
         $erro = "Erro ao alterar: " . mysqli_error($conexao);
     }
 }
 
-// Busca os dados atuais da venda, pra preencher o formulário
+
 $idBusca = mysqli_real_escape_string($conexao, $id);
 $sql = "SELECT * FROM tbvenda WHERE idVenda = '$idBusca'";
 $resultado = mysqli_query($conexao, $sql);
 $venda = mysqli_fetch_assoc($resultado);
 
-// Só busca cliente/funcionário/pacote com status Ativo, pra alimentar os selects
+
 $resultadoClientes = mysqli_query($conexao, "SELECT * FROM tbCliente WHERE status = 'Ativo' ORDER BY nome, razaoSocial");
 $resultadoFuncionarios = mysqli_query($conexao, "SELECT * FROM tbFuncionario WHERE status = 'Ativo' ORDER BY nome");
 $resultadoPacotes = mysqli_query($conexao, "SELECT * FROM tbpacote WHERE status = 'Ativo' ORDER BY nomePacote");
-// Só fretamentos Aprovados fazem sentido virar venda
+
 $resultadoFretamentos = mysqli_query($conexao, "SELECT * FROM tbFretamento WHERE status = 'Aprovado' ORDER BY dataHoraSaida DESC");
 $tipoVinculoAtual = $venda['idFretamento'] !== null ? 'fretamento' : ($venda['idPacote'] !== null ? 'pacote' : 'nenhum');
 ?>
@@ -202,7 +202,7 @@ $tipoVinculoAtual = $venda['idFretamento'] !== null ? 'fretamento' : ($venda['id
                             <strong><label>Status</label></strong>
                             <select class="form-select" name="status" required>
                                 <option value="Em andamento" <?= $venda['status'] === 'Em andamento' ? 'selected' : '' ?>>Em andamento</option>
-                                <option value="Concluída" <?= $venda['status'] === 'Concluída' ? 'selected' : '' ?>>Concluída</option>
+                                <option value="Concluído" <?= $venda['status'] === 'Concluído' ? 'selected' : '' ?>>Concluído</option>
                                 <option value="Cancelado" <?= $venda['status'] === 'Cancelado' ? 'selected' : '' ?>>Cancelado</option>
                             </select>
                         </div>
@@ -217,7 +217,6 @@ $tipoVinculoAtual = $venda['idFretamento'] !== null ? 'fretamento' : ($venda['id
     </section>
 
     <script>
-        // Mostra o select de Pacote ou de Fretamento, conforme o vínculo escolhido
         const selectTipoVinculo = document.getElementById('selectTipoVinculo');
         const blocoPacote = document.getElementById('blocoPacote');
         const blocoFretamento = document.getElementById('blocoFretamento');
@@ -229,12 +228,10 @@ $tipoVinculoAtual = $venda['idFretamento'] !== null ? 'fretamento' : ($venda['id
             blocoPacote.style.display = this.value === 'pacote' ? 'block' : 'none';
             blocoFretamento.style.display = this.value === 'fretamento' ? 'block' : 'none';
 
-            // Limpa o select escondido, pra não mandar um valor que não faz mais sentido
             if (this.value !== 'pacote') selectPacote.value = '';
             if (this.value !== 'fretamento') selectFretamento.value = '';
         });
 
-        // Preenche o Valor Recebido com o preço do pacote ou do fretamento selecionado
         function preencherValorRecebido() {
             const preco = this.options[this.selectedIndex].dataset.preco;
             if (preco) {

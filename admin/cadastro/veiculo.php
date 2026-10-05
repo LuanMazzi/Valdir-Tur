@@ -32,8 +32,6 @@ if (isset($_POST['salvar'])) {
     $leitoSegundoAndar       = mysqli_real_escape_string($conexao, $_POST['leitoSegundoAndar'] ?? '');
     $status                  = mysqli_real_escape_string($conexao, $_POST['status']);
 
-    // Upload de mídia (opcional, vários arquivos). Cada nome salvo vira um item
-    // da lista separada por vírgula guardada na coluna `midia`.
     $extensoesPermitidas = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4', 'mov', 'avi', 'webm'];
     $nomesMidia = [];
     $diretorio  = __DIR__ . '/../assets/uploads/';
@@ -61,7 +59,7 @@ if (isset($_POST['salvar'])) {
     $nomeMidia = $nomesMidia ? implode(',', $nomesMidia) : null;
 
     if ($erro === "") {
-        // Campos opcionais: se vier vazio, grava NULL no banco em vez de string vazia
+     
         $capacidadePrimeiroAndar = $capacidadePrimeiroAndar === '' ? "NULL" : "'$capacidadePrimeiroAndar'";
         $capacidadeSegundoAndar  = $capacidadeSegundoAndar === '' ? "NULL" : "'$capacidadeSegundoAndar'";
         $tipoLeito               = $tipoLeito === '' ? "NULL" : "'$tipoLeito'";
@@ -81,7 +79,7 @@ if (isset($_POST['salvar'])) {
 
         try {
             mysqli_query($conexao, $sql);
-            // Redireciona pra evitar reenvio do formulário (e reenvio do upload) ao atualizar a página (F5)
+            
             header('Location: veiculo.php?sucesso=1');
             exit;
         } catch (mysqli_sql_exception $e) {

@@ -17,17 +17,17 @@ if (isset($_GET['excluir'])) {
     exit;
 }
 
-// Se veio ?busca=X na URL, filtra por destino, cliente ou veículo
+
 $busca = trim($_GET['busca'] ?? '');
 $where = "";
 if ($busca !== "") {
-    $buscaEscapada = mysqli_real_escape_string($conexao, $busca);
-    $where = "WHERE fretamento.destino LIKE '%$buscaEscapada%'
-        OR cliente.nome LIKE '%$buscaEscapada%' OR cliente.sobrenome LIKE '%$buscaEscapada%' OR cliente.razaoSocial LIKE '%$buscaEscapada%'
-        OR veiculo.nomeIdentificacao LIKE '%$buscaEscapada%'";
+    $buscaTabela = mysqli_real_escape_string($conexao, $busca);
+    $where = "WHERE fretamento.destino LIKE '%$buscaTabela%'
+        OR cliente.nome LIKE '%$buscaTabela%' OR cliente.sobrenome LIKE '%$buscaTabela%' OR cliente.razaoSocial LIKE '%$buscaTabela%'
+        OR veiculo.nomeIdentificacao LIKE '%$buscaTabela%'";
 }
 
-// JOIN com veículo, cliente e funcionário só pra mostrar nome em vez do ID cru
+
 $sql = "SELECT
             fretamento.*,
             veiculo.nomeIdentificacao AS veiculoNome,
@@ -84,7 +84,6 @@ $resultado = mysqli_query($conexao, $sql);
                                         <th scope="col">Veículo</th>
                                         <th scope="col">Destino</th>
                                         <th scope="col">Saída</th>
-                                        <th scope="col">Valor</th>
                                         <th scope="col">Status</th>
                                         <th scope="col">Ações</th>
                                     </tr>
@@ -107,7 +106,6 @@ $resultado = mysqli_query($conexao, $sql);
                                                 <td><?= htmlspecialchars($fretamento['veiculoNome']) ?></td>
                                                 <td><?= htmlspecialchars($fretamento['destino']) ?></td>
                                                 <td><?= $fretamento['dataHoraSaida'] ? date('d/m/Y H:i', strtotime($fretamento['dataHoraSaida'])) : '' ?></td>
-                                                <td>R$ <?= number_format((float) $fretamento['preco'], 2, ',', '.') ?></td>
                                                 <td><?= htmlspecialchars($fretamento['status']) ?></td>
                                                 <td>
                                                     <a href="../editar/fretamento.php?id=<?= $fretamento['idFretamento'] ?>" class="text-decoration-none">

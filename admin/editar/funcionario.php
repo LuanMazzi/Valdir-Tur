@@ -13,7 +13,7 @@ $erro = "";
 $sucesso = false;
 $id = $_POST['id'] ?? $_GET['id'] ?? '';
 
-// Se o formulário foi enviado, faz o UPDATE
+
 if (isset($_POST['salvar'])) {
 
     $id             = mysqli_real_escape_string($conexao, $_POST['id'] ?? '');
@@ -34,7 +34,7 @@ if (isset($_POST['salvar'])) {
     $numero         = mysqli_real_escape_string($conexao, $_POST['numero'] ?? '');
     $status         = mysqli_real_escape_string($conexao, $_POST['status'] ?? '');
 
-    // Senha é opcional aqui: só grava uma nova coluna `senha` no SQL se o campo vier preenchido
+
     $senhaSql = "";
     if ($senhaPost !== '') {
         $senhaHash = mysqli_real_escape_string($conexao, password_hash($senhaPost, PASSWORD_DEFAULT));
@@ -62,7 +62,7 @@ if (isset($_POST['salvar'])) {
 
     try {
         mysqli_query($conexao, $sql);
-        $sucesso = true; // sucesso, segue e recarrega os dados atualizados abaixo
+        $sucesso = true; 
     } catch (mysqli_sql_exception $e) {
         if (str_contains($e->getMessage(), 'Duplicate entry')) {
             $erro = "Já existe outro funcionário cadastrado com esse CPF.";
@@ -72,7 +72,7 @@ if (isset($_POST['salvar'])) {
     }
 }
 
-// Busca os dados atuais do funcionário, pra preencher o formulário
+
 $idBusca = mysqli_real_escape_string($conexao, $id);
 $sql = "SELECT * FROM tbfuncionario WHERE idFuncionario = '$idBusca'";
 $resultado = mysqli_query($conexao, $sql);
@@ -109,7 +109,7 @@ $funcoes = ['Motorista', 'Agente de Viagens', 'Mecânico', 'Vendedor'];
                 <div class="alert alert-danger"><?= htmlspecialchars($erro) ?></div>
             <?php endif; ?>
 
-            <!-- Campo escondido: carrega o ID do funcionário junto no POST -->
+     
             <input type="hidden" name="id" value="<?= $funcionario['idFuncionario'] ?>">
 
             <div class="row">

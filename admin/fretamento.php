@@ -41,7 +41,7 @@ if (isset($_POST['salvar'])) {
     )";
 
     if (mysqli_query($conexao, $sql)) {
-        // Redireciona pra evitar reenvio do formulário ao atualizar a página (F5)
+   
         header('Location: fretamento.php?sucesso=1');
         exit;
     } else {
@@ -49,8 +49,6 @@ if (isset($_POST['salvar'])) {
     }
 }
 
-// Só busca veículo/cliente/funcionário com status Ativo, pra alimentar os selects
-// SELECT * traz todas as colunas, assim dá pra mostrar qualquer campo no option sem precisar mudar a query
 $resultadoVeiculos = mysqli_query($conexao, "SELECT * FROM tbVeiculo WHERE status = 'Ativo' ORDER BY nomeIdentificacao");
 $resultadoClientes = mysqli_query($conexao, "SELECT * FROM tbCliente WHERE status = 'Ativo' ORDER BY nome, razaoSocial");
 $resultadoFuncionarios = mysqli_query($conexao, "SELECT * FROM tbFuncionario WHERE status = 'Ativo' ORDER BY nome");
@@ -173,7 +171,7 @@ $resultadoFuncionarios = mysqli_query($conexao, "SELECT * FROM tbFuncionario WHE
                                     if (distancia !== '' && consumo !== '' && preco !== '' && parseFloat(consumo) > 0) {
                                         const litros = parseFloat(distancia) / parseFloat(consumo);
                                         const gasto = litros * parseFloat(preco);
-                                        campoGasto.value = gasto.toFixed(2); // só o número, sem "R$" e sem vírgula
+                                        campoGasto.value = gasto.toFixed(2); 
                                     } else {
                                         campoGasto.value = '';
                                     }

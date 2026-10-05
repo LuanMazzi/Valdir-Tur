@@ -9,7 +9,7 @@ if (!isset($_SESSION['admin'])) {
 require_once(__DIR__ . '/../../config/config.php');
 require_once(__DIR__ . '/../../config/conexao.php');
 
-// Se veio ?excluir=X na URL, apaga o cliente antes de montar a lista
+
 $erroExclusao = "";
 if (isset($_GET['excluir'])) {
     $id = mysqli_real_escape_string($conexao, $_GET['excluir']);
@@ -22,12 +22,12 @@ if (isset($_GET['excluir'])) {
     }
 }
 
-// Se veio ?busca=X na URL, filtra por nome, sobrenome, razão social ou email
+
 $busca = trim($_GET['busca'] ?? '');
 $where = "";
 if ($busca !== "") {
-    $buscaEscapada = mysqli_real_escape_string($conexao, $busca);
-    $where = "WHERE nome LIKE '%$buscaEscapada%' OR sobrenome LIKE '%$buscaEscapada%' OR razaoSocial LIKE '%$buscaEscapada%' OR email LIKE '%$buscaEscapada%'";
+    $buscaTabela = mysqli_real_escape_string($conexao, $busca);
+    $where = "WHERE nome LIKE '%$buscaTabela%' OR sobrenome LIKE '%$buscaTabela%' OR razaoSocial LIKE '%$buscaTabela%' OR email LIKE '%$buscaTabela%'";
 }
 
 $sql = "select * from tbCliente $where";

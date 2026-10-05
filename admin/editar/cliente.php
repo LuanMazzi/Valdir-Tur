@@ -35,8 +35,7 @@ if (isset($_POST["salvar"])) {
     $CNPJ            = mysqli_real_escape_string($conexao, $_POST['CNPJ'] ?? '');
     $status          = mysqli_real_escape_string($conexao, $_POST['status'] ?? '');
 
-    // CPF, RG e CNPJ são únicos no banco: grava NULL em vez de '' quando vazio,
-    // senão dois clientes sem CNPJ (por exemplo) colidem como se fossem duplicados
+ 
     $CPFSql  = $CPF === '' ? 'NULL' : "'$CPF'";
     $RGSql   = $RG === '' ? 'NULL' : "'$RG'";
     $CNPJSql = $CNPJ === '' ? 'NULL' : "'$CNPJ'";
@@ -62,8 +61,7 @@ if (isset($_POST["salvar"])) {
     }
 }
 
-// Busca os dados atuais do cliente, pra preencher o formulário
-// (Se acabou de salvar, isso já traz os dados atualizados de volta)
+
 $idBusca = mysqli_real_escape_string($conexao, $id);
 $sql = "SELECT * FROM tbcliente WHERE idCliente = '$idBusca'";
 $resultado = mysqli_query($conexao, $sql);
@@ -93,7 +91,7 @@ $ufs = ['AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MG', 'MS', 
 
             <?= $mensagem ?>
 
-            <!-- Campo escondido: carrega o ID do cliente junto no POST, senão o UPDATE não sabe quem alterar -->
+
             <input type="hidden" name="id" value="<?= $cliente['idCliente'] ?>">
 
             <div class="row">

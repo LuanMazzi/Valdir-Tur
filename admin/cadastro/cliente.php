@@ -16,7 +16,7 @@ if (isset($_GET['sucesso'])) {
 
                             if (isset($_POST["salvar"])) {
 
-                                // 1. Capturar e escapar os dados vindos do formulário
+                     
                                 $tipoCliente     = mysqli_real_escape_string($conexao, $_POST['tipoCliente'] ?? '');
                                 $nome            = mysqli_real_escape_string($conexao, $_POST['nome'] ?? '');
                                 $sobrenome       = mysqli_real_escape_string($conexao, $_POST['sobrenome'] ?? '');
@@ -37,8 +37,6 @@ if (isset($_GET['sucesso'])) {
                                 $CNPJ            = mysqli_real_escape_string($conexao, $_POST['CNPJ'] ?? '');
                                 $status          = mysqli_real_escape_string($conexao, $_POST['status'] ?? '');
 
-                                // 2. CPF, RG e CNPJ são únicos no banco: grava NULL em vez de '' quando vazio,
-                                // senão dois clientes sem CNPJ (por exemplo) colidem como se fossem duplicados
                                 $CPFSql  = $CPF === '' ? 'NULL' : "'$CPF'";
                                 $RGSql   = $RG === '' ? 'NULL' : "'$RG'";
                                 $CNPJSql = $CNPJ === '' ? 'NULL' : "'$CNPJ'";
@@ -54,10 +52,10 @@ if (isset($_GET['sucesso'])) {
                                     '$razaoSocial', '$nomeFantasia', '$nomeResponsavel', $CNPJSql, '$status'
                                 )";
 
-                                // 4. Executar e verificar erro
+                          
                                 try {
                                     mysqli_query($conexao, $sql);
-                                    // Redireciona pra evitar reenvio do formulário ao atualizar a página (F5)
+                                    
                                     header('Location: cliente.php?sucesso=1');
                                     exit;
                                 } catch (mysqli_sql_exception $e) {

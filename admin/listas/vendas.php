@@ -20,10 +20,10 @@ if (isset($_GET['excluir'])) {
 $busca = trim($_GET['busca'] ?? '');
 $where = "";
 if ($busca !== "") {
-    $buscaEscapada = mysqli_real_escape_string($conexao, $busca);
-    $where = "WHERE cliente.nome LIKE '%$buscaEscapada%' OR cliente.sobrenome LIKE '%$buscaEscapada%' OR cliente.razaoSocial LIKE '%$buscaEscapada%'
-        OR funcionario.nome LIKE '%$buscaEscapada%' OR funcionario.sobrenome LIKE '%$buscaEscapada%'
-        OR pacote.nomePacote LIKE '%$buscaEscapada%'";
+    $buscaTabela = mysqli_real_escape_string($conexao, $busca);
+    $where = "WHERE cliente.nome LIKE '%$buscaTabela%' OR cliente.sobrenome LIKE '%$buscaTabela%' OR cliente.razaoSocial LIKE '%$buscaTabela%'
+        OR funcionario.nome LIKE '%$buscaTabela%' OR funcionario.sobrenome LIKE '%$buscaTabela%'
+        OR pacote.nomePacote LIKE '%$buscaTabela%'";
 }
 
 // JOIN com cliente, funcionário e pacote só pra mostrar nome em vez do ID cru

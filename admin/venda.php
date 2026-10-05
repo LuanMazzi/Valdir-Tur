@@ -28,7 +28,7 @@ if (isset($_POST['salvar'])) {
     $juros             = mysqli_real_escape_string($conexao, ($_POST['juros'] ?? '') !== '' ? $_POST['juros'] : '0');
     $status            = mysqli_real_escape_string($conexao, $_POST['status'] ?? '');
 
-    // idPacote e idFretamento são opcionais (e mutuamente exclusivos), então manda NULL quando não vier valor
+
     $idPacoteSql = $idPacote === '' ? 'NULL' : "'$idPacote'";
     $idFretamentoSql = $idFretamento === '' ? 'NULL' : "'$idFretamento'";
 
@@ -41,7 +41,7 @@ if (isset($_POST['salvar'])) {
     )";
 
     if (mysqli_query($conexao, $sql)) {
-        // Redireciona pra evitar reenvio do formulário ao atualizar a página (F5)
+       
         header('Location: venda.php?sucesso=1');
         exit;
     } else {
@@ -49,11 +49,11 @@ if (isset($_POST['salvar'])) {
     }
 }
 
-// Só busca cliente/funcionário/pacote com status Ativo, pra alimentar os selects
+
 $resultadoClientes = mysqli_query($conexao, "SELECT * FROM tbCliente WHERE status = 'Ativo' ORDER BY nome, razaoSocial");
 $resultadoFuncionarios = mysqli_query($conexao, "SELECT * FROM tbFuncionario WHERE status = 'Ativo' ORDER BY nome");
 $resultadoPacotes = mysqli_query($conexao, "SELECT * FROM tbpacote WHERE status = 'Ativo' ORDER BY nomePacote");
-// Só fretamentos Aprovados fazem sentido virar venda
+
 $resultadoFretamentos = mysqli_query($conexao, "SELECT * FROM tbFretamento WHERE status = 'Aprovado' ORDER BY dataHoraSaida DESC");
 ?>
 
@@ -181,7 +181,7 @@ $resultadoFretamentos = mysqli_query($conexao, "SELECT * FROM tbFretamento WHERE
                             <strong><label>Status</label></strong>
                             <select class="form-select" name="status" required>
                                 <option value="Em andamento" selected>Em andamento</option>
-                                <option value="Concluída">Concluída</option>
+                                <option value="Concluído">Concluído</option>
                                 <option value="Cancelado">Cancelado</option>
                             </select>
                         </div>
@@ -196,7 +196,6 @@ $resultadoFretamentos = mysqli_query($conexao, "SELECT * FROM tbFretamento WHERE
     </section>
 
     <script>
-        // Mostra o select de Pacote ou de Fretamento, conforme o vínculo escolhido
         const selectTipoVinculo = document.getElementById('selectTipoVinculo');
         const blocoPacote = document.getElementById('blocoPacote');
         const blocoFretamento = document.getElementById('blocoFretamento');
@@ -208,12 +207,10 @@ $resultadoFretamentos = mysqli_query($conexao, "SELECT * FROM tbFretamento WHERE
             blocoPacote.style.display = this.value === 'pacote' ? 'block' : 'none';
             blocoFretamento.style.display = this.value === 'fretamento' ? 'block' : 'none';
 
-            // Limpa o select escondido, pra não mandar um valor que não faz mais sentido
             if (this.value !== 'pacote') selectPacote.value = '';
             if (this.value !== 'fretamento') selectFretamento.value = '';
         });
 
-        // Preenche o Valor Recebido com o preço do pacote ou do fretamento selecionado
         function preencherValorRecebido() {
             const preco = this.options[this.selectedIndex].dataset.preco;
             if (preco) {

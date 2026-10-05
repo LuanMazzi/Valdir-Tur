@@ -17,8 +17,7 @@ if (isset($_GET['sucesso'])) {
 if (isset($_POST["salvar"])) {
     $diretorio = __DIR__ . '/../../assets/uploads/';
 
-    // Processamento de upload (vários arquivos). Os nomes salvos viram uma
-    // lista separada por vírgula guardada na coluna `midia`.
+
     $extensoesPermitidas = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4', 'mov', 'avi', 'webm'];
     $nomesMidia = [];
     if (isset($_FILES['midia']) && is_array($_FILES['midia']['name'])) {
@@ -41,7 +40,7 @@ if (isset($_POST["salvar"])) {
     }
     $nomeMidia = implode(',', $nomesMidia);
 
-    // Captura dos dados
+
     $nomePacote       = mysqli_real_escape_string($conexao, $_POST['nomePacote'] ?? '');
     $destino          = mysqli_real_escape_string($conexao, $_POST['destino'] ?? '');
     $locaisEmbarque       = mysqli_real_escape_string($conexao, $_POST['locaisEmbarque'] ?? '');
@@ -57,7 +56,7 @@ if (isset($_POST["salvar"])) {
     $juros            = (int) ($_POST['juros'] ?? 0);
     $parcelas         = (int) (($_POST['parcelas'] ?? '') !== '' ? $_POST['parcelas'] : 1);
 
-    // Inserção no Banco
+
     $sql = "INSERT INTO `tbpacote` (
         `nomePacote`, `destino`, `locaisEmbarque`, `dataHoraSaida`, `dataHoraRetorno`,
         `preco`, `duracaoViagem`, `descricaoCurta`, `descricaoLonga`, `vagasDisponiveis`, `pacoteParceiro`, `midia`, `status`, `juros`, `qtdParcelas`
@@ -67,7 +66,7 @@ if (isset($_POST["salvar"])) {
     )";
 
     if (mysqli_query($conexao, $sql)) {
-        // Redireciona pra evitar reenvio do formulário (e reenvio do upload) ao atualizar a página (F5)
+        
         header('Location: pacote.php?sucesso=1');
         exit;
     } else {
@@ -181,7 +180,7 @@ if (isset($_POST["salvar"])) {
                                 <input class="form-control" type="text" id="qualParceriaInput" placeholder="Nome do parceiro">
                             </div>
 
-                            <!-- Campo real enviado pro banco: "Não" ou o nome do parceiro -->
+                   
                             <input type="hidden" name="pacoteParceiro" id="pacoteParceiroHidden" value="Não">
                         </div>
                     </div>
@@ -195,7 +194,7 @@ if (isset($_POST["salvar"])) {
     </section>
 
     <script>
-        // Lógica de cálculo de duração
+
         const inputSaida = document.getElementById('dataHoraSaida');
         const inputRetorno = document.getElementById('dataHoraRetorno');
         const displayDuracao = document.getElementById('duracao_display');
@@ -211,13 +210,13 @@ if (isset($_POST["salvar"])) {
                     const horasTotal = Math.floor(diffMinutosTotal / 60);
                     const minutos = diffMinutosTotal % 60;
 
-                    // Texto amigável pra mostrar (ex: "2 dia(s) 3 hora(s)")
+           
                     const dias = Math.floor(horasTotal / 24);
                     const horasRestantes = horasTotal % 24;
-                    let resultado = (dias > 0 ? dias + " dia(s) " : "") + (horasRestantes > 0 || dias === 0 ? horasRestantes + "e hora(s)" : "");
+                    let resultado = (dias > 0 ? dias + " dia(s) " : "") + (horasRestantes > 0 || dias === 0 ? "e " + horasRestantes + " horas" : "");
                     displayDuracao.value = resultado;
 
-                    // Valor real enviado pro banco, formato TIME (HH:MM:SS) — aceita mais de 24h
+                    
                     const horasStr = String(horasTotal).padStart(2, '0');
                     const minutosStr = String(minutos).padStart(2, '0');
                     valorDuracao.value = `${horasStr}:${minutosStr}:00`;
@@ -227,7 +226,7 @@ if (isset($_POST["salvar"])) {
         inputSaida.addEventListener('change', calcularDuracao);
         inputRetorno.addEventListener('change', calcularDuracao);
 
-        // Valor da parcela: (preço + juros%) / parcelas
+
         const inputPreco = document.getElementById('preco');
         const inputJuros = document.getElementById('juros');
         const inputParcelas = document.getElementById('parcelas');
@@ -250,7 +249,7 @@ if (isset($_POST["salvar"])) {
         inputJuros.addEventListener('input', calcularParcela);
         inputParcelas.addEventListener('input', calcularParcela);
 
-        // Pacote de Parceria: por trás, tudo vira um valor só ("Não" ou o nome do parceiro)
+
         const selectParceria = document.getElementById('selectParceria');
         const qualParceria = document.getElementById('qualParceria');
         const qualParceriaInput = document.getElementById('qualParceriaInput');

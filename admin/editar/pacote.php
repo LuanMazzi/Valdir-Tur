@@ -13,7 +13,6 @@ $erro = "";
 $sucesso = false;
 $id = $_POST['id'] ?? $_GET['id'] ?? '';
 
-// Se o formulário foi enviado, faz o UPDATE
 if (isset($_POST['salvar'])) {
 
     $id               = mysqli_real_escape_string($conexao, $_POST['id'] ?? '');
@@ -32,10 +31,9 @@ if (isset($_POST['salvar'])) {
     $juros            = (int) ($_POST['juros'] ?? 0);
     $parcelas         = (int) (($_POST['parcelas'] ?? '') !== '' ? $_POST['parcelas'] : 1);
 
-    // Upload de mídia (opcional, vários arquivos). Só troca se enviarem
-    // arquivo(s) novo(s) — nesse caso, substitui a lista inteira anterior.
+
     $extensoesPermitidas = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4', 'mov', 'avi', 'webm'];
-    $novaMidiaSql = ""; // se continuar vazio, o UPDATE não mexe na coluna `midia`
+    $novaMidiaSql = "";
     $nomesMidia = [];
     $diretorio  = __DIR__ . '/../../assets/uploads/';
 
@@ -81,23 +79,22 @@ if (isset($_POST['salvar'])) {
         WHERE `idPacote` = '$id'";
 
     if (mysqli_query($conexao, $sql)) {
-        $sucesso = true; // sucesso, segue e recarrega os dados atualizados abaixo
+        $sucesso = true; 
     } else {
         $erro = "Erro ao alterar: " . mysqli_error($conexao);
     }
 }
 
-// Busca os dados atuais do pacote, pra preencher o formulário
 $idBusca = mysqli_real_escape_string($conexao, $id);
 $sql = "SELECT * FROM tbpacote WHERE idPacote = '$idBusca'";
 $resultado = mysqli_query($conexao, $sql);
 $pacote = mysqli_fetch_array($resultado);
 
-// O input datetime-local espera "AAAA-MM-DDTHH:MM"; o banco guarda "AAAA-MM-DD HH:MM:SS"
+
 $dataSaidaInput   = $pacote['dataHoraSaida'] ? date('Y-m-d\TH:i', strtotime($pacote['dataHoraSaida'])) : '';
 $dataRetornoInput = $pacote['dataHoraRetorno'] ? date('Y-m-d\TH:i', strtotime($pacote['dataHoraRetorno'])) : '';
 
-// duracaoViagem vem do banco como "HH:MM:SS" (tipo TIME); monta um texto amigável pra mostrar
+
 $duracaoTexto = '';
 if ($pacote['duracaoViagem']) {
     [$horasTotal, $minutos] = array_map('intval', explode(':', $pacote['duracaoViagem']));

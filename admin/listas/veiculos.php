@@ -26,8 +26,8 @@ if (isset($_GET['excluir'])) {
 $busca = trim($_GET['busca'] ?? '');
 $where = "";
 if ($busca !== "") {
-    $buscaEscapada = mysqli_real_escape_string($conexao, $busca);
-    $where = "WHERE nomeIdentificacao LIKE '%$buscaEscapada%' OR placa LIKE '%$buscaEscapada%' OR tipoVeiculo LIKE '%$buscaEscapada%'";
+    $buscaTabela = mysqli_real_escape_string($conexao, $busca);
+    $where = "WHERE nomeIdentificacao LIKE '%$buscaTabela%' OR placa LIKE '%$buscaTabela%' OR tipoVeiculo LIKE '%$buscaTabela%'";
 }
 
 $sql = "select * from tbVeiculo $where";

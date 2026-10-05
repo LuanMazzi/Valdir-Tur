@@ -13,7 +13,6 @@ $erro = "";
 $sucesso = false;
 $id = $_POST['id'] ?? $_GET['id'] ?? '';
 
-// Se o formulário foi enviado, faz o UPDATE
 if (isset($_POST['salvar'])) {
 
     $id                      = mysqli_real_escape_string($conexao, $_POST['id'] ?? '');
@@ -32,10 +31,8 @@ if (isset($_POST['salvar'])) {
     $leitoSegundoAndar       = mysqli_real_escape_string($conexao, $_POST['leitoSegundoAndar'] ?? '');
     $status                  = mysqli_real_escape_string($conexao, $_POST['status'] ?? '');
 
-    // Upload de mídia (opcional, vários arquivos). Só troca se enviarem
-    // arquivo(s) novo(s) — nesse caso, substitui a lista inteira anterior.
     $extensoesPermitidas = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4', 'mov', 'avi', 'webm'];
-    $novaMidiaSql = ""; // se continuar vazio, o UPDATE não mexe na coluna `midia`
+    $novaMidiaSql = "";
     $nomesMidia = [];
     $diretorio  = __DIR__ . '/../../assets/uploads/';
 
@@ -64,7 +61,7 @@ if (isset($_POST['salvar'])) {
     }
 
     if ($erro === "") {
-        // Campos opcionais: se vier vazio, grava NULL no banco em vez de string vazia
+      
         $capacidadePrimeiroAndarSql = $capacidadePrimeiroAndar === '' ? "NULL" : "'$capacidadePrimeiroAndar'";
         $capacidadeSegundoAndarSql  = $capacidadeSegundoAndar === '' ? "NULL" : "'$capacidadeSegundoAndar'";
         $tipoLeitoSql               = $tipoLeito === '' ? "NULL" : "'$tipoLeito'";
@@ -91,7 +88,7 @@ if (isset($_POST['salvar'])) {
 
         try {
             mysqli_query($conexao, $sql);
-            $sucesso = true; // sucesso, segue e recarrega os dados atualizados abaixo
+            $sucesso = true; 
         } catch (mysqli_sql_exception $e) {
             if (str_contains($e->getMessage(), 'Duplicate entry')) {
                 $erro = "Já existe outro veículo cadastrado com essa placa.";
@@ -102,7 +99,6 @@ if (isset($_POST['salvar'])) {
     }
 }
 
-// Busca os dados atuais do veículo, pra preencher o formulário
 $idBusca = mysqli_real_escape_string($conexao, $id);
 $sql = "SELECT * FROM tbVeiculo WHERE idVeiculo = '$idBusca'";
 $resultado = mysqli_query($conexao, $sql);
@@ -136,7 +132,6 @@ $veiculo = mysqli_fetch_array($resultado);
                 <div class="alert alert-danger"><?= htmlspecialchars($erro) ?></div>
             <?php endif; ?>
 
-            <!-- Campo escondido: carrega o ID do veículo junto no POST -->
             <input type="hidden" name="id" value="<?= $veiculo['idVeiculo'] ?>">
 
             <div class="row">
@@ -270,7 +265,7 @@ $veiculo = mysqli_fetch_array($resultado);
                                     <input type="text" id="tagInput" placeholder="Adicionar tags"
                                         class="border-0 flex-grow-1" style="outline: none; min-width: 120px; background: transparent; color: black;">
                                 </div>
-                                <!-- Campo oculto: já vem preenchido com as tags salvas -->
+                        
                                 <input type="hidden" name="tags" id="tagsHidden" value="<?= htmlspecialchars($veiculo['tags'] ?? '') ?>">
                             </div>
                         </div>

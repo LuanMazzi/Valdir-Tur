@@ -45,7 +45,7 @@ if (isset($_POST['salvar'])) {
 
     try {
         mysqli_query($conexao, $sql);
-        // Redireciona pra evitar reenvio do formulário ao atualizar a página (F5)
+    
         header('Location: funcionario.php?sucesso=1');
         exit;
     } catch (mysqli_sql_exception $e) {

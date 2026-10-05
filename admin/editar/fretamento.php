@@ -13,7 +13,7 @@ $erro = "";
 $sucesso = false;
 $id = $_POST['id'] ?? $_GET['id'] ?? '';
 
-// Se o formulário foi enviado, faz o UPDATE
+
 if (isset($_POST['salvar'])) {
 
     $id               = mysqli_real_escape_string($conexao, $_POST['id'] ?? '');
@@ -48,23 +48,21 @@ if (isset($_POST['salvar'])) {
         WHERE `idFretamento` = '$id'";
 
     if (mysqli_query($conexao, $sql)) {
-        $sucesso = true; // sucesso, segue e recarrega os dados atualizados abaixo
+        $sucesso = true;
     } else {
         $erro = "Erro ao alterar: " . mysqli_error($conexao);
     }
 }
 
-// Busca os dados atuais do fretamento, pra preencher o formulário
+
 $idBusca = mysqli_real_escape_string($conexao, $id);
 $sql = "SELECT * FROM tbFretamento WHERE idFretamento = '$idBusca'";
 $resultado = mysqli_query($conexao, $sql);
 $fretamento = mysqli_fetch_assoc($resultado);
 
-// O input datetime-local espera "AAAA-MM-DDTHH:MM"; o banco guarda "AAAA-MM-DD HH:MM:SS"
 $dataSaidaInput   = $fretamento['dataHoraSaida'] ? date('Y-m-d\TH:i', strtotime($fretamento['dataHoraSaida'])) : '';
 $dataRetornoInput = $fretamento['dataHoraRetorno'] ? date('Y-m-d\TH:i', strtotime($fretamento['dataHoraRetorno'])) : '';
 
-// Só busca veículo/cliente/funcionário com status Ativo, pra alimentar os selects
 $resultadoVeiculos = mysqli_query($conexao, "SELECT * FROM tbVeiculo WHERE status = 'Ativo' ORDER BY nomeIdentificacao");
 $resultadoClientes = mysqli_query($conexao, "SELECT * FROM tbCliente WHERE status = 'Ativo' ORDER BY nome, razaoSocial");
 $resultadoFuncionarios = mysqli_query($conexao, "SELECT * FROM tbFuncionario WHERE status = 'Ativo' ORDER BY nome");
@@ -96,7 +94,6 @@ $resultadoFuncionarios = mysqli_query($conexao, "SELECT * FROM tbFuncionario WHE
                 <div class="alert alert-danger"><?= htmlspecialchars($erro) ?></div>
             <?php endif; ?>
 
-            <!-- Campo escondido: carrega o ID do fretamento junto no POST -->
             <input type="hidden" name="id" value="<?= $fretamento['idFretamento'] ?>">
 
             <div class="row">

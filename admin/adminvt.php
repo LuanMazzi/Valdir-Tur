@@ -17,7 +17,7 @@ if (!isset($_SESSION['admin'])) {
 
     <?php include(__DIR__ . '/../includes/sidebar-admin.php'); ?>
 
-    <!-- O main é "o berço" de tudo do painel -->
+   
     <main class="w-100 p-4" style="overflow-y: auto;">
         <div class="container-fluid">
             <h2 class="fw-bold">Bem-vindo, admin!</h2>
@@ -38,7 +38,7 @@ if (!isset($_SESSION['admin'])) {
 
 
 
-    <script> // Função de data formatada
+    <script> // Função de data
         (function () {
             const elementoData = document.getElementById('data-atual');
             const hoje = new Date();

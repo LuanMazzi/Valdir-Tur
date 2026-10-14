@@ -146,7 +146,7 @@ $resultadoFuncionarios = mysqli_query($conexao, "SELECT * FROM tbFuncionario WHE
                             </div>
                             <input type="hidden" id="cidadeOrigemLat">
                             <input type="hidden" id="cidadeOrigemLon">
-                            <small class="text-muted">Se trocar origem ou destino, selecione um item da lista de sugestões pra recalcular o Km automaticamente</small>
+                            <!-- <small class="text-muted">Se trocar origem ou destino, selecione um item da lista de sugestões pra recalcular o Km automaticamente</small> -->
 
                             <label class="form-label pt-2">Locais de Embarque</label>
                             <input class="form-control" type="text" name="locaisEmbarque"
@@ -174,7 +174,7 @@ $resultadoFuncionarios = mysqli_query($conexao, "SELECT * FROM tbFuncionario WHE
                                     <label class="form-label pt-2">Quantidade de Km</label>
                                     <input type="number" class="form-control" name="qtdKm" id="qtdKm" step="0.01" min="0"
                                         value="<?= htmlspecialchars($fretamento['qtdKm']) ?>" required>
-                                    <small class="text-muted">Calculado automaticamente (ida e volta) ao selecionar origem e destino — pode ajustar</small>
+                                    <small class="text-muted">O valor automático é aproximado</small>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label pt-2">Valor do Combustível</label>

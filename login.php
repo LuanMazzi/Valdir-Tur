@@ -1,35 +1,32 @@
-<?php
-session_start();
+<?php 
+session_start(); 
+require_once(__DIR__ . '/config/config.php'); 
+require_once(__DIR__ . '/config/conexao.php'); 
 
-// 1. Importa as configurações primeiro
-require_once(__DIR__ . '/config/config.php');
-require_once(__DIR__ . '/config/conexao.php');
-
-// 2. Executa o bloco APENAS se o formulário foi enviado
 if (isset($_POST["entrar"])) { 
     $email = $_POST['email'] ?? ''; 
     $senha = $_POST['senha'] ?? ''; 
-
-    // O ideal aqui seria usar Prepared Statements para evitar Injeção de SQL
+    
     $sql = "SELECT * FROM tbFuncionario WHERE email = '$email' AND senha = '$senha'"; 
     $resultado = mysqli_query($conexao, $sql); 
     
-    if ($resultado) {
+    if ($resultado) { 
         $registros = mysqli_num_rows($resultado); 
-        
-        if($registros > 0) {
-            $_SESSION['admin'] = true;
-            header("Location: /ValdirTur/admin/adminvt.php");
+        if($registros > 0) { 
+            $_SESSION['admin'] = true; 
+            header("Location: /ValdirTur/admin/adminvt.php"); 
+            exit(); 
         } else { 
-            $mensagem = "Usuário e/ou senha inválidos."; 
-            header("Location: index.php?mensagem=$mensagem"); 
-            
+            // Salva a mensagem na sessão em vez da URL
+            $_SESSION['mensagemErro'] = "Usuário e/ou senha inválidos."; 
+            header("Location: index.php"); 
+            exit(); 
         } 
-    } else {
-        die("Erro na consulta: " . mysqli_error($conexao));
-    }
+    } else { 
+        die("Erro na consulta: " . mysqli_error($conexao)); 
+    } 
 } 
-?> 
+?>
 <!DOCTYPE html> 
 <html lang="pt-BR"> 
 <head> 

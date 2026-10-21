@@ -47,10 +47,10 @@ $resultado = mysqli_query($conexao, $sql);
     <section class="container py-5">
 
         <div class="d-flex align-items-center">
-            <button type="button" class="botao-voltar" onclick="window.location.href='../adminvt.php'">
+            <!-- <button type="button" class="botao-voltar" onclick="window.location.href='../adminvt.php'">
                 <i class="bi bi-bus-front-fill fs-4"></i>
             </button>
-            <i class="bi bi-arrow-right-short"></i>
+            <i class="bi bi-arrow-right-short"></i> -->
             <label><strong>Lista de veículos</strong></label>
 
             <a href="../cadastro/veiculo.php" class="ms-auto text-decoration-none">

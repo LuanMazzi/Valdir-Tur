@@ -195,9 +195,8 @@ $resultadoFuncionarios = mysqli_query($conexao, "SELECT * FROM tbFuncionario WHE
                             <select class="form-select" name="status" required>
                                 <option value="Orçamento" selected>Orçamento</option>
                                 <option value="Aprovado">Aprovado</option>
-                                <option value="Em andamento">Em andamento</option>
-                                <option value="Concluído">Concluído</option>
                                 <option value="Cancelado">Cancelado</option>
+                                <option value="Rascunho">Rascunho</option>
                             </select>
                         </div>
                     </div>

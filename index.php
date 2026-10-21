@@ -1,10 +1,13 @@
 <?php
+session_start();
+
 require_once(__DIR__ . '/config/config.php');
 require_once(__DIR__ . '/config/conexao.php');
 
 $sql = "SELECT * FROM tbpacote WHERE status = 'Ativo' ORDER BY dataHoraSaida ASC";
 $resultado = mysqli_query($conexao, $sql);
 ?>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <title>Valdir Tur</title>
@@ -22,11 +25,15 @@ $resultado = mysqli_query($conexao, $sql);
 
     <br>
 
-    <?php if (isset($_GET['mensagem'])) { ?>
-        <div class=" container alert alert-danger mt-3" role="alert">
-            <i class="bi bi-exclamation-triangle-fill"></i> <?= $_GET['mensagem'] ?>
-        </div>
-    <?php } ?>
+  <?php if (isset($_SESSION['mensagemErro'])): ?>
+    <div class="container alert alert-danger">
+        <p><?php echo $_SESSION['mensagemErro']; ?></p>
+    </div>
+    <?php 
+    // Apaga a mensagem para que ela não reapareça se o usuário atualizar a página (F5)
+    unset($_SESSION['mensagemErro']); 
+    ?>
+<?php endif; ?>
 
     <div class="container card overflow-hidden p-0 shadow-sm">
         <div class="row align-items-center g-0">

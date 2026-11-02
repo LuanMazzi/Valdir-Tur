@@ -1,11 +1,13 @@
 <?php
 session_start();
 
+// Acesso apenas para admin logado
 if (!isset($_SESSION['admin'])) {
     header('Location: /ValdirTur/login.php');
     exit;
 }
 
+// Configurações e conexão com o banco
 require_once(__DIR__ . '/../../config/config.php');
 require_once(__DIR__ . '/../../config/conexao.php');
 
@@ -13,6 +15,7 @@ $erro = "";
 $sucesso = false;
 $id = $_POST['id'] ?? $_GET['id'] ?? '';
 
+// Salvar: recebe os dados do formulário e atualiza no banco
 if (isset($_POST['salvar'])) {
 
     $id               = mysqli_real_escape_string($conexao, $_POST['id'] ?? '');
@@ -60,6 +63,7 @@ if (isset($_POST['salvar'])) {
         $novaMidiaSql = "`midia` = '" . implode(',', $nomesMidia) . "',";
     }
 
+    // Comando SQL
     $sql = "UPDATE `tbpacote` SET
         `nomePacote` = '$nomePacote',
         `destino` = '$destino',
@@ -78,17 +82,27 @@ if (isset($_POST['salvar'])) {
         `status` = '$status'
         WHERE `idPacote` = '$id'";
 
-    if (mysqli_query($conexao, $sql)) {
-        $sucesso = true; 
-    } else {
-        $erro = "Erro ao alterar: " . mysqli_error($conexao);
+    try {
+        mysqli_query($conexao, $sql);
+        $sucesso = true;
+    } catch (mysqli_sql_exception $e) {
+        $erro = "Erro ao alterar: " . $e->getMessage();
     }
 }
 
 $idBusca = mysqli_real_escape_string($conexao, $id);
+// Busca o registro atual para preencher o formulário
 $sql = "SELECT * FROM tbpacote WHERE idPacote = '$idBusca'";
 $resultado = mysqli_query($conexao, $sql);
 $pacote = mysqli_fetch_array($resultado);
+
+// Em caso de erro, mostra o que foi digitado em vez dos dados do banco
+if ($erro !== "") {
+    $pacote = array_merge($pacote, $_POST);
+    // Campos com nome diferente no formulário e no banco
+    $pacote['duracaoViagem'] = $_POST['duracao_viagem'] ?? '';
+    $pacote['qtdParcelas']   = $_POST['parcelas'] ?? '';
+}
 
 
 $dataSaidaInput   = $pacote['dataHoraSaida'] ? date('Y-m-d\TH:i', strtotime($pacote['dataHoraSaida'])) : '';
@@ -131,10 +145,13 @@ if ($pacote['duracaoViagem']) {
             <?php endif; ?>
 
         
+            <!-- ID do registro (campo oculto) -->
             <input type="hidden" name="id" value="<?= $pacote['idPacote'] ?>">
 
             <div class="row">
+                <!-- Coluna da esquerda -->
                 <div class="col-lg-8 col-md-12">
+                    <!-- Card: Dados do pacote -->
                     <div class="card-principal">
                         <div class="card-principal-conteudo">
                             <label class="py-2">Nome do Pacote</label>
@@ -212,7 +229,9 @@ if ($pacote['duracaoViagem']) {
                     </div>
                 </div>
 
+                <!-- Coluna da direita -->
                 <div class="col-lg-4 col-md-12">
+                    <!-- Card: Status e parceria -->
                     <div class="card-principal">
                         <div class="card-principal-conteudo">
                             <strong><label>Status</label></strong>
@@ -247,6 +266,7 @@ if ($pacote['duracaoViagem']) {
 
     <script>
 
+        // Duração da viagem (calculada pelas datas de saída e retorno)
         const inputSaida = document.getElementById('dataHoraSaida');
         const inputRetorno = document.getElementById('dataHoraRetorno');
         const displayDuracao = document.getElementById('duracao_display');
@@ -277,6 +297,7 @@ if ($pacote['duracaoViagem']) {
         inputRetorno.addEventListener('change', calcularDuracao);
 
 
+        // Valor da parcela (preço, juros e quantidade de parcelas)
         const inputPreco = document.getElementById('preco');
         const inputJuros = document.getElementById('juros');
         const inputParcelas = document.getElementById('parcelas');
@@ -300,6 +321,7 @@ if ($pacote['duracaoViagem']) {
         inputParcelas.addEventListener('input', calcularParcela);
         calcularParcela(); 
         
+        // Pacote de parceria (mostra o campo "Qual?")
         const selectParceria = document.getElementById('selectParceria');
         const qualParceria = document.getElementById('qualParceria');
         const qualParceriaInput = document.getElementById('qualParceriaInput');

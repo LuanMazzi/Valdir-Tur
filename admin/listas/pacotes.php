@@ -1,15 +1,17 @@
 <?php
 session_start();
 
+// Acesso apenas para admin logado
 if (!isset($_SESSION['admin'])) {
     header('Location: /ValdirTur/login.php');
     exit;
 }
 
+// Configurações e conexão com o banco
 require_once(__DIR__ . '/../../config/config.php');
 require_once(__DIR__ . '/../../config/conexao.php');
 
-// Se veio ?excluir=X na URL, apaga o pacote antes de montar a lista
+// Excluir registro
 $erroExclusao = "";
 if (isset($_GET['excluir'])) {
     $id = mysqli_real_escape_string($conexao, $_GET['excluir']);
@@ -22,7 +24,7 @@ if (isset($_GET['excluir'])) {
     }
 }
 
-// Se veio ?busca=X na URL, filtra por nome do pacote ou destino
+// Busca
 $busca = trim($_GET['busca'] ?? '');
 $where = "";
 if ($busca !== "") {
@@ -30,6 +32,7 @@ if ($busca !== "") {
     $where = "WHERE nomePacote LIKE '%$buscaTabela%' OR destino LIKE '%$buscaTabela%'";
 }
 
+// Lista de registros
 $sql = "select * from tbpacote $where";
 $resultado = mysqli_query($conexao, $sql);
 ?>
@@ -62,13 +65,14 @@ $resultado = mysqli_query($conexao, $sql);
             <div class="alert alert-danger mt-3"><?= htmlspecialchars($erroExclusao) ?></div>
         <?php endif; ?>
 
+        <!-- Campo de busca -->
         <form method="GET" class="d-flex mt-3" style="max-width: 400px;">
             <input type="text" name="busca" class="form-control" placeholder="Buscar por nome ou destino..." value="<?= htmlspecialchars($busca) ?>">
             <button class="btn btn-outline-secondary ms-2" type="submit"><i class="bi bi-search"></i></button>
         </form>
 
         <div class="row mt-3">
-            <!-- Coluna da esquerda -->
+            <!-- Tabela -->
             <div class="col-md-12">
                 <div class="card-principal">
                     <div class="card-principal-conteudo">

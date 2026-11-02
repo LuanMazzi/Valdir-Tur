@@ -7,7 +7,7 @@ $sql = "SELECT * FROM tbpacote WHERE idPacote = '$id' AND status = 'Ativo'";
 $resultado = mysqli_query($conexao, $sql);
 $pacote = mysqli_fetch_array($resultado);
 
-// duracaoViagem vem do banco como "HH:MM:SS" (tipo TIME); monta um texto amigável
+// Converte a duração (HH:MM:SS) em texto
 $duracaoTexto = '';
 if ($pacote && $pacote['duracaoViagem']) {
     [$horasTotal, $minutos] = array_map('intval', explode(':', $pacote['duracaoViagem']));
@@ -122,7 +122,6 @@ if ($pacote && $pacote['duracaoViagem']) {
                     <hr class="my-4">
 
                     <p class="fs-4 fw-bold mb-4">A partir de R$ <?= number_format((float) $pacote['preco'], 2, ',', '.') ?> por pessoa</p>
-                    <!-- <small class="fs-4 fw-bold mb-4"> Ou <?= $pacote['qtdParcelas']?> parcelas</small> -->
 
                     <div class="d-grid gap-2 d-md-flex">
                         <a href="/ValdirTur/contato.php" class="btn btn-primary btn-lg px-4">Reservar</a>

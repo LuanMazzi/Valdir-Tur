@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // Usado em: cadastro-veiculo.php e admin/editar/veiculo.php
-    
+    // Tags do veículo (cadastro e edição)
     const tagContainer = document.getElementById('tagContainer');
     const tagInput = document.getElementById('tagInput');
     const tagsHidden = document.getElementById('tagsHidden');
@@ -69,8 +68,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Usado em: cadastro-veiculo.php e admin/editar/veiculo.php
-
+    // Texto do campo de upload de arquivos
     const fileUpload = document.getElementById('fileUpload');
     const fileUploadLabel = document.getElementById('fileUploadLabel');
 

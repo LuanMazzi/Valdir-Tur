@@ -1,11 +1,13 @@
 <?php
 session_start();
 
+// Acesso apenas para admin logado
 if (!isset($_SESSION['admin'])) {
     header('Location: /ValdirTur/login.php');
     exit;
 }
 
+// Configurações e conexão com o banco
 require_once(__DIR__ . '/../../config/config.php');
 require_once(__DIR__ . '/../../config/conexao.php');
 
@@ -14,6 +16,7 @@ $sucesso = false;
 $id = $_POST['id'] ?? $_GET['id'] ?? '';
 
 
+// Salvar: recebe os dados do formulário e atualiza no banco
 if (isset($_POST['salvar'])) {
 
     $id                = mysqli_real_escape_string($conexao, $_POST['id'] ?? '');
@@ -33,6 +36,7 @@ if (isset($_POST['salvar'])) {
     $idPacoteSql = $idPacote === '' ? 'NULL' : "'$idPacote'";
     $idFretamentoSql = $idFretamento === '' ? 'NULL' : "'$idFretamento'";
 
+    // Comando SQL
     $sql = "UPDATE `tbvenda` SET
         `dataVenda` = '$dataVenda',
         `idFuncionario` = '$idFuncionario',
@@ -47,15 +51,17 @@ if (isset($_POST['salvar'])) {
         `status` = '$status'
         WHERE `idVenda` = '$id'";
 
-    if (mysqli_query($conexao, $sql)) {
-        $sucesso = true; 
-    } else {
-        $erro = "Erro ao alterar: " . mysqli_error($conexao);
+    try {
+        mysqli_query($conexao, $sql);
+        $sucesso = true;
+    } catch (mysqli_sql_exception $e) {
+        $erro = "Erro ao alterar: " . $e->getMessage();
     }
 }
 
 
 $idBusca = mysqli_real_escape_string($conexao, $id);
+// Busca o registro atual para preencher o formulário
 $sql = "SELECT * FROM tbvenda WHERE idVenda = '$idBusca'";
 $resultado = mysqli_query($conexao, $sql);
 $venda = mysqli_fetch_assoc($resultado);
@@ -67,6 +73,12 @@ $resultadoPacotes = mysqli_query($conexao, "SELECT * FROM tbpacote WHERE status 
 
 $resultadoFretamentos = mysqli_query($conexao, "SELECT * FROM tbFretamento WHERE status = 'Aprovado' ORDER BY dataHoraSaida DESC");
 $tipoVinculoAtual = $venda['idFretamento'] !== null ? 'fretamento' : ($venda['idPacote'] !== null ? 'pacote' : 'nenhum');
+
+// Em caso de erro, mostra o que foi digitado em vez dos dados do banco
+if ($erro !== "") {
+    $venda = array_merge($venda, $_POST);
+    $tipoVinculoAtual = $_POST['tipoVinculo'] ?? 'nenhum';
+}
 ?>
 
 <!DOCTYPE html>
@@ -95,11 +107,13 @@ $tipoVinculoAtual = $venda['idFretamento'] !== null ? 'fretamento' : ($venda['id
                 <div class="alert alert-danger"><?= htmlspecialchars($erro) ?></div>
             <?php endif; ?>
 
-            <!-- Campo escondido: carrega o ID da venda junto no POST -->
+            <!-- ID do registro (campo oculto) -->
             <input type="hidden" name="id" value="<?= $venda['idVenda'] ?>">
 
             <div class="row">
+                <!-- Coluna da esquerda -->
                 <div class="col-lg-8 col-md-12">
+                    <!-- Card: Dados da venda -->
                     <div class="card-principal">
                         <div class="card-principal-conteudo">
                             <strong><label>Cliente</label></strong>
@@ -196,7 +210,9 @@ $tipoVinculoAtual = $venda['idFretamento'] !== null ? 'fretamento' : ($venda['id
                     </div>
                 </div>
 
+                <!-- Coluna da direita -->
                 <div class="col-lg-4 col-md-12">
+                    <!-- Card: Status -->
                     <div class="card-principal">
                         <div class="card-principal-conteudo">
                             <strong><label>Status</label></strong>

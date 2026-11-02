@@ -1,17 +1,23 @@
 <?php
 session_start();
 
+// Acesso apenas para admin logado
 if (!isset($_SESSION['admin'])) {
     header('Location: /ValdirTur/login.php');
     exit;
 }
 
+// Configurações e conexão com o banco
 require_once(__DIR__ . '/../../config/config.php');
 require_once(__DIR__ . '/../../config/conexao.php');
+require_once(__DIR__ . '/../../includes/validar-cpf.php');
+require_once(__DIR__ . '/../../includes/validar-cnpj.php');
 
 $mensagem = "";
+$deuErro = false;
 $id = $_POST['id'] ?? $_GET['id'] ?? '';
 
+// Salvar: recebe os dados do formulário e atualiza no banco
 if (isset($_POST["salvar"])) {
 
     $id              = mysqli_real_escape_string($conexao, $_POST['id'] ?? '');
@@ -32,7 +38,7 @@ if (isset($_POST["salvar"])) {
     $razaoSocial     = mysqli_real_escape_string($conexao, $_POST['razaoSocial'] ?? '');
     $nomeFantasia    = mysqli_real_escape_string($conexao, $_POST['nomeFantasia'] ?? '');
     $nomeResponsavel = mysqli_real_escape_string($conexao, $_POST['nomeResponsavel'] ?? '');
-    $CNPJ            = mysqli_real_escape_string($conexao, $_POST['CNPJ'] ?? '');
+    $CNPJ            = mysqli_real_escape_string($conexao, strtoupper($_POST['CNPJ'] ?? ''));
     $status          = mysqli_real_escape_string($conexao, $_POST['status'] ?? '');
 
  
@@ -40,6 +46,7 @@ if (isset($_POST["salvar"])) {
     $RGSql   = $RG === '' ? 'NULL' : "'$RG'";
     $CNPJSql = $CNPJ === '' ? 'NULL' : "'$CNPJ'";
 
+    // Comando SQL
     $sql = "UPDATE `tbcliente` SET
         `tipoCliente` = '$tipoCliente', `nome` = '$nome', `sobrenome` = '$sobrenome',
         `dataNascimento` = '$dataNascimento', `email` = '$email', `telefone` = '$telefone',
@@ -49,23 +56,39 @@ if (isset($_POST["salvar"])) {
         `nomeResponsavel` = '$nomeResponsavel', `CNPJ` = $CNPJSql, `status` = '$status'
         WHERE `idCliente` = '$id'";
 
-    try {
-        mysqli_query($conexao, $sql);
-        $mensagem = "<div class='alert alert-success'>Cliente alterado com sucesso.</div>";
-    } catch (mysqli_sql_exception $e) {
-        if (str_contains($e->getMessage(), 'Duplicate entry')) {
-            $mensagem = "<div class='alert alert-danger'>Já existe outro cliente cadastrado com esse CPF, RG ou CNPJ.</div>";
-        } else {
-            $mensagem = "<div class='alert alert-danger'>Erro ao alterar: " . htmlspecialchars($e->getMessage()) . "</div>";
+    // CPF e CNPJ são opcionais: só valida se preenchidos
+    if ($CPF !== '' && !validarCPF($_POST['CPF'])) {
+        $mensagem = "<div class='alert alert-danger'>CPF inválido.</div>";
+        $deuErro = true;
+    } elseif ($CNPJ !== '' && !validarCNPJ($CNPJ)) {
+        $mensagem = "<div class='alert alert-danger'>CNPJ inválido.</div>";
+        $deuErro = true;
+    } else {
+        try {
+            mysqli_query($conexao, $sql);
+            $mensagem = "<div class='alert alert-success'>Cliente alterado com sucesso.</div>";
+        } catch (mysqli_sql_exception $e) {
+            $deuErro = true;
+            if (str_contains($e->getMessage(), 'Duplicate entry')) {
+                $mensagem = "<div class='alert alert-danger'>Já existe outro cliente cadastrado com esse CPF, RG ou CNPJ.</div>";
+            } else {
+                $mensagem = "<div class='alert alert-danger'>Erro ao alterar: " . htmlspecialchars($e->getMessage()) . "</div>";
+            }
         }
     }
 }
 
 
 $idBusca = mysqli_real_escape_string($conexao, $id);
+// Busca o registro atual para preencher o formulário
 $sql = "SELECT * FROM tbcliente WHERE idCliente = '$idBusca'";
 $resultado = mysqli_query($conexao, $sql);
 $cliente = mysqli_fetch_array($resultado);
+
+// Em caso de erro, mostra o que foi digitado em vez dos dados do banco
+if ($deuErro) {
+    $cliente = array_merge($cliente, $_POST);
+}
 
 $ufs = ['AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MG', 'MS', 'MT', 'PA', 'PB', 'PE', 'PI', 'PR', 'RJ', 'RN', 'RO', 'RR', 'RS', 'SC', 'SE', 'SP', 'TO'];
 ?>
@@ -92,11 +115,13 @@ $ufs = ['AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MG', 'MS', 
             <?= $mensagem ?>
 
 
+            <!-- ID do registro (campo oculto) -->
             <input type="hidden" name="id" value="<?= $cliente['idCliente'] ?>">
 
             <div class="row">
                 <!-- Coluna da esquerda -->
                 <div class="col-lg-8 col-md-12">
+                    <!-- Card: Dados do cliente -->
                     <div class="card-principal">
                         <div class="card-principal-conteudo">
                             <div class="col-auto mb-3">
@@ -119,10 +144,22 @@ $ufs = ['AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MG', 'MS', 
                             <input type="date" class="form-control" id="dataNascimento" name="dataNascimento" value="<?= htmlspecialchars($cliente['dataNascimento']) ?>">
 
                             <label class="py-2">CPF</label>
-                            <input class="form-control" type="text" name="CPF" value="<?= htmlspecialchars($cliente['CPF']) ?>">
+                            <input class="form-control" type="text" name="CPF" maxlength="11" value="<?= htmlspecialchars($cliente['CPF'] ?? '') ?>">
+                            <small class="text-muted">Escrever sem pontos e traços</small>
 
-                            <label class="py-2">RG</label>
-                            <input class="form-control" type="text" name="RG" value="<?= htmlspecialchars($cliente['RG']) ?>">
+                            <?php
+                            // Checkbox "Não usa RG"
+                            $semRG = isset($_POST['salvar']) ? isset($_POST['semRG']) : trim($cliente['RG'] ?? '') === '';
+                            ?>
+                            <label class="d-block py-2">RG</label>
+                            <input class="form-control" type="text" name="RG" id="campoRG"
+                                value="<?= $semRG ? '' : htmlspecialchars($cliente['RG'] ?? '') ?>" <?= $semRG ? 'disabled' : '' ?>>
+                            <div class="form-check mt-1">
+                                <input class="form-check-input" type="checkbox" name="semRG" id="semRG"
+                                    <?= $semRG ? 'checked' : '' ?>
+                                    onchange="const rg = document.getElementById('campoRG'); rg.disabled = this.checked; if (this.checked) rg.value = '';">
+                                <label class="form-check-label" for="semRG">Não usa RG</label>
+                            </div>
 
                             <div class="row">
                                 <div class="col-md-6">
@@ -149,12 +186,14 @@ $ufs = ['AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MG', 'MS', 
                                 <input class="form-control" type="text" name="nomeResponsavel" value="<?= htmlspecialchars($cliente['nomeResponsavel']) ?>">
 
                                 <label class="py-2">CNPJ</label>
-                                <input class="form-control" type="text" name="CNPJ" value="<?= htmlspecialchars($cliente['CNPJ']) ?>">
+                                <input class="form-control" type="text" name="CNPJ" maxlength="14" value="<?= htmlspecialchars($cliente['CNPJ'] ?? '') ?>">
+                                <small class="text-muted">Escrever sem pontos, barras e traços</small>
 
                             </div>
                         </div>
                     </div>
 
+                    <!-- Card: Endereço -->
                     <div class="card-principal mt-4">
                         <div class="card-principal-conteudo">
                             <strong><label>Endereço</label></strong> <br>
@@ -191,10 +230,11 @@ $ufs = ['AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MG', 'MS', 
                             </div>
                         </div>
                     </div>
-                </div> <!-- Fim Coluna Esquerda -->
+                </div>
 
                 <!-- Coluna da direita -->
                 <div class="col-lg-4 col-md-12">
+                    <!-- Card: Status -->
                     <div class="card-principal">
                         <div class="card-principal-conteudo">
                             <strong><label>Status</label></strong>
@@ -204,8 +244,8 @@ $ufs = ['AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MG', 'MS', 
                             </select>
                         </div>
                     </div>
-                </div> <!-- Fim Coluna Direita -->
-            </div> <!-- Fim Row -->
+                </div>
+            </div>
             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                 <button style="color: white;" class="btn btn-primary" name="salvar" type="submit">Salvar</button>
             </div>
@@ -213,6 +253,7 @@ $ufs = ['AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MG', 'MS', 
     </section>
 
     <script>
+        // Mostra os campos de Pessoa Jurídica quando o tipo é PJ
         const selectTipo = document.getElementById('selectTipo');
         const formPJ = document.getElementById('formPJ');
 

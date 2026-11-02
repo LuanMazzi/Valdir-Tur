@@ -1,19 +1,23 @@
 <?php
 session_start();
 
+// Acesso apenas para admin logado
 if (!isset($_SESSION['admin'])) {
     header('Location: /ValdirTur/login.php');
     exit;
 }
 
+// Configurações e conexão com o banco
 require_once(__DIR__ . '/../../config/config.php');
 require_once(__DIR__ . '/../../config/conexao.php');
+require_once(__DIR__ . '/../../includes/validar-cpf.php');
 
 $erro = "";
 $sucesso = false;
 $id = $_POST['id'] ?? $_GET['id'] ?? '';
 
 
+// Salvar: recebe os dados do formulário e atualiza no banco
 if (isset($_POST['salvar'])) {
 
     $id             = mysqli_real_escape_string($conexao, $_POST['id'] ?? '');
@@ -41,6 +45,7 @@ if (isset($_POST['salvar'])) {
         $senhaSql = "`senha` = '$senhaHash',";
     }
 
+    // Comando SQL
     $sql = "UPDATE `tbfuncionario` SET
         `nome` = '$nome',
         `sobrenome` = '$sobrenome',
@@ -60,23 +65,36 @@ if (isset($_POST['salvar'])) {
         `status` = '$status'
         WHERE `idFuncionario` = '$id'";
 
-    try {
-        mysqli_query($conexao, $sql);
-        $sucesso = true; 
-    } catch (mysqli_sql_exception $e) {
-        if (str_contains($e->getMessage(), 'Duplicate entry')) {
-            $erro = "Já existe outro funcionário cadastrado com esse CPF.";
-        } else {
-            $erro = "Erro ao alterar: " . $e->getMessage();
+    // Validações: CPF e confirmação de senha
+    if (!validarCPF($_POST['CPF'] ?? '')) {
+        $erro = "CPF inválido.";
+    } elseif ($senhaPost !== ($_POST['confirmarSenha'] ?? '')) {
+        $erro = "As senhas não conferem.";
+    } else {
+        try {
+            mysqli_query($conexao, $sql);
+            $sucesso = true;
+        } catch (mysqli_sql_exception $e) {
+            if (str_contains($e->getMessage(), 'Duplicate entry')) {
+                $erro = "Já existe outro funcionário cadastrado com esse CPF.";
+            } else {
+                $erro = "Erro ao alterar: " . $e->getMessage();
+            }
         }
     }
 }
 
 
 $idBusca = mysqli_real_escape_string($conexao, $id);
+// Busca o registro atual para preencher o formulário
 $sql = "SELECT * FROM tbfuncionario WHERE idFuncionario = '$idBusca'";
 $resultado = mysqli_query($conexao, $sql);
 $funcionario = mysqli_fetch_array($resultado);
+
+// Em caso de erro, mostra o que foi digitado em vez dos dados do banco
+if ($erro !== "") {
+    $funcionario = array_merge($funcionario, $_POST);
+}
 
 $ufs = ['AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MG', 'MS', 'MT', 'PA', 'PB', 'PE', 'PI', 'PR', 'RJ', 'RN', 'RO', 'RR', 'RS', 'SC', 'SE', 'SP', 'TO'];
 $funcoes = ['Motorista', 'Agente de Viagens', 'Mecânico', 'Vendedor'];
@@ -110,10 +128,13 @@ $funcoes = ['Motorista', 'Agente de Viagens', 'Mecânico', 'Vendedor'];
             <?php endif; ?>
 
      
+            <!-- ID do registro (campo oculto) -->
             <input type="hidden" name="id" value="<?= $funcionario['idFuncionario'] ?>">
 
             <div class="row">
-                <div class="col-lg-8 col-md-12"> <!-- Coluna da esquerda -->
+                <!-- Coluna da esquerda -->
+                <div class="col-lg-8 col-md-12">
+                    <!-- Card: Dados do funcionário -->
                     <div class="card-principal">
                         <div class="card-principal-conteudo">
                             <label class="py-2">Nome</label>
@@ -139,12 +160,23 @@ $funcoes = ['Motorista', 'Agente de Viagens', 'Mecânico', 'Vendedor'];
                             </div>
 
                             <label class="py-2">CPF</label>
-                            <input class="form-control" type="text" name="CPF"
+                            <input class="form-control" type="text" name="CPF" maxlength="11"
                                 value="<?= htmlspecialchars($funcionario['CPF']) ?>" required>
+                            <small class="text-muted">Escrever sem pontos e traços</small>
 
-                            <label class="py-2">RG</label>
-                            <input class="form-control" type="text" name="RG"
-                                value="<?= htmlspecialchars($funcionario['RG']) ?>" required>
+                            <?php
+                            // Checkbox "Não usa RG"
+                            $semRG = isset($_POST['salvar']) ? isset($_POST['semRG']) : trim($funcionario['RG'] ?? '') === '';
+                            ?>
+                            <label class="d-block py-2">RG</label>
+                            <input class="form-control" type="text" name="RG" id="campoRG"
+                                value="<?= $semRG ? '' : htmlspecialchars($funcionario['RG'] ?? '') ?>" <?= $semRG ? 'disabled' : 'required' ?>>
+                            <div class="form-check mt-1">
+                                <input class="form-check-input" type="checkbox" name="semRG" id="semRG"
+                                    <?= $semRG ? 'checked' : '' ?>
+                                    onchange="const rg = document.getElementById('campoRG'); rg.disabled = this.checked; rg.required = !this.checked; if (this.checked) rg.value = '';">
+                                <label class="form-check-label" for="semRG">Não usa RG</label>
+                            </div>
 
                             <div class="row">
                                 <div class="col-md-6">
@@ -162,9 +194,13 @@ $funcoes = ['Motorista', 'Agente de Viagens', 'Mecânico', 'Vendedor'];
                             <label class="py-2">Senha de acesso</label>
                             <input class="form-control" type="password" name="senha" placeholder="Deixe em branco para manter a senha atual" minlength="6">
 
+                            <label class="py-2">Confirmar senha</label>
+                            <input class="form-control" type="password" name="confirmarSenha" placeholder="Repita a nova senha" minlength="6">
+
                         </div>
                     </div>
 
+                    <!-- Card: Endereço -->
                     <div class="card-principal mt-4">
                         <div class="card-principal-conteudo">
                             <strong><label>Endereço</label></strong> <br>
@@ -215,7 +251,9 @@ $funcoes = ['Motorista', 'Agente de Viagens', 'Mecânico', 'Vendedor'];
                     </div>
                 </div>
 
-                <div class="col-lg-4 col-md-12"> <!-- Coluna da direita -->
+                <!-- Coluna da direita -->
+                <div class="col-lg-4 col-md-12">
+                    <!-- Card: Status -->
                     <div class="card-principal">
                         <div class="card-principal-conteudo">
                             <strong><label>Status</label></strong>

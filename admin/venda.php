@@ -1,11 +1,13 @@
 <?php
 session_start();
 
+// Acesso apenas para admin logado
 if (!isset($_SESSION['admin'])) {
     header('Location: /ValdirTur/login.php');
     exit;
 }
 
+// Configurações e conexão com o banco
 require_once(__DIR__ . '/../config/config.php');
 require_once(__DIR__ . '/../config/conexao.php');
 
@@ -14,6 +16,7 @@ if (isset($_GET['sucesso'])) {
     $mensagem = "<div class='alert alert-success'>Venda cadastrada com sucesso!</div>";
 }
 
+// Salvar: recebe os dados do formulário e grava no banco
 if (isset($_POST['salvar'])) {
 
     $dataVenda        = mysqli_real_escape_string($conexao, $_POST['dataVenda'] ?? '');
@@ -32,6 +35,7 @@ if (isset($_POST['salvar'])) {
     $idPacoteSql = $idPacote === '' ? 'NULL' : "'$idPacote'";
     $idFretamentoSql = $idFretamento === '' ? 'NULL' : "'$idFretamento'";
 
+    // Comando SQL
     $sql = "INSERT INTO `tbvenda` (
         `dataVenda`, `idFuncionario`, `idCliente`, `idPacote`, `idFretamento`, `formaRecebimento`,
         `dataRecebimento`, `valorRecebido`, `qtdParcelas`, `juros`, `status`
@@ -79,7 +83,9 @@ $resultadoFretamentos = mysqli_query($conexao, "SELECT * FROM tbFretamento WHERE
             <?= $mensagem ?>
 
             <div class="row">
+                <!-- Coluna da esquerda -->
                 <div class="col-lg-8 col-md-12">
+                    <!-- Card: Dados da venda -->
                     <div class="card-principal">
                         <div class="card-principal-conteudo">
                             <strong><label>Cliente</label></strong>
@@ -175,7 +181,9 @@ $resultadoFretamentos = mysqli_query($conexao, "SELECT * FROM tbFretamento WHERE
                     </div>
                 </div>
 
+                <!-- Coluna da direita -->
                 <div class="col-lg-4 col-md-12">
+                    <!-- Card: Status -->
                     <div class="card-principal">
                         <div class="card-principal-conteudo">
                             <strong><label>Status</label></strong>

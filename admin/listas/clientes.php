@@ -1,11 +1,13 @@
 <?php
 session_start();
 
+// Acesso apenas para admin logado
 if (!isset($_SESSION['admin'])) {
     header('Location: /ValdirTur/login.php');
     exit;
 }
 
+// Configurações e conexão com o banco
 require_once(__DIR__ . '/../../config/config.php');
 require_once(__DIR__ . '/../../config/conexao.php');
 
@@ -30,6 +32,7 @@ if ($busca !== "") {
     $where = "WHERE nome LIKE '%$buscaTabela%' OR sobrenome LIKE '%$buscaTabela%' OR razaoSocial LIKE '%$buscaTabela%' OR email LIKE '%$buscaTabela%'";
 }
 
+// Lista de registros
 $sql = "select * from tbCliente $where";
 $resultado = mysqli_query($conexao, $sql);
 ?>
@@ -63,13 +66,14 @@ $resultado = mysqli_query($conexao, $sql);
             <div class="alert alert-danger mt-3"><?= htmlspecialchars($erroExclusao) ?></div>
         <?php endif; ?>
 
+        <!-- Campo de busca -->
         <form method="GET" class="d-flex mt-3" style="max-width: 400px;">
             <input type="text" name="busca" class="form-control" placeholder="Buscar por nome ou email..." value="<?= htmlspecialchars($busca) ?>">
             <button class="btn btn-outline-secondary ms-2" type="submit"><i class="bi bi-search"></i></button>
         </form>
 
         <div class="row mt-3">
-            <!-- Coluna da esquerda -->
+            <!-- Tabela -->
             <div class="col-md-12">
                 <div class="card-principal">
                     <div class="card-principal-conteudo">

@@ -1,8 +1,8 @@
 <?php
-    // Nome do arquivo que está sendo executado agora, ex: "veiculos.php"
+    // Página atual
     $paginaAtual = basename($_SERVER['PHP_SELF']);
 
-    // Devolve "active" quando o arquivo do link bate com a página atual
+    // Marca o link do menu que corresponde à página atual
     function ativo($arquivo, $paginaAtual)
     {
         return $arquivo === $paginaAtual ? 'active' : '';
@@ -18,7 +18,7 @@
                 <a href="/ValdirTur/admin/adminvt.php" class="nav-link <?= ativo('adminvt.php', $paginaAtual) ?>" aria-current="page">Início</a>
             </li>
             <li class="mb-1">
-                <!-- Botão Principal -->
+                <!-- Links do menu -->
                 <a href="/ValdirTur/admin/listas/veiculos.php" class="btn d-inline-flex align-items-center rounded nav-link link-body-emphasis w-100 <?= ativo('veiculos.php', $paginaAtual) ?>"> Veículos </a>
 
                 <a href="/ValdirTur/admin/listas/funcionarios.php" class="btn d-inline-flex align-items-center rounded nav-link link-body-emphasis w-100 <?= ativo('funcionarios.php', $paginaAtual) ?>"> Funcionários </a>

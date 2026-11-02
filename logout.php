@@ -1,10 +1,10 @@
 <?php
 session_start();
 
-// Limpa as variáveis da sessão
+// Limpa os dados da sessão
 $_SESSION = [];
 
-// Apaga o cookie de sessão do navegador, senão o PHP continua mandando o mesmo ID
+// Apaga o cookie de sessão do navegador
 if (ini_get('session.use_cookies')) {
     $parametros = session_get_cookie_params();
     setcookie(
@@ -18,7 +18,7 @@ if (ini_get('session.use_cookies')) {
     );
 }
 
-// Destrói a sessão no servidor
+// Encerra a sessão no servidor
 session_destroy();
 
 header('Location: /ValdirTur/login.php');

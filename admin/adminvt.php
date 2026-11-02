@@ -23,11 +23,8 @@ if (!isset($_SESSION['admin'])) {
             <h2 class="fw-bold">Bem-vindo, admin!</h2>
             <h3 class="text-secondary fw-normal fs-5" id="data-atual">Carregando data...</h3>
 
-           <!-- O segredo está nesta DIV com a classe 'row' envolta de todos os cards -->
-<div class="row g-4 mt-2"> 
-    
-    <!-- Card 1 -->
-        
+           <!-- Cards do painel -->
+<div class="row g-4 mt-2">
 
 </div>
         </div>
@@ -38,7 +35,8 @@ if (!isset($_SESSION['admin'])) {
 
 
 
-    <script> // Função de data
+    <!-- Data de hoje -->
+    <script>
         (function () {
             const elementoData = document.getElementById('data-atual');
             const hoje = new Date();
@@ -50,7 +48,7 @@ if (!isset($_SESSION['admin'])) {
                 year: 'numeric'
             };
 
-            // Formata a data "sexta-feira, 01 de maio de 2026"
+            // Formato: "sexta-feira, 01 de maio de 2026"
             let dataFormatada = hoje.toLocaleDateString('pt-BR', opcoes);
 
 

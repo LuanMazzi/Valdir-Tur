@@ -1,11 +1,13 @@
 <?php
 session_start();
 
+// Acesso apenas para admin logado
 if (!isset($_SESSION['admin'])) {
     header('Location: /ValdirTur/login.php');
     exit;
 }
 
+// Configurações e conexão com o banco
 require_once(__DIR__ . '/../../config/config.php');
 require_once(__DIR__ . '/../../config/conexao.php');
 
@@ -14,6 +16,7 @@ $sucesso = false;
 $id = $_POST['id'] ?? $_GET['id'] ?? '';
 
 
+// Salvar: recebe os dados do formulário e atualiza no banco
 if (isset($_POST['salvar'])) {
 
     $id               = mysqli_real_escape_string($conexao, $_POST['id'] ?? '');
@@ -31,6 +34,7 @@ if (isset($_POST['salvar'])) {
     $qtdPassageiros  = mysqli_real_escape_string($conexao, $_POST['qtdPassageiros'] ?? '0');
     $status           = mysqli_real_escape_string($conexao, $_POST['status'] ?? '');
 
+    // Comando SQL
     $sql = "UPDATE `tbFretamento` SET
         `idVeiculo` = '$idVeiculo',
         `idCliente` = '$idCliente',
@@ -47,18 +51,25 @@ if (isset($_POST['salvar'])) {
         `status` = '$status'
         WHERE `idFretamento` = '$id'";
 
-    if (mysqli_query($conexao, $sql)) {
+    try {
+        mysqli_query($conexao, $sql);
         $sucesso = true;
-    } else {
-        $erro = "Erro ao alterar: " . mysqli_error($conexao);
+    } catch (mysqli_sql_exception $e) {
+        $erro = "Erro ao alterar: " . $e->getMessage();
     }
 }
 
 
 $idBusca = mysqli_real_escape_string($conexao, $id);
+// Busca o registro atual para preencher o formulário
 $sql = "SELECT * FROM tbFretamento WHERE idFretamento = '$idBusca'";
 $resultado = mysqli_query($conexao, $sql);
 $fretamento = mysqli_fetch_assoc($resultado);
+
+// Em caso de erro, mostra o que foi digitado em vez dos dados do banco
+if ($erro !== "") {
+    $fretamento = array_merge($fretamento, $_POST);
+}
 
 $dataSaidaInput   = $fretamento['dataHoraSaida'] ? date('Y-m-d\TH:i', strtotime($fretamento['dataHoraSaida'])) : '';
 $dataRetornoInput = $fretamento['dataHoraRetorno'] ? date('Y-m-d\TH:i', strtotime($fretamento['dataHoraRetorno'])) : '';
@@ -94,10 +105,13 @@ $resultadoFuncionarios = mysqli_query($conexao, "SELECT * FROM tbFuncionario WHE
                 <div class="alert alert-danger"><?= htmlspecialchars($erro) ?></div>
             <?php endif; ?>
 
+            <!-- ID do registro (campo oculto) -->
             <input type="hidden" name="id" value="<?= $fretamento['idFretamento'] ?>">
 
             <div class="row">
+                <!-- Coluna da esquerda -->
                 <div class="col-lg-8 col-md-12">
+                    <!-- Card: Dados do fretamento -->
                     <div class="card-principal">
                         <div class="card-principal-conteudo">
                             <strong><label>Cliente</label></strong>
@@ -196,7 +210,9 @@ $resultadoFuncionarios = mysqli_query($conexao, "SELECT * FROM tbFuncionario WHE
                     </div>
                 </div>
 
+                <!-- Coluna da direita -->
                 <div class="col-lg-4 col-md-12">
+                    <!-- Card: Status -->
                     <div class="card-principal">
                         <div class="card-principal-conteudo">
                             <strong><label>Status</label></strong>

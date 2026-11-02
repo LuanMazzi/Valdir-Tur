@@ -6,21 +6,21 @@ require_once(__DIR__ . '/config/conexao.php');
 
 if (isset($_POST['enviar'])) {
 
-    // 1. Coleta e sanitização dos dados
+    // Dados do formulário
     $nome = urlencode($_POST['nome'] ?? '');
     $email = urlencode($_POST['email'] ?? '');
     $mensagem = urlencode($_POST['mensagem'] ?? '');
 
-    // 2. Número de destino (deve incluir código do país, DDD e número)
+    // Número do WhatsApp de destino (país + DDD + número)
     $numero_whatsapp = "5544984641251"; 
 
-    // 3. Montagem da mensagem
+    // Mensagem
     $texto = "Olá, sou $nome." . " E-mail: $email. " . "Mensagem: $mensagem";
 
-    // 4. URL de redirecionamento
+    // Link do WhatsApp
     $url = "https://wa.me/{$numero_whatsapp}?text={$texto}";
 
-    // 5. Redirecionar
+    // Abre o WhatsApp
     header("Location: $url");
     exit;
 

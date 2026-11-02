@@ -1,7 +1,7 @@
 <?php
-// Funções auxiliares pra lidar com a coluna `midia`, que guarda vários nomes
-// de arquivo (imagens e/ou vídeos) separados por vírgula num único campo.
+// Funções da coluna `midia` (vários arquivos separados por vírgula)
 
+// Transforma o texto do banco em lista de arquivos
 function midiaLista($midia)
 {
     if (empty($midia)) {
@@ -10,6 +10,7 @@ function midiaLista($midia)
     return array_values(array_filter(array_map('trim', explode(',', $midia))));
 }
 
+// Diz se o arquivo é vídeo (pela extensão)
 function midiaEhVideo($nomeArquivo)
 {
     $extensoesVideo = ['mp4', 'mov', 'avi', 'webm'];
@@ -17,7 +18,7 @@ function midiaEhVideo($nomeArquivo)
     return in_array($extensao, $extensoesVideo, true);
 }
 
-// Pra cards/miniaturas: pega a primeira imagem da lista (pula vídeos)
+// Primeira imagem da lista (usada nos cards), ignorando vídeos
 function midiaPrimeiraImagem($midia)
 {
     foreach (midiaLista($midia) as $nome) {

@@ -1,20 +1,36 @@
 <?php
 session_start();
 
+// Acesso apenas para admin logado
 if (!isset($_SESSION['admin'])) {
     header('Location: /ValdirTur/login.php');
     exit;
 }
 
+// Configurações e conexão com o banco
 require_once(__DIR__ . '/../../config/config.php');
 require_once(__DIR__ . '/../../config/conexao.php');
 
+// Devolve o valor digitado (mantém os dados no formulário após um erro)
+function valor($campo)
+{
+    return htmlspecialchars($_POST[$campo] ?? '');
+}
+
+// Marca a opção escolhida do <select>
+function selecionado($campo, $opcao)
+{
+    return ($_POST[$campo] ?? '') === $opcao ? 'selected' : '';
+}
+
 $erro = "";
 $mensagem = "";
+$doisAndares = isset($_POST['doisAndares']);
 if (isset($_GET['sucesso'])) {
     $mensagem = "<div class='alert alert-success'>Veículo cadastrado com sucesso!</div>";
 }
 
+// Salvar: recebe os dados do formulário e grava no banco
 if (isset($_POST['salvar'])) {
 
     $tipoVeiculo             = mysqli_real_escape_string($conexao, $_POST['tipoVeiculo']);
@@ -32,9 +48,16 @@ if (isset($_POST['salvar'])) {
     $leitoSegundoAndar       = mysqli_real_escape_string($conexao, $_POST['leitoSegundoAndar'] ?? '');
     $status                  = mysqli_real_escape_string($conexao, $_POST['status']);
 
+    // Tipo de leito único (1 andar) OU por andar (2 andares), nunca os dois
+    if ($doisAndares) {
+        $tipoLeito = '';
+    } else {
+        $capacidadePrimeiroAndar = $capacidadeSegundoAndar = $leitoPrimeiroAndar = $leitoSegundoAndar = '';
+    }
+
     $extensoesPermitidas = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4', 'mov', 'avi', 'webm'];
     $nomesMidia = [];
-    $diretorio  = __DIR__ . '/../assets/uploads/';
+    $diretorio  = __DIR__ . '/../../assets/uploads/';
 
     if (isset($_FILES['midia']) && is_array($_FILES['midia']['name'])) {
         foreach ($_FILES['midia']['name'] as $i => $nomeOriginal) {
@@ -67,6 +90,7 @@ if (isset($_POST['salvar'])) {
         $leitoSegundoAndar       = $leitoSegundoAndar === '' ? "NULL" : "'$leitoSegundoAndar'";
         $nomeMidia               = $nomeMidia === null ? "NULL" : "'$nomeMidia'";
 
+        // Comando SQL
         $sql = "INSERT INTO `tbVeiculo` (
             `tipoVeiculo`, `nomeIdentificacao`, `numeracao`, `capacidadeTotal`,
             `capacidadePrimeiroAndar`, `capacidadeSegundoAndar`, `midia`, `descricao`,
@@ -107,7 +131,7 @@ if (isset($_POST['salvar'])) {
     <section class="container py-5">
 
         <form method="POST" enctype="multipart/form-data">
-            <button class="botao-voltar" onclick="window.location.href='../listas/veiculos.php'">
+            <button type="button" class="botao-voltar" onclick="window.location.href='../listas/veiculos.php'">
                 <i class="bi bi-bus-front-fill fs-4"></i>
             </button>
             <i class="bi bi-arrow-right-short"></i>
@@ -119,19 +143,21 @@ if (isset($_POST['salvar'])) {
             <?php endif; ?>
 
             <div class="row">
-                <div class="col-lg-8 col-md-12"> <!-- Coluna da esquerda -->
+                <!-- Coluna da esquerda -->
+                <div class="col-lg-8 col-md-12">
+                    <!-- Card: Dados do veículo -->
                     <div class="card-principal">
                         <div class="card-principal-conteudo">
                             <label class="py-2">Nome de identificação</label>
-                            <input class="form-control" type="text" name="nomeIdentificacao"
+                            <input class="form-control" type="text" name="nomeIdentificacao" value="<?= valor('nomeIdentificacao') ?>"
                                 placeholder="Ônibus 2026 DD" required>
 
                             <label class="py-2">Numeração</label>
-                            <input class="form-control" type="number" name="numeracao" placeholder="4000" required>
+                            <input class="form-control" type="number" name="numeracao" value="<?= valor('numeracao') ?>" placeholder="4000" required>
 
                             <div class="mb-3">
                                 <label class="py-2">Descrição</label>
-                                <textarea class="form-control" name="descricao" id="descricao" rows="3"></textarea>
+                                <textarea class="form-control" name="descricao" id="descricao" rows="3"><?= valor('descricao') ?></textarea>
                             </div>
 
                             <div class="mb-3">
@@ -144,6 +170,7 @@ if (isset($_POST['salvar'])) {
                         </div>
                     </div>
 
+                    <!-- Card: Informações do veículo -->
                     <div class="card-principal mt-4">
                         <div class="card-principal-conteudo">
                             <strong><label>Informações</label></strong> <br>
@@ -153,58 +180,62 @@ if (isset($_POST['salvar'])) {
                                     <label class="d-block py-2">Tipo de Veículo</label>
                                     <select class="form-select" name="tipoVeiculo" required>
                                         <option value="" selected disabled>Selecione</option>
-                                        <option value="Ônibus">Ônibus</option>
-                                        <option value="Micro-ônibus">Micro-ônibus</option>
-                                        <option value="Van">Van</option>
-                                        <option value="Carro">Carro</option>
+                                        <option value="Ônibus" <?= selecionado('tipoVeiculo', 'Ônibus') ?>>Ônibus</option>
+                                        <option value="Micro-ônibus" <?= selecionado('tipoVeiculo', 'Micro-ônibus') ?>>Micro-ônibus</option>
+                                        <option value="Van" <?= selecionado('tipoVeiculo', 'Van') ?>>Van</option>
+                                        <option value="Carro" <?= selecionado('tipoVeiculo', 'Carro') ?>>Carro</option>
                                     </select>
                                 </div>
 
                                 <div class="col-auto">
                                     <label class="d-block py-2">Capacidade total</label>
                                     <input style="width: 100px;" class="form-control" type="number"
-                                        name="capacidadeTotal" required>
+                                        name="capacidadeTotal" value="<?= valor('capacidadeTotal') ?>" required>
                                 </div>
 
-                                <div class="col-auto">
+                                <div class="col-auto <?= $doisAndares ? 'd-none' : '' ?>" id="blocoTipoLeito">
                                     <label class="d-block py-2">Tipo de leito</label>
                                     <select class="form-select" name="tipoLeito">
                                         <option value="" selected disabled>Selecione</option>
-                                        <option value="Convencional">Convencional</option>
-                                        <option value="Semi-leito">Semi-leito</option>
-                                        <option value="Leito">Leito</option>
-                                        <option value="Leito Cama">Leito Cama</option>
+                                        <option value="Convencional" <?= selecionado('tipoLeito', 'Convencional') ?>>Convencional</option>
+                                        <option value="Semi-leito" <?= selecionado('tipoLeito', 'Semi-leito') ?>>Semi-leito</option>
+                                        <option value="Leito" <?= selecionado('tipoLeito', 'Leito') ?>>Leito</option>
+                                        <option value="Leito Cama" <?= selecionado('tipoLeito', 'Leito Cama') ?>>Leito Cama</option>
                                     </select>
                                 </div>
 
                                 <div class="col-auto">
                                     <label class="d-block py-2">Ano</label>
-                                    <input style="width: 100px;" class="form-control" type="number" name="ano"
+                                    <input style="width: 100px;" class="form-control" type="number" name="ano" value="<?= valor('ano') ?>"
                                         placeholder="2020" required>
                                 </div>
 
                                 <div class="col-auto">
                                     <label class="d-block py-2">Placa</label>
-                                    <input style="width: 100px;" class="form-control" type="text" name="placa"
+                                    <input style="width: 100px;" class="form-control" type="text" name="placa" value="<?= valor('placa') ?>"
                                         placeholder="ABC1D23" maxlength="7" required>
                                 </div>
                             </div>
 
                             <hr class="my-4">
 
-                            <small class="text-muted">Preencha apenas se o veículo tiver 2 andares</small>
-                            <div class="row g-3 mt-1">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="doisAndares" id="doisAndares"
+                                    <?= $doisAndares ? 'checked' : '' ?>>
+                                <label class="form-check-label" for="doisAndares">Veículo de 2 andares</label>
+                            </div>
+                            <div class="row g-3 mt-1 <?= $doisAndares ? '' : 'd-none' ?>" id="blocoAndares">
                                 <div class="col-md-6 border-end">
                                     <small class="text-muted">1º Andar</small>
                                     <div class="d-flex gap-2 mt-2">
                                         <input style="width: 100px;" class="form-control" type="number"
-                                            name="capacidadePrimeiroAndar" placeholder="Cap.">
+                                            name="capacidadePrimeiroAndar" value="<?= valor('capacidadePrimeiroAndar') ?>" placeholder="Cap.">
                                         <select class="form-select" name="leitoPrimeiroAndar">
                                             <option value="" selected disabled>Leito 1º andar</option>
-                                            <option value="Convencional">Convencional</option>
-                                            <option value="Semi-Leito">Semi-Leito</option>
-                                            <option value="Leito">Leito</option>
-                                            <option value="Leito Cama">Leito Cama</option>
+                                            <option value="Convencional" <?= selecionado('leitoPrimeiroAndar', 'Convencional') ?>>Convencional</option>
+                                            <option value="Semi-Leito" <?= selecionado('leitoPrimeiroAndar', 'Semi-Leito') ?>>Semi-Leito</option>
+                                            <option value="Leito" <?= selecionado('leitoPrimeiroAndar', 'Leito') ?>>Leito</option>
+                                            <option value="Leito Cama" <?= selecionado('leitoPrimeiroAndar', 'Leito Cama') ?>>Leito Cama</option>
                                         </select>
                                     </div>
                                 </div>
@@ -213,13 +244,13 @@ if (isset($_POST['salvar'])) {
                                     <small class="text-muted">2º Andar</small>
                                     <div class="d-flex gap-2 mt-2">
                                         <input style="width: 100px;" class="form-control" type="number"
-                                            name="capacidadeSegundoAndar" placeholder="Cap.">
+                                            name="capacidadeSegundoAndar" value="<?= valor('capacidadeSegundoAndar') ?>" placeholder="Cap.">
                                         <select class="form-select" name="leitoSegundoAndar">
                                             <option value="" selected disabled>Leito 2º andar</option>
-                                            <option value="Convencional">Convencional</option>
-                                            <option value="Semi-Leito">Semi-Leito</option>
-                                            <option value="Leito">Leito</option>
-                                            <option value="Leito Cama">Leito Cama</option>
+                                            <option value="Convencional" <?= selecionado('leitoSegundoAndar', 'Convencional') ?>>Convencional</option>
+                                            <option value="Semi-Leito" <?= selecionado('leitoSegundoAndar', 'Semi-Leito') ?>>Semi-Leito</option>
+                                            <option value="Leito" <?= selecionado('leitoSegundoAndar', 'Leito') ?>>Leito</option>
+                                            <option value="Leito Cama" <?= selecionado('leitoSegundoAndar', 'Leito Cama') ?>>Leito Cama</option>
                                         </select>
                                     </div>
                                 </div>
@@ -229,13 +260,15 @@ if (isset($_POST['salvar'])) {
 
                 </div>
 
-                <div class="col-lg-4 col-md-12"> <!-- Coluna da direita -->
+                <!-- Coluna da direita -->
+                <div class="col-lg-4 col-md-12">
+                    <!-- Card: Status e tags -->
                     <div class="card-principal">
                         <div class="card-principal-conteudo">
                             <strong><label>Status</label></strong>
                             <select class="form-select" name="status" required>
-                                <option value="Ativo">Ativo</option>
-                                <option value="Inativo">Inativo</option>
+                                <option value="Ativo" <?= selecionado('status', 'Ativo') ?>>Ativo</option>
+                                <option value="Inativo" <?= selecionado('status', 'Inativo') ?>>Inativo</option>
                             </select>
 
                             <div class="mb-3">
@@ -245,8 +278,8 @@ if (isset($_POST['salvar'])) {
                                     <input type="text" id="tagInput" placeholder="Adicionar tags"
                                         class="border-0 flex-grow-1" style="outline: none; min-width: 120px; background: transparent; color: black;">
                                 </div>
-                                <!-- Campo oculto para enviar as tags via POST no PHP -->
-                                <input type="hidden" name="tags" id="tagsHidden">
+                                <!-- Tags (preenchido pelo script) -->
+                                <input type="hidden" name="tags" id="tagsHidden" value="<?= valor('tags') ?>">
                             </div>
                         </div>
                     </div>
@@ -260,6 +293,23 @@ if (isset($_POST['salvar'])) {
         </form>
     </section>
 
+    <script>
+
+        const checkAndares = document.getElementById('doisAndares');
+        const blocoTipoLeito = document.getElementById('blocoTipoLeito');
+        const blocoAndares = document.getElementById('blocoAndares');
+
+        function alternarAndares() {
+            const dois = checkAndares.checked;
+            blocoTipoLeito.classList.toggle('d-none', dois);
+            blocoAndares.classList.toggle('d-none', !dois);
+            blocoTipoLeito.querySelectorAll('input, select').forEach(c => c.disabled = dois);
+            blocoAndares.querySelectorAll('input, select').forEach(c => c.disabled = !dois);
+        }
+
+        checkAndares.addEventListener('change', alternarAndares);
+        alternarAndares();
+    </script>
     <script src="/ValdirTur/assets/js/script.js"></script>
     <script src="/ValdirTur/assets/js/protecao-form.js"></script>
     </main>

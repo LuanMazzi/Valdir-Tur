@@ -1,11 +1,13 @@
 <?php
 session_start();
 
+// Acesso apenas para admin logado
 if (!isset($_SESSION['admin'])) {
     header('Location: /ValdirTur/login.php');
     exit;
 }
 
+// Configurações e conexão com o banco
 require_once(__DIR__ . '/../../config/config.php');
 require_once(__DIR__ . '/../../config/conexao.php');
 
@@ -13,6 +15,7 @@ $erro = "";
 $sucesso = false;
 $id = $_POST['id'] ?? $_GET['id'] ?? '';
 
+// Salvar: recebe os dados do formulário e atualiza no banco
 if (isset($_POST['salvar'])) {
 
     $id                      = mysqli_real_escape_string($conexao, $_POST['id'] ?? '');
@@ -30,6 +33,13 @@ if (isset($_POST['salvar'])) {
     $leitoPrimeiroAndar      = mysqli_real_escape_string($conexao, $_POST['leitoPrimeiroAndar'] ?? '');
     $leitoSegundoAndar       = mysqli_real_escape_string($conexao, $_POST['leitoSegundoAndar'] ?? '');
     $status                  = mysqli_real_escape_string($conexao, $_POST['status'] ?? '');
+
+    // Tipo de leito único (1 andar) OU por andar (2 andares), nunca os dois
+    if (isset($_POST['doisAndares'])) {
+        $tipoLeito = '';
+    } else {
+        $capacidadePrimeiroAndar = $capacidadeSegundoAndar = $leitoPrimeiroAndar = $leitoSegundoAndar = '';
+    }
 
     $extensoesPermitidas = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4', 'mov', 'avi', 'webm'];
     $novaMidiaSql = "";
@@ -68,6 +78,7 @@ if (isset($_POST['salvar'])) {
         $leitoPrimeiroAndarSql      = $leitoPrimeiroAndar === '' ? "NULL" : "'$leitoPrimeiroAndar'";
         $leitoSegundoAndarSql       = $leitoSegundoAndar === '' ? "NULL" : "'$leitoSegundoAndar'";
 
+        // Comando SQL
         $sql = "UPDATE `tbVeiculo` SET
             `tipoVeiculo` = '$tipoVeiculo',
             `nomeIdentificacao` = '$nomeIdentificacao',
@@ -100,9 +111,20 @@ if (isset($_POST['salvar'])) {
 }
 
 $idBusca = mysqli_real_escape_string($conexao, $id);
+// Busca o registro atual para preencher o formulário
 $sql = "SELECT * FROM tbVeiculo WHERE idVeiculo = '$idBusca'";
 $resultado = mysqli_query($conexao, $sql);
 $veiculo = mysqli_fetch_array($resultado);
+
+
+if ($erro !== "") {
+    $veiculo = array_merge($veiculo, $_POST);
+}
+
+$doisAndares = isset($_POST['salvar'])
+    ? isset($_POST['doisAndares'])
+    : (!empty($veiculo['capacidadePrimeiroAndar']) || !empty($veiculo['capacidadeSegundoAndar'])
+        || !empty($veiculo['leitoPrimeiroAndar']) || !empty($veiculo['leitoSegundoAndar']));
 ?>
 
 <!DOCTYPE html>
@@ -132,10 +154,13 @@ $veiculo = mysqli_fetch_array($resultado);
                 <div class="alert alert-danger"><?= htmlspecialchars($erro) ?></div>
             <?php endif; ?>
 
+            <!-- ID do registro (campo oculto) -->
             <input type="hidden" name="id" value="<?= $veiculo['idVeiculo'] ?>">
 
             <div class="row">
-                <div class="col-lg-8 col-md-12"> <!-- Coluna da esquerda -->
+                <!-- Coluna da esquerda -->
+                <div class="col-lg-8 col-md-12">
+                    <!-- Card: Dados do veículo -->
                     <div class="card-principal">
                         <div class="card-principal-conteudo">
                             <label class="py-2">Nome de identificação</label>
@@ -164,6 +189,7 @@ $veiculo = mysqli_fetch_array($resultado);
                         </div>
                     </div>
 
+                    <!-- Card: Informações do veículo -->
                     <div class="card-principal mt-4">
                         <div class="card-principal-conteudo">
                             <strong><label>Informações</label></strong> <br>
@@ -186,7 +212,7 @@ $veiculo = mysqli_fetch_array($resultado);
                                         name="capacidadeTotal" value="<?= htmlspecialchars($veiculo['capacidadeTotal']) ?>" required>
                                 </div>
 
-                                <div class="col-auto">
+                                <div class="col-auto <?= $doisAndares ? 'd-none' : '' ?>" id="blocoTipoLeito">
                                     <label class="d-block py-2">Tipo de leito</label>
                                     <select class="form-select" name="tipoLeito">
                                         <option value="" <?= empty($veiculo['tipoLeito']) ? 'selected' : '' ?>>Selecione</option>
@@ -212,8 +238,13 @@ $veiculo = mysqli_fetch_array($resultado);
 
                             <hr class="my-4">
 
-                            <small class="text-muted">Preencha apenas se o veículo tiver 2 andares</small>
-                            <div class="row g-3 mt-1">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="doisAndares" id="doisAndares"
+                                    <?= $doisAndares ? 'checked' : '' ?>>
+                                <label class="form-check-label" for="doisAndares">Veículo de 2 andares</label>
+                            </div>
+                            <small class="text-muted">Nesse caso, o tipo de leito é definido por andar</small>
+                            <div class="row g-3 mt-1 <?= $doisAndares ? '' : 'd-none' ?>" id="blocoAndares">
                                 <div class="col-md-6 border-end">
                                     <small class="text-muted">1º Andar</small>
                                     <div class="d-flex gap-2 mt-2">
@@ -249,7 +280,9 @@ $veiculo = mysqli_fetch_array($resultado);
 
                 </div>
 
-                <div class="col-lg-4 col-md-12"> <!-- Coluna da direita -->
+                <!-- Coluna da direita -->
+                <div class="col-lg-4 col-md-12">
+                    <!-- Card: Status e tags -->
                     <div class="card-principal">
                         <div class="card-principal-conteudo">
                             <strong><label>Status</label></strong>
@@ -280,6 +313,23 @@ $veiculo = mysqli_fetch_array($resultado);
         </form>
     </section>
 
+    <script>
+        // Alterna entre tipo de leito único e leito por andar
+        const checkAndares = document.getElementById('doisAndares');
+        const blocoTipoLeito = document.getElementById('blocoTipoLeito');
+        const blocoAndares = document.getElementById('blocoAndares');
+
+        function alternarAndares() {
+            const dois = checkAndares.checked;
+            blocoTipoLeito.classList.toggle('d-none', dois);
+            blocoAndares.classList.toggle('d-none', !dois);
+            blocoTipoLeito.querySelectorAll('input, select').forEach(c => c.disabled = dois);
+            blocoAndares.querySelectorAll('input, select').forEach(c => c.disabled = !dois);
+        }
+
+        checkAndares.addEventListener('change', alternarAndares);
+        alternarAndares();
+    </script>
     <script src="/ValdirTur/assets/js/script.js"></script>
     <script src="/ValdirTur/assets/js/protecao-form.js"></script>
     </main>

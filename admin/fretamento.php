@@ -1,11 +1,13 @@
 <?php
 session_start();
 
+// Acesso apenas para admin logado
 if (!isset($_SESSION['admin'])) {
     header('Location: /ValdirTur/login.php');
     exit;
 }
 
+// Configurações e conexão com o banco
 require_once(__DIR__ . '/../config/config.php');
 require_once(__DIR__ . '/../config/conexao.php');
 
@@ -14,6 +16,7 @@ if (isset($_GET['sucesso'])) {
     $mensagem = "<div class='alert alert-success'>Fretamento cadastrado com sucesso!</div>";
 }
 
+// Salvar: recebe os dados do formulário e grava no banco
 if (isset($_POST['salvar'])) {
 
     $idVeiculo              = mysqli_real_escape_string($conexao, $_POST['idVeiculo'] ?? '');
@@ -32,6 +35,7 @@ if (isset($_POST['salvar'])) {
     $status                 = mysqli_real_escape_string($conexao, $_POST['status'] ?? '');
 
 
+    // Comando SQL
     $sql = "INSERT INTO `tbFretamento` (
         `idVeiculo`, `idCliente`, `idFuncionario`, `cidadeOrigem`, `locaisEmbarque`, `dataHoraSaida`,
         `destino`, `dataHoraRetorno`, `valorCombustivel`, `qtdKm`, `consumoCombustivel`, `preco`, `qtdPassageiros`, `status`
@@ -76,7 +80,9 @@ $resultadoFuncionarios = mysqli_query($conexao, "SELECT * FROM tbFuncionario WHE
             <?= $mensagem ?>
 
             <div class="row">
+                <!-- Coluna da esquerda -->
                 <div class="col-lg-8 col-md-12">
+                    <!-- Card: Dados do fretamento -->
                     <div class="card-principal">
                         <div class="card-principal-conteudo">
                             <strong><label>Cliente</label></strong>
@@ -188,7 +194,9 @@ $resultadoFuncionarios = mysqli_query($conexao, "SELECT * FROM tbFuncionario WHE
                     </div>
                 </div>
 
+                <!-- Coluna da direita -->
                 <div class="col-lg-4 col-md-12">
+                    <!-- Card: Status -->
                     <div class="card-principal">
                         <div class="card-principal-conteudo">
                             <strong><label>Status</label></strong>

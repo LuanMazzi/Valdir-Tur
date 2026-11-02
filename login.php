@@ -1,12 +1,15 @@
 <?php 
 session_start(); 
-require_once(__DIR__ . '/config/config.php'); 
-require_once(__DIR__ . '/config/conexao.php'); 
+// Configurações e conexão com o banco
+require_once(__DIR__ . '/config/config.php');
+require_once(__DIR__ . '/config/conexao.php');
 
-if (isset($_POST["entrar"])) { 
-    $email = $_POST['email'] ?? ''; 
-    $senha = $_POST['senha'] ?? ''; 
-    
+// Login: roda só quando o formulário é enviado
+if (isset($_POST["entrar"])) {
+    $email = $_POST['email'] ?? '';
+    $senha = $_POST['senha'] ?? '';
+
+    // Consulta o usuário (melhoria futura: Prepared Statements)
     $sql = "SELECT * FROM tbFuncionario WHERE email = '$email' AND senha = '$senha'"; 
     $resultado = mysqli_query($conexao, $sql); 
     

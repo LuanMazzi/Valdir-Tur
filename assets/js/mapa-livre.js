@@ -1,6 +1,7 @@
 
 document.addEventListener('DOMContentLoaded', function () {
 
+    // Autocompletar de cidades (campos de origem e destino)
     configurarAutocomplete('cidadeOrigem');
     configurarAutocomplete('destino');
 
@@ -11,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const latHidden = document.getElementById(inputId + 'Lat');
         const lonHidden = document.getElementById(inputId + 'Lon');
 
-        // Caixa de sugestões, posicionada logo abaixo do campo
+        // Caixa de sugestões abaixo do campo
         const lista = document.createElement('div');
         lista.className = 'list-group position-absolute w-100 shadow-sm';
         lista.style.zIndex = '1000';
@@ -22,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
         let timer = null;
 
         input.addEventListener('input', function () {
-            // Editou o texto na mão -> as coordenadas antigas não valem mais
+            // Texto alterado: limpa as coordenadas antigas
             if (latHidden) latHidden.value = '';
             if (lonHidden) lonHidden.value = '';
 
@@ -32,8 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (termo.length < 3) return;
 
-            // Espera meio segundo sem digitar antes de buscar
-            // (o uso público do Nominatim pede no máximo 1 requisição por segundo)
+            // Espera 0,5s sem digitar antes de buscar (limite do Nominatim)
             timer = setTimeout(function () {
                 buscarLugares(termo, lista, function (lugar) {
                     input.value = lugar.display_name;
@@ -50,6 +50,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // Busca lugares na API Nominatim (OpenStreetMap)
     function buscarLugares(termo, lista, aoSelecionar) {
         const url = 'https://nominatim.openstreetmap.org/search?format=json&limit=5&countrycodes=br&q=' + encodeURIComponent(termo);
 
@@ -71,6 +72,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
+    // Calcula a distância (ida e volta) pela API OSRM
     function calcularDistancia() {
         const latOrigem = document.getElementById('cidadeOrigemLat')?.value;
         const lonOrigem = document.getElementById('cidadeOrigemLon')?.value;
@@ -78,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const lonDestino = document.getElementById('destinoLon')?.value;
         const campoKm = document.getElementById('qtdKm');
 
-        // Só calcula quando origem E destino já foram escolhidos na lista (têm coordenadas)
+        // Só calcula com origem e destino escolhidos na lista
         if (!latOrigem || !lonOrigem || !latDestino || !lonDestino || !campoKm) return;
 
         const url = 'https://router.project-osrm.org/route/v1/driving/'
@@ -95,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             })
             .catch(function () {
-                // Se o serviço estiver fora do ar, só não preenche sozinho — a pessoa digita na mão
+                // Serviço fora do ar: o campo é preenchido manualmente
             });
     }
 });

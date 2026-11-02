@@ -19,7 +19,6 @@
                 <li class="nav-item mb-2"><a href="/ValdirTur/index.php" class="nav-link p-0 text-body-secondary">Início</a></li>
                 <li class="nav-item mb-2"><a href="/ValdirTur/frota/frota.php" class="nav-link p-0 text-body-secondary">Frota</a></li>
                 <li class="nav-item mb-2"><a href="/ValdirTur/pacotes/pacotes.php" class="nav-link p-0 text-body-secondary">Pacotes</a></li>
-                <!-- <li class="nav-item mb-2"><a href="/ValdirTur/pages/sobre.php" class="nav-link p-0 text-body-secondary">Sobre nós</a></li> -->
             </ul>
         </div>
 

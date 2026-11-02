@@ -84,7 +84,6 @@ $resultado = mysqli_query($conexao, $sql);
     <br>
 
 
-    <!-- <a href="login.php" class="btn btn-primary"> login </a> -->
 
     <?php include 'includes/footer.php'; ?>
 </body>

@@ -1,5 +1,6 @@
 
 document.addEventListener('DOMContentLoaded', function () {
+    // Avisa ao sair da página com alterações não salvas
     const form = document.querySelector('form');
     if (!form) return;
 
@@ -13,11 +14,11 @@ document.addEventListener('DOMContentLoaded', function () {
     window.addEventListener('beforeunload', function (e) {
         if (formAlterado) {
             e.preventDefault();
-            e.returnValue = ''; // obrigatório pra funcionar em todo navegador, o texto em si é ignorado
+            e.returnValue = ''; // necessário para o aviso aparecer em todos os navegadores
         }
     });
 
-    // Ao clicar em Salvar, o formulário está sendo enviado de propósito — não avisa nesse caso
+    // Ao salvar, não avisa
     form.addEventListener('submit', function () {
         formAlterado = false;
     });

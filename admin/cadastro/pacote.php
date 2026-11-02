@@ -1,19 +1,28 @@
 <?php
 session_start();
 
+// Acesso apenas para admin logado
 if (!isset($_SESSION['admin'])) {
     header('Location: /ValdirTur/login.php');
     exit;
 }
 
+// Configurações e conexão com o banco
 require_once(__DIR__ . '/../../config/config.php');
 require_once(__DIR__ . '/../../config/conexao.php');
+
+// Devolve o valor digitado (mantém os dados no formulário após um erro)
+function valor($campo)
+{
+    return htmlspecialchars($_POST[$campo] ?? '');
+}
 
 $mensagem = "";
 if (isset($_GET['sucesso'])) {
     $mensagem = "<div class='alert alert-success'>Pacote cadastrado com sucesso!</div>";
 }
 
+// Salvar: recebe os dados do formulário e grava no banco
 if (isset($_POST["salvar"])) {
     $diretorio = __DIR__ . '/../../assets/uploads/';
 
@@ -57,6 +66,7 @@ if (isset($_POST["salvar"])) {
     $parcelas         = (int) (($_POST['parcelas'] ?? '') !== '' ? $_POST['parcelas'] : 1);
 
 
+    // Comando SQL
     $sql = "INSERT INTO `tbpacote` (
         `nomePacote`, `destino`, `locaisEmbarque`, `dataHoraSaida`, `dataHoraRetorno`,
         `preco`, `duracaoViagem`, `descricaoCurta`, `descricaoLonga`, `vagasDisponiveis`, `pacoteParceiro`, `midia`, `status`, `juros`, `qtdParcelas`
@@ -65,12 +75,13 @@ if (isset($_POST["salvar"])) {
         '$preco', '$duracao', '$descricaoCurta', '$descricaoLonga', '$vagasDisponiveis', '$pacoteParceiro', '$nomeMidia', '$status', '$juros', '$parcelas'
     )";
 
-    if (mysqli_query($conexao, $sql)) {
-        
+    try {
+        mysqli_query($conexao, $sql);
+
         header('Location: pacote.php?sucesso=1');
         exit;
-    } else {
-        $mensagem = "<div class='alert alert-danger'>Erro ao cadastrar: " . mysqli_error($conexao) . "</div>";
+    } catch (mysqli_sql_exception $e) {
+        $mensagem = "<div class='alert alert-danger'>Erro ao cadastrar: " . htmlspecialchars($e->getMessage()) . "</div>";
     }
 }
 ?>
@@ -97,17 +108,19 @@ if (isset($_POST["salvar"])) {
             <?= $mensagem ?>
 
             <div class="row">
+                <!-- Coluna da esquerda -->
                 <div class="col-lg-8 col-md-12">
+                    <!-- Card: Dados do pacote -->
                     <div class="card-principal">
                         <div class="card-principal-conteudo">
                             <label class="py-2">Nome do Pacote</label>
-                            <input class="form-control" type="text" name="nomePacote" placeholder="Excursão Ody Park Aquático" required>
+                            <input class="form-control" type="text" name="nomePacote" value="<?= valor('nomePacote') ?>" placeholder="Excursão Ody Park Aquático" required>
 
                             <label class="py-2">Descrição Curta</label>
-                            <input class="form-control" type="text" name="descricaoCurta" id="descricaoCurta" maxlength="100" placeholder="Aparece no card da viagem" required>
+                            <input class="form-control" type="text" name="descricaoCurta" id="descricaoCurta" value="<?= valor('descricaoCurta') ?>" maxlength="100" placeholder="Aparece no card da viagem" required>
 
                             <label class="py-2">Descrição Longa</label>
-                            <textarea class="form-control" name="descricaoLonga" id="descricaoLonga" rows="5" placeholder="Detalhes completos da viagem" required></textarea>
+                            <textarea class="form-control" name="descricaoLonga" id="descricaoLonga" rows="5" placeholder="Detalhes completos da viagem" required><?= valor('descricaoLonga') ?></textarea>
 
                             <div class="mb-3">
                                 <label for="fileUpload" class="py-2">Conteúdo (Imagens ou Vídeos)</label>
@@ -116,16 +129,16 @@ if (isset($_POST["salvar"])) {
                             </div>
 
                             <label class="py-2">Destino</label>
-                            <input class="form-control" type="text" name="destino" placeholder="Ody Park Aquático" required>
+                            <input class="form-control" type="text" name="destino" value="<?= valor('destino') ?>" placeholder="Ody Park Aquático" required>
 
                             <label class="form-label pt-2">Data e Hora de Saída</label>
-                            <input type="datetime-local" class="form-control" id="dataHoraSaida" name="dataHoraSaida" required>
+                            <input type="datetime-local" class="form-control" id="dataHoraSaida" name="dataHoraSaida" value="<?= valor('dataHoraSaida') ?>" required>
 
                             <label class="py-2">Local de Saída</label>
-                            <input class="form-control" type="text" name="locaisEmbarque" placeholder="Rodoviária" required>
+                            <input class="form-control" type="text" name="locaisEmbarque" value="<?= valor('locaisEmbarque') ?>" placeholder="Rodoviária" required>
 
                             <label class="form-label pt-2">Data e Hora de Retorno</label>
-                            <input type="datetime-local" class="form-control" id="dataHoraRetorno" name="dataHoraRetorno" required>
+                            <input type="datetime-local" class="form-control" id="dataHoraRetorno" name="dataHoraRetorno" value="<?= valor('dataHoraRetorno') ?>" required>
 
                             <label class="form-label pt-2">Duração Estimada</label>
                             <div class="input-group">
@@ -137,15 +150,15 @@ if (isset($_POST["salvar"])) {
                             <label class="form-label pt-2">Valor do pacote</label>
                             <div class="input-group">
                                 <span class="input-group-text">R$</span>
-                                <input type="number" class="form-control" name="preco" id="preco" step="0.01" min="0" placeholder="0,00" required>
+                                <input type="number" class="form-control" name="preco" id="preco" value="<?= valor('preco') ?>" step="0.01" min="0" placeholder="0,00" required>
                             </div>
 
                             <label class="form-label pt-2">Parcelas</label>
-                            <input type="number" class="form-control" name="parcelas" id="parcelas" min="1" placeholder="1">
+                            <input type="number" class="form-control" name="parcelas" id="parcelas" value="<?= valor('parcelas') ?>" min="1" placeholder="1">
 
                              <label class="form-label pt-2">Juros (%)</label>
                             <div class="input-group">
-                                <input type="number" class="form-control" name="juros" id="juros" step="1" min="0" placeholder="0">
+                                <input type="number" class="form-control" name="juros" id="juros" value="<?= valor('juros') ?>" step="1" min="0" placeholder="0">
                                 <span class="input-group-text">%</span>
                             </div>
 
@@ -155,33 +168,42 @@ if (isset($_POST["salvar"])) {
                             </div>
 
                             <label class="form-label pt-2">Vagas Disponíveis</label>
-                            <input type="number" class="form-control" name="vagasDisponiveis" min="0" placeholder="40" required>
+                            <input type="number" class="form-control" name="vagasDisponiveis" value="<?= valor('vagasDisponiveis') ?>" min="0" placeholder="40" required>
                         </div>
                     </div>
                 </div>
 
+                <!-- Coluna da direita -->
                 <div class="col-lg-4 col-md-12">
+                    <!-- Card: Status e parceria -->
                     <div class="card-principal">
                         <div class="card-principal-conteudo">
                             <strong><label>Status</label></strong>
                             <select class="form-select" name="status">
                                 <option value="Ativo">Ativo</option>
-                                <option value="Inativo">Inativo</option>
+                                <option value="Inativo" <?= ($_POST['status'] ?? '') === 'Inativo' ? 'selected' : '' ?>>Inativo</option>
                             </select>
 
                             <strong><label class="d-block pt-3">Pacote de Parceria</label></strong>
+                            <?php
+                            // pacoteParceiro guarda "Não", "Sim" ou o nome do parceiro
+                            $parceiro     = $_POST['pacoteParceiro'] ?? 'Não';
+                            $temParceria  = $parceiro !== 'Não';
+                            $nomeParceiro = $parceiro === 'Sim' || $parceiro === 'Não' ? '' : $parceiro;
+                            ?>
                             <select class="form-select" id="selectParceria">
-                                <option value="Não" selected>Não</option>
-                                <option value="Sim">Sim</option>
+                                <option value="Não" <?= !$temParceria ? 'selected' : '' ?>>Não</option>
+                                <option value="Sim" <?= $temParceria ? 'selected' : '' ?>>Sim</option>
                             </select>
 
-                            <div id="qualParceria" class="pt-2 d-none">
+                            <div id="qualParceria" class="pt-2 <?= $temParceria ? '' : 'd-none' ?>">
                                 <label class="py-2">Qual?</label>
-                                <input class="form-control" type="text" id="qualParceriaInput" placeholder="Nome do parceiro">
+                                <input class="form-control" type="text" id="qualParceriaInput" placeholder="Nome do parceiro"
+                                    value="<?= htmlspecialchars($nomeParceiro) ?>">
                             </div>
 
-                   
-                            <input type="hidden" name="pacoteParceiro" id="pacoteParceiroHidden" value="Não">
+
+                            <input type="hidden" name="pacoteParceiro" id="pacoteParceiroHidden" value="<?= htmlspecialchars($parceiro) ?>">
                         </div>
                     </div>
                 </div>
@@ -195,6 +217,7 @@ if (isset($_POST["salvar"])) {
 
     <script>
 
+        // Duração da viagem (calculada pelas datas de saída e retorno)
         const inputSaida = document.getElementById('dataHoraSaida');
         const inputRetorno = document.getElementById('dataHoraRetorno');
         const displayDuracao = document.getElementById('duracao_display');
@@ -227,6 +250,7 @@ if (isset($_POST["salvar"])) {
         inputRetorno.addEventListener('change', calcularDuracao);
 
 
+        // Valor da parcela (preço, juros e quantidade de parcelas)
         const inputPreco = document.getElementById('preco');
         const inputJuros = document.getElementById('juros');
         const inputParcelas = document.getElementById('parcelas');
@@ -249,7 +273,12 @@ if (isset($_POST["salvar"])) {
         inputJuros.addEventListener('input', calcularParcela);
         inputParcelas.addEventListener('input', calcularParcela);
 
+        // Recalcula duração e parcela quando a página volta com erro
+        calcularDuracao();
+        calcularParcela();
 
+
+        // Pacote de parceria (mostra o campo "Qual?")
         const selectParceria = document.getElementById('selectParceria');
         const qualParceria = document.getElementById('qualParceria');
         const qualParceriaInput = document.getElementById('qualParceriaInput');

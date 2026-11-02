@@ -1,11 +1,13 @@
 <?php
 session_start();
 
+// Acesso apenas para admin logado
 if (!isset($_SESSION['admin'])) {
     header('Location: /ValdirTur/login.php');
     exit;
 }
 
+// Configurações e conexão com o banco
 require_once(__DIR__ . '/../../config/config.php');
 require_once(__DIR__ . '/../../config/conexao.php');
 
@@ -16,7 +18,7 @@ if (isset($_GET['excluir'])) {
     exit;
 }
 
-// Se veio ?busca=X na URL, filtra por cliente, funcionário ou pacote
+// Busca
 $busca = trim($_GET['busca'] ?? '');
 $where = "";
 if ($busca !== "") {
@@ -26,7 +28,7 @@ if ($busca !== "") {
         OR pacote.nomePacote LIKE '%$buscaTabela%'";
 }
 
-// JOIN com cliente, funcionário e pacote só pra mostrar nome em vez do ID cru
+// Lista com os nomes de cliente, funcionário e pacote (JOIN)
 $sql = "SELECT
             venda.*,
             cliente.tipoCliente AS clienteTipo, cliente.nome AS clienteNome, cliente.sobrenome AS clienteSobrenome, cliente.razaoSocial AS clienteRazaoSocial,
@@ -65,13 +67,14 @@ $resultado = mysqli_query($conexao, $sql);
                 </a>
             </div>
 
+            <!-- Campo de busca -->
             <form method="GET" class="d-flex mt-3" style="max-width: 400px;">
                 <input type="text" name="busca" class="form-control" placeholder="Buscar por cliente, funcionário ou pacote..." value="<?= htmlspecialchars($busca) ?>">
                 <button class="btn btn-outline-secondary ms-2" type="submit"><i class="bi bi-search"></i></button>
             </form>
 
             <div class="row mt-3">
-                <!-- Coluna da esquerda -->
+                <!-- Tabela -->
                 <div class="col-md-12">
                     <div class="card-principal">
                         <div class="card-principal-conteudo">

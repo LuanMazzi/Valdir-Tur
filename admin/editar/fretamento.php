@@ -10,6 +10,7 @@ if (!isset($_SESSION['admin'])) {
 // Configurações e conexão com o banco
 require_once(__DIR__ . '/../../config/config.php');
 require_once(__DIR__ . '/../../config/conexao.php');
+require_once(__DIR__ . '/../../includes/agenda.php');
 
 $erro = "";
 $sucesso = false;
@@ -31,6 +32,7 @@ if (isset($_POST['salvar'])) {
     $valorCombustivel = mysqli_real_escape_string($conexao, $_POST['valorCombustivel'] ?? '0');
     $qtdKm            = mysqli_real_escape_string($conexao, $_POST['qtdKm'] ?? '0');
     $preco            = mysqli_real_escape_string($conexao, $_POST['preco'] ?? '0');
+    $valorSinal       = mysqli_real_escape_string($conexao, ($_POST['valorSinal'] ?? '') !== '' ? $_POST['valorSinal'] : '0');
     $qtdPassageiros  = mysqli_real_escape_string($conexao, $_POST['qtdPassageiros'] ?? '0');
     $status           = mysqli_real_escape_string($conexao, $_POST['status'] ?? '');
 
@@ -47,15 +49,25 @@ if (isset($_POST['salvar'])) {
         `valorCombustivel` = '$valorCombustivel',
         `qtdKm` = '$qtdKm',
         `preco` = '$preco',
+        `valorSinal` = '$valorSinal',
         `qtdPassageiros` = '$qtdPassageiros',
         `status` = '$status'
         WHERE `idFretamento` = '$id'";
 
-    try {
-        mysqli_query($conexao, $sql);
-        $sucesso = true;
-    } catch (mysqli_sql_exception $e) {
-        $erro = "Erro ao alterar: " . $e->getMessage();
+    // Validações: datas, agenda do veículo (ignorando este próprio fretamento) e sinal
+    $erro = validarAgendaFretamento($conexao, $_POST['idVeiculo'] ?? 0, $_POST['dataHoraSaida'] ?? '', $_POST['dataHoraRetorno'] ?? '', $_POST['status'] ?? '', $id);
+
+    if ($erro === '' && (float) $valorSinal > (float) $preco) {
+        $erro = 'O sinal não pode ser maior que o valor do orçamento.';
+    }
+
+    if ($erro === '') {
+        try {
+            mysqli_query($conexao, $sql);
+            $sucesso = true;
+        } catch (mysqli_sql_exception $e) {
+            $erro = "Erro ao alterar: " . $e->getMessage();
+        }
     }
 }
 
@@ -203,9 +215,18 @@ $resultadoFuncionarios = mysqli_query($conexao, "SELECT * FROM tbFuncionario WHE
                             <label class="form-label pt-2">Valor do Orçamento</label>
                             <div class="input-group">
                                 <span class="input-group-text">R$</span>
-                                <input type="number" class="form-control" name="preco" step="0.01" min="0"
+                                <input type="number" id="gasto" class="form-control" name="preco" step="0.01" min="0"
                                     value="<?= htmlspecialchars($fretamento['preco']) ?>" required>
                             </div>
+
+                            <label class="form-label pt-2">Sinal (entrada para reservar a data)</label>
+                            <div class="input-group">
+                                <span class="input-group-text">R$</span>
+                                <input type="number" id="valorSinal" class="form-control" name="valorSinal" step="0.01" min="0" placeholder="0,00"
+                                    value="<?= htmlspecialchars($fretamento['valorSinal'] ?? '0') ?>">
+                            </div>
+                            <small class="text-muted d-block" id="infoSinal"></small>
+                            <small class="text-warning-emphasis d-none" id="avisoSinal">Atenção: o sinal está abaixo de 10% do valor do orçamento.</small>
                         </div>
                     </div>
                 </div>
@@ -216,12 +237,13 @@ $resultadoFuncionarios = mysqli_query($conexao, "SELECT * FROM tbFuncionario WHE
                     <div class="card-principal">
                         <div class="card-principal-conteudo">
                             <strong><label>Status</label></strong>
-                            <select class="form-select" name="status" required>
+                            <select class="form-select" name="status" id="status" required>
                                 <option value="Orçamento" <?= $fretamento['status'] === 'Orçamento' ? 'selected' : '' ?>>Orçamento</option>
                                 <option value="Aprovado" <?= $fretamento['status'] === 'Aprovado' ? 'selected' : '' ?>>Aprovado</option>
                                 <option value="Cancelado" <?= $fretamento['status'] === 'Cancelado' ? 'selected' : '' ?>>Cancelado</option>
                                 <option value="Rascunho" <?= $fretamento['status'] === 'Rascunho' ? 'selected' : '' ?>>Rascunho</option>
                             </select>
+                            <small class="text-muted d-block mt-2">Só fretamentos <strong>Aprovados</strong> reservam o ônibus na agenda.</small>
                         </div>
                     </div>
                 </div>
@@ -233,6 +255,44 @@ $resultadoFuncionarios = mysqli_query($conexao, "SELECT * FROM tbFuncionario WHE
         </form>
     </section>
 
+    <script>
+        // Sinal: mostra os 10% sugeridos, o saldo a pagar e o prazo (véspera da viagem)
+        const campoOrcamento = document.getElementById('gasto');
+        const campoSinal = document.getElementById('valorSinal');
+        const campoSaida = document.querySelector('[name="dataHoraSaida"]');
+        const campoStatus = document.getElementById('status');
+        const infoSinal = document.getElementById('infoSinal');
+        const avisoSinal = document.getElementById('avisoSinal');
+
+        function reais(valor) {
+            return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        function atualizarSinal() {
+            const total = parseFloat(campoOrcamento.value) || 0;
+            const sinal = parseFloat(campoSinal.value) || 0;
+            let texto = '';
+
+            if (total > 0) {
+                texto = 'Sinal mínimo sugerido (10%): ' + reais(total * 0.10) + ' | Saldo a pagar: ' + reais(total - sinal);
+
+                if (campoSaida.value) {
+                    const vespera = new Date(campoSaida.value);
+                    vespera.setDate(vespera.getDate() - 1);
+                    texto += ' até ' + vespera.toLocaleDateString('pt-BR');
+                }
+            }
+
+            infoSinal.textContent = texto;
+            avisoSinal.classList.toggle('d-none', !(campoStatus.value === 'Aprovado' && total > 0 && sinal < total * 0.10));
+        }
+
+        [campoOrcamento, campoSinal, campoSaida, campoStatus].forEach(c => {
+            c.addEventListener('input', atualizarSinal);
+            c.addEventListener('change', atualizarSinal);
+        });
+        atualizarSinal();
+    </script>
     <script src="/ValdirTur/assets/js/mapa-livre.js"></script>
     <script src="/ValdirTur/assets/js/protecao-form.js"></script>
     </main>

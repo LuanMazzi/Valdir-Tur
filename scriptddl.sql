@@ -104,6 +104,7 @@ CREATE TABLE tbFretamento (
     qtdKm DOUBLE NOT NULL,
     consumoCombustivel DOUBLE NOT NULL,
     preco DOUBLE NOT NULL,
+    valorSinal DOUBLE NOT NULL DEFAULT 0,
     status VARCHAR(100) NOT NULL,
     FOREIGN KEY (idVeiculo)
         REFERENCES tbVeiculo (idVeiculo),

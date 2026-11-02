@@ -57,10 +57,6 @@ $resultado = mysqli_query($conexao, $sql);
         <section class="container py-5">
 
             <div class="d-flex align-items-center">
-                <!-- <button type="button" class="botao-voltar" onclick="window.location.href='../adminvt.php'">
-                    <i class="bi bi-signpost-split-fill fs-4"></i>
-                </button>
-                <i class="bi bi-arrow-right-short"></i> -->
                 <label><strong>Lista de fretamentos</strong></label>
 
                 <a href="../fretamento.php" class="ms-auto text-decoration-none">
@@ -87,6 +83,9 @@ $resultado = mysqli_query($conexao, $sql);
                                         <th scope="col">Veículo</th>
                                         <th scope="col">Destino</th>
                                         <th scope="col">Saída</th>
+                                        <th scope="col">Valor</th>
+                                        <th scope="col">Sinal</th>
+                                        <th scope="col">Saldo</th>
                                         <th scope="col">Status</th>
                                         <th scope="col">Ações</th>
                                     </tr>
@@ -94,7 +93,7 @@ $resultado = mysqli_query($conexao, $sql);
                                 <tbody>
                                     <?php if (mysqli_num_rows($resultado) === 0) { ?>
                                         <tr>
-                                            <td colspan="8" class="text-center text-muted py-4">Nenhum fretamento cadastrado.</td>
+                                            <td colspan="10" class="text-center text-muted py-4">Nenhum fretamento cadastrado.</td>
                                         </tr>
                                     <?php } else { ?>
                                         <?php while ($fretamento = mysqli_fetch_assoc($resultado)) { ?>
@@ -109,6 +108,9 @@ $resultado = mysqli_query($conexao, $sql);
                                                 <td><?= htmlspecialchars($fretamento['veiculoNome']) ?></td>
                                                 <td><?= htmlspecialchars($fretamento['destino']) ?></td>
                                                 <td><?= $fretamento['dataHoraSaida'] ? date('d/m/Y H:i', strtotime($fretamento['dataHoraSaida'])) : '' ?></td>
+                                                <td>R$ <?= number_format($fretamento['preco'], 2, ',', '.') ?></td>
+                                                <td>R$ <?= number_format($fretamento['valorSinal'], 2, ',', '.') ?></td>
+                                                <td>R$ <?= number_format($fretamento['preco'] - $fretamento['valorSinal'], 2, ',', '.') ?></td>
                                                 <td><?= htmlspecialchars($fretamento['status']) ?></td>
                                                 <td>
                                                     <a href="../editar/fretamento.php?id=<?= $fretamento['idFretamento'] ?>" class="text-decoration-none">

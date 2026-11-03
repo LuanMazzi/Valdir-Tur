@@ -21,7 +21,6 @@ $resultado = mysqli_query($conexao, $sql);
 
 <body>
     <?php include 'includes/header.php'; ?>
-    <script src="/ValdirTur/bootstrap/js/bootstrap.bundle.min.js"></script>
 
     <br>
 

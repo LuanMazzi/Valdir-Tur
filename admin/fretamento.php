@@ -164,6 +164,9 @@ $resultadoFuncionarios = mysqli_query($conexao, "SELECT * FROM tbFuncionario WHE
                                 </div>
                             </div>
 
+                            <!-- Aviso de disponibilidade do veículo -->
+                            <div id="avisoAgenda" class="d-none"></div>
+
                             <div class="row">
                                 <div class="col-md-6">
                                     <label class="form-label pt-2">Quantidade de Km</label>
@@ -284,6 +287,79 @@ $resultadoFuncionarios = mysqli_query($conexao, "SELECT * FROM tbFuncionario WHE
             c.addEventListener('change', atualizarSinal);
         });
         atualizarSinal();
+    </script>
+    <script>
+        // Aviso de disponibilidade: consulta a agenda assim que veículo e datas estão preenchidos
+        // (usa campoSaida e campoStatus, definidos no script acima)
+        const urlAgenda = 'api/disponibilidade-veiculo.php';
+        const campoVeiculo = document.querySelector('[name="idVeiculo"]');
+        const campoRetorno = document.querySelector('[name="dataHoraRetorno"]');
+        const avisoAgenda = document.getElementById('avisoAgenda');
+        const idDoFretamento = document.querySelector('[name="id"]')?.value || 0;
+        let respostaAgenda = null;
+        let timerAgenda;
+        let numeroConsulta = 0;
+
+        // Monta o aviso conforme o resultado da consulta e o status escolhido
+        function mostrarAvisoAgenda() {
+            if (!respostaAgenda) {
+                avisoAgenda.className = 'd-none';
+                return;
+            }
+
+            if (!respostaAgenda.conflito) {
+                avisoAgenda.className = 'alert alert-success py-2 mt-2 mb-0';
+                avisoAgenda.textContent = 'Veículo disponível neste período.';
+                return;
+            }
+
+            const aprovando = campoStatus.value === 'Aprovado';
+            avisoAgenda.className = 'alert py-2 mt-2 mb-0 ' + (aprovando ? 'alert-danger' : 'alert-warning');
+            avisoAgenda.textContent = respostaAgenda.mensagem + (aprovando
+                ? ' Não será possível salvar como Aprovado: escolha outro veículo ou outras datas.'
+                : ' Você ainda pode salvar como orçamento, mas não poderá aprovar enquanto houver conflito.');
+        }
+
+        function verificarAgenda() {
+            clearTimeout(timerAgenda);
+            const consulta = ++numeroConsulta;
+            respostaAgenda = null;
+            mostrarAvisoAgenda();
+
+            if (!campoVeiculo.value || !campoSaida.value || !campoRetorno.value) return;
+
+            if (new Date(campoRetorno.value) <= new Date(campoSaida.value)) {
+                avisoAgenda.className = 'alert alert-warning py-2 mt-2 mb-0';
+                avisoAgenda.textContent = 'A data de retorno deve ser depois da data de saída.';
+                return;
+            }
+
+            // Espera um instante após a última alteração antes de consultar
+            timerAgenda = setTimeout(function () {
+                const parametros = new URLSearchParams({
+                    idVeiculo: campoVeiculo.value,
+                    saida: campoSaida.value,
+                    retorno: campoRetorno.value,
+                    ignorar: idDoFretamento
+                });
+
+                fetch(urlAgenda + '?' + parametros)
+                    .then(resposta => resposta.json())
+                    .then(dados => {
+                        if (consulta !== numeroConsulta) return; // chegou uma resposta mais nova
+                        respostaAgenda = dados;
+                        mostrarAvisoAgenda();
+                    })
+                    .catch(() => {}); // sem resposta: o servidor confere de novo ao salvar
+            }, 300);
+        }
+
+        [campoVeiculo, campoSaida, campoRetorno].forEach(c => {
+            c.addEventListener('input', verificarAgenda);
+            c.addEventListener('change', verificarAgenda);
+        });
+        campoStatus.addEventListener('change', mostrarAvisoAgenda);
+        verificarAgenda();
     </script>
     <script src="/ValdirTur/assets/js/mapa-livre.js"></script>
     <script src="/ValdirTur/assets/js/protecao-form.js"></script>

@@ -59,7 +59,7 @@ $resumoFretamentos = mysqli_fetch_assoc(mysqli_query($conexao, "SELECT COUNT(*) 
                     <i class="bi bi-bar-chart-fill fs-4"></i>
                 </button>
                 <i class="bi bi-arrow-right-short"></i> -->
-                <label><strong>Relatórios</strong></label>
+                <h3><strong>Relatórios</strong></h3>
             </div>
 
             <form method="GET" class="d-flex align-items-end gap-2 mt-3 flex-wrap">
@@ -103,7 +103,7 @@ $resumoFretamentos = mysqli_fetch_assoc(mysqli_query($conexao, "SELECT COUNT(*) 
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th scope="col">ID</th>
+                                        <th scope="col">N°</th>
                                         <th scope="col">Cliente</th>
                                         <th scope="col">Data</th>
                                         <th scope="col">Valor Recebido</th>
@@ -146,7 +146,7 @@ $resumoFretamentos = mysqli_fetch_assoc(mysqli_query($conexao, "SELECT COUNT(*) 
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th scope="col">ID</th>
+                                        <th scope="col">N°</th>
                                         <th scope="col">Cliente</th>
                                         <th scope="col">Destino</th>
                                         <th scope="col">Saída</th>

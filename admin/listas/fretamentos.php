@@ -45,7 +45,7 @@ $resultado = mysqli_query($conexao, $sql);
 ?>
 <!DOCTYPE html>
 <html lang="pt_BR">
-<title>Lista de fretamentos</title>
+<title>Fretamentos</title>
 <?php include(__DIR__ . '/../../includes/head.php'); ?>
 
 <body class="d-flex flex-nowrap">
@@ -57,7 +57,7 @@ $resultado = mysqli_query($conexao, $sql);
         <section class="container py-5">
 
             <div class="d-flex align-items-center">
-                <label><strong>Lista de fretamentos</strong></label>
+                <h3><strong>Fretamentos</strong></h3>
 
                 <a href="../fretamento.php" class="ms-auto text-decoration-none">
                     <button class="btn btn-dark" type="button">Adicionar fretamento</button>
@@ -78,7 +78,7 @@ $resultado = mysqli_query($conexao, $sql);
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th scope="col">ID</th>
+                                        <th scope="col">N°</th>
                                         <th scope="col">Cliente</th>
                                         <th scope="col">Veículo</th>
                                         <th scope="col">Destino</th>

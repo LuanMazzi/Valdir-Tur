@@ -11,6 +11,7 @@ if (!isset($_SESSION['admin'])) {
 require_once(__DIR__ . '/../../config/config.php');
 require_once(__DIR__ . '/../../config/conexao.php');
 require_once(__DIR__ . '/../../includes/validar-cpf.php');
+require_once(__DIR__ . '/../../includes/validar-idade.php');
 
 $erro = "";
 $sucesso = false;
@@ -65,9 +66,11 @@ if (isset($_POST['salvar'])) {
         `status` = '$status'
         WHERE `idFuncionario` = '$id'";
 
-    // Validações: CPF e confirmação de senha
+    // Validações: CPF, idade mínima (18 anos) e confirmação de senha
     if (!validarCPF($_POST['CPF'] ?? '')) {
         $erro = "CPF inválido.";
+    } elseif (!maiorDeIdade($_POST['dataNascimento'] ?? '')) {
+        $erro = "O funcionário precisa ter 18 anos ou mais. Confira a data de nascimento.";
     } elseif ($senhaPost !== ($_POST['confirmarSenha'] ?? '')) {
         $erro = "As senhas não conferem.";
     } else {
@@ -147,7 +150,8 @@ $funcoes = ['Motorista', 'Agente de Viagens', 'Mecânico', 'Vendedor'];
 
                             <label class="py-2">Data de nascimento</label>
                             <input type="date" class="form-control" id="dataNascimento" name="dataNascimento"
-                                value="<?= htmlspecialchars($funcionario['dataNascimento']) ?>">
+                                max="<?= date('Y-m-d', strtotime('-18 years')) ?>" value="<?= htmlspecialchars($funcionario['dataNascimento']) ?>" required>
+                            <small class="text-muted">Idade mínima: 18 anos</small>
 
                             <div class="col-auto">
                                 <label class="d-block py-2">Função</label>

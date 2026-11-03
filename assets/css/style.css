@@ -22,7 +22,7 @@ body {
 }
 
 .card-desenho {
-  background-color: #4f8fcf;
+  background-color: #0d6efd;
   border: black;
   border-radius: 26px;
   height: 180px;
@@ -129,7 +129,7 @@ body {
 
 
 body {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Montserrat', sans-serif;
 }
 
 /* Texto branco no item ativo da sidebar do admin.

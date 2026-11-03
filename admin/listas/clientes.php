@@ -39,7 +39,7 @@ $resultado = mysqli_query($conexao, $sql);
 
 <!DOCTYPE html>
 <html lang="pt_BR">
-<title>Lista de clientes</title>
+<title>Clientes</title>
 <?php include(__DIR__ . '/../../includes/head.php'); ?>
 
 <body class="d-flex flex-nowrap">
@@ -55,7 +55,7 @@ $resultado = mysqli_query($conexao, $sql);
                 <i class="bi bi-person-fill fs-4"></i>
             </button>
             <i class="bi bi-arrow-right-short"></i> -->
-            <label><strong>Lista de clientes</strong></label>
+            <h3><strong>Clientes</strong></h3>
 
             <a href="../cadastro/cliente.php" class="ms-auto text-decoration-none">
                 <button class="btn btn-dark" type="button">Adicionar cliente</button>
@@ -80,7 +80,7 @@ $resultado = mysqli_query($conexao, $sql);
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th scope="col">ID</th>
+                                    <th scope="col">N°</th>
                                     <th scope="col">Nome</th>
                                     <th scope="col">Email</th>
                                     <th scope="col">Ações</th>

@@ -25,26 +25,29 @@ if ($busca !== "") {
     $buscaTabela = mysqli_real_escape_string($conexao, $busca);
     $where = "WHERE cliente.nome LIKE '%$buscaTabela%' OR cliente.sobrenome LIKE '%$buscaTabela%' OR cliente.razaoSocial LIKE '%$buscaTabela%'
         OR funcionario.nome LIKE '%$buscaTabela%' OR funcionario.sobrenome LIKE '%$buscaTabela%'
-        OR pacote.nomePacote LIKE '%$buscaTabela%'";
+        OR pacote.nomePacote LIKE '%$buscaTabela%'
+        OR fretamento.destino LIKE '%$buscaTabela%'";
 }
 
-// Lista com os nomes de cliente, funcionário e pacote (JOIN)
+// Lista com os nomes de cliente, funcionário, pacote e fretamento (JOIN)
 $sql = "SELECT
             venda.*,
             cliente.tipoCliente AS clienteTipo, cliente.nome AS clienteNome, cliente.sobrenome AS clienteSobrenome, cliente.razaoSocial AS clienteRazaoSocial,
             funcionario.nome AS funcionarioNome, funcionario.sobrenome AS funcionarioSobrenome,
-            pacote.nomePacote AS pacoteNome
+            pacote.nomePacote AS pacoteNome,
+            fretamento.destino AS fretamentoDestino, fretamento.dataHoraSaida AS fretamentoSaida
         FROM tbvenda venda
         LEFT JOIN tbCliente cliente ON venda.idCliente = cliente.idCliente
         LEFT JOIN tbFuncionario funcionario ON venda.idFuncionario = funcionario.idFuncionario
         LEFT JOIN tbpacote pacote ON venda.idPacote = pacote.idPacote
+        LEFT JOIN tbFretamento fretamento ON venda.idFretamento = fretamento.idFretamento
         $where
         ORDER BY venda.idVenda DESC";
 $resultado = mysqli_query($conexao, $sql);
 ?>
 <!DOCTYPE html>
 <html lang="pt_BR">
-<title>Lista de vendas</title>
+<title>Vendas</title>
 <?php include(__DIR__ . '/../../includes/head.php'); ?>
 
 <body class="d-flex flex-nowrap">
@@ -56,11 +59,7 @@ $resultado = mysqli_query($conexao, $sql);
         <section class="container py-5">
 
             <div class="d-flex align-items-center">
-                <!-- <button type="button" class="botao-voltar" onclick="window.location.href='../adminvt.php'">
-                    <i class="bi bi-cash-coin fs-4"></i>
-                </button>
-                <i class="bi bi-arrow-right-short"></i> -->
-                <label><strong>Lista de vendas</strong></label>
+                <h3><strong>Vendas</strong></h3>
 
                 <a href="../venda.php" class="ms-auto text-decoration-none">
                     <button class="btn btn-dark" type="button">Adicionar venda</button>
@@ -69,7 +68,7 @@ $resultado = mysqli_query($conexao, $sql);
 
             <!-- Campo de busca -->
             <form method="GET" class="d-flex mt-3" style="max-width: 400px;">
-                <input type="text" name="busca" class="form-control" placeholder="Buscar por cliente, funcionário ou pacote..." value="<?= htmlspecialchars($busca) ?>">
+                <input type="text" name="busca" class="form-control" placeholder="Buscar por cliente, funcionário, pacote ou fretamento..." value="<?= htmlspecialchars($busca) ?>">
                 <button class="btn btn-outline-secondary ms-2" type="submit"><i class="bi bi-search"></i></button>
             </form>
 
@@ -81,10 +80,10 @@ $resultado = mysqli_query($conexao, $sql);
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th scope="col">ID</th>
+                                        <th scope="col">N°</th>
                                         <th scope="col">Cliente</th>
                                         <th scope="col">Funcionário</th>
-                                        <th scope="col">Pacote</th>
+                                        <th scope="col">Pacote / Fretamento</th>
                                         <th scope="col">Data da Venda</th>
                                         <th scope="col">Valor Recebido</th>
                                         <th scope="col">Status</th>
@@ -107,7 +106,21 @@ $resultado = mysqli_query($conexao, $sql);
                                                 <td><?= $venda['idVenda'] ?></td>
                                                 <td><?= htmlspecialchars($nomeCliente) ?></td>
                                                 <td><?= htmlspecialchars(trim($venda['funcionarioNome'] . ' ' . $venda['funcionarioSobrenome'])) ?></td>
-                                                <td><?= $venda['pacoteNome'] ? htmlspecialchars($venda['pacoteNome']) : '-' ?></td>
+                                                <td>
+                                                    <?php if ($venda['idFretamento'] !== null): ?>
+                                                        <!-- Venda de fretamento: mostra o número, o destino (só a cidade) e a data de saída -->
+                                                        <span class="badge text-bg-secondary">Fretamento nº <?= $venda['idFretamento'] ?></span><br>
+                                                        <?= htmlspecialchars(trim(explode(',', (string) $venda['fretamentoDestino'])[0])) ?>
+                                                        <?= $venda['fretamentoSaida'] ? ' · ' . date('d/m/Y', strtotime($venda['fretamentoSaida'])) : '' ?>
+                                                    <?php elseif ($venda['idPacote'] !== null): ?>
+                                                        <!-- Venda de pacote -->
+                                                         
+                                                        <span class="badge text-bg-primary">Pacote nº <?= $venda['idPacote'] ?></span><br>
+                                                        <?= htmlspecialchars((string) $venda['pacoteNome']) ?>
+                                                    <?php else: ?>
+                                                        -
+                                                    <?php endif; ?>
+                                                </td>
                                                 <td><?= $venda['dataVenda'] ? date('d/m/Y', strtotime($venda['dataVenda'])) : '' ?></td>
                                                 <td>R$ <?= number_format((float) $venda['valorRecebido'], 2, ',', '.') ?></td>
                                                 <td><?= htmlspecialchars($venda['status']) ?></td>

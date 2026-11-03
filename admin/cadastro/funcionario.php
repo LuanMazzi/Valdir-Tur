@@ -11,6 +11,7 @@ if (!isset($_SESSION['admin'])) {
 require_once(__DIR__ . '/../../config/config.php');
 require_once(__DIR__ . '/../../config/conexao.php');
 require_once(__DIR__ . '/../../includes/validar-cpf.php');
+require_once(__DIR__ . '/../../includes/validar-idade.php');
 
 // Devolve o valor digitado (mantém os dados no formulário após um erro)
 function valor($campo)
@@ -54,9 +55,11 @@ if (isset($_POST['salvar'])) {
         '$bairro', '$numero', '$status'
     )";
 
-    // Validações: CPF e confirmação de senha
+    // Validações: CPF, idade mínima (18 anos) e confirmação de senha
     if (!validarCPF($_POST['CPF'] ?? '')) {
         $mensagem = "<div class='alert alert-danger'>CPF inválido.</div>";
+    } elseif (!maiorDeIdade($_POST['dataNascimento'] ?? '')) {
+        $mensagem = "<div class='alert alert-danger'>O funcionário precisa ter 18 anos ou mais. Confira a data de nascimento.</div>";
     } elseif (($_POST['senha'] ?? '') !== ($_POST['confirmarSenha'] ?? '')) {
         $mensagem = "<div class='alert alert-danger'>As senhas não conferem.</div>";
     } else {
@@ -117,7 +120,8 @@ $funcoes = ['Motorista', 'Agente de Viagens', 'Mecânico', 'Vendedor'];
 
                             <label class="py-2">Data de nascimento</label>
                             <input type="date" class="form-control" id="dataNascimento" name="dataNascimento"
-                                value="<?= valor('dataNascimento') ?>">
+                                max="<?= date('Y-m-d', strtotime('-18 years')) ?>" value="<?= valor('dataNascimento') ?>" required>
+                            <small class="text-muted">Idade mínima: 18 anos</small>
 
                             <div class="col-auto">
                                 <label class="d-block py-2">Função</label>

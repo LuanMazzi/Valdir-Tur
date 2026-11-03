@@ -12,7 +12,7 @@ require_once(__DIR__ . '/../../config/config.php');
 require_once(__DIR__ . '/../../config/conexao.php');
 require_once(__DIR__ . '/../../includes/agenda.php');
 
-// Responde se o veículo já está reservado no período (usado pelo aviso dos formulários de fretamento)
+// Responde se o veículo já está reservado no período
 header('Content-Type: application/json; charset=utf-8');
 
 $conflito = buscarConflitoAgenda(

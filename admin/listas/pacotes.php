@@ -38,7 +38,7 @@ $resultado = mysqli_query($conexao, $sql);
 ?>
 <!DOCTYPE html>
 <html lang="pt_BR">
-<title>Lista de pacotes</title>
+<title>Pacotes</title>
 <?php include(__DIR__ . '/../../includes/head.php'); ?>
 
 <body class="d-flex flex-nowrap">
@@ -54,7 +54,7 @@ $resultado = mysqli_query($conexao, $sql);
                 <i class="bi bi-luggage-fill fs-4"></i>
             </button>
             <i class="bi bi-arrow-right-short"></i> -->
-            <label><strong>Lista de pacotes</strong></label>
+            <h3><strong>Pacotes</strong></h3>
 
             <a href="../cadastro/pacote.php" class="ms-auto text-decoration-none">
                 <button class="btn btn-dark" type="button">Adicionar pacote</button>
@@ -79,7 +79,7 @@ $resultado = mysqli_query($conexao, $sql);
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th scope="col">ID</th>
+                                    <th scope="col">N°</th>
                                     <th scope="col">Nome do Pacote</th>
                                     <th scope="col">Destino</th>
                                     <th scope="col">Saída</th>

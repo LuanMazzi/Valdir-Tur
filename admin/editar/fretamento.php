@@ -31,6 +31,7 @@ if (isset($_POST['salvar'])) {
     $dataHoraRetorno  = mysqli_real_escape_string($conexao, $_POST['dataHoraRetorno'] ?? '');
     $valorCombustivel = mysqli_real_escape_string($conexao, $_POST['valorCombustivel'] ?? '0');
     $qtdKm            = mysqli_real_escape_string($conexao, $_POST['qtdKm'] ?? '0');
+    $valorKm          = mysqli_real_escape_string($conexao, ($_POST['valorKm'] ?? '') !== '' ? $_POST['valorKm'] : '0');
     $preco            = mysqli_real_escape_string($conexao, $_POST['preco'] ?? '0');
     $valorSinal       = mysqli_real_escape_string($conexao, ($_POST['valorSinal'] ?? '') !== '' ? $_POST['valorSinal'] : '0');
     $qtdPassageiros  = mysqli_real_escape_string($conexao, $_POST['qtdPassageiros'] ?? '0');
@@ -48,6 +49,7 @@ if (isset($_POST['salvar'])) {
         `dataHoraRetorno` = '$dataHoraRetorno',
         `valorCombustivel` = '$valorCombustivel',
         `qtdKm` = '$qtdKm',
+        `valorKm` = '$valorKm',
         `preco` = '$preco',
         `valorSinal` = '$valorSinal',
         `qtdPassageiros` = '$qtdPassageiros',
@@ -213,6 +215,16 @@ $resultadoFuncionarios = mysqli_query($conexao, "SELECT * FROM tbFuncionario WHE
                                             value="<?= htmlspecialchars($fretamento['valorCombustivel']) ?>" required>
                                     </div>
                                 </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label pt-2">Valor do Km</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">R$</span>
+                                        <input type="number" id="valorKm" class="form-control" name="valorKm" step="0.01" min="0" placeholder="0,00"
+                                            value="<?= htmlspecialchars($fretamento['valorKm'] ?? '0') ?>">
+                                    </div>
+                                    <small class="text-muted">Ao mudar o km ou o valor do km, o orçamento é recalculado (km × valor do km)</small>
+                                </div>
                             </div>
 
                             <label class="form-label pt-2">Valor do Orçamento</label>
@@ -295,6 +307,24 @@ $resultadoFuncionarios = mysqli_query($conexao, "SELECT * FROM tbFuncionario WHE
             c.addEventListener('change', atualizarSinal);
         });
         atualizarSinal();
+
+        // Orçamento = km × valor do km. Só recalcula quando o km ou o valor do km são alterados na tela
+        // (abrir um fretamento já salvo não muda o preço)
+        const campoKm = document.getElementById('qtdKm');
+        const campoValorKm = document.getElementById('valorKm');
+
+        function calcularOrcamento() {
+            const km = parseFloat(campoKm.value) || 0;
+            const valorKm = parseFloat(campoValorKm.value) || 0;
+
+            if (km > 0 && valorKm > 0) {
+                campoOrcamento.value = (km * valorKm).toFixed(2);
+                atualizarSinal();
+            }
+        }
+
+        campoKm.addEventListener('input', calcularOrcamento);
+        campoValorKm.addEventListener('input', calcularOrcamento);
     </script>
     <script>
         // Aviso de disponibilidade: consulta a agenda assim que veículo e datas estão preenchidos

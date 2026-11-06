@@ -1,5 +1,5 @@
 <?php
-// Funções da coluna `midia` (vários arquivos separados por vírgula)
+// Funções da coluna `midia` 
 
 // Transforma o texto do banco em lista de arquivos
 function midiaLista($midia)

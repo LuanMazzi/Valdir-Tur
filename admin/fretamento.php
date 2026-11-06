@@ -37,6 +37,7 @@ if (isset($_POST['salvar'])) {
     $valorCombustivel       = mysqli_real_escape_string($conexao, $_POST['valorCombustivel'] ?? '0');
     $consumoCombustivel     = mysqli_real_escape_string($conexao, $_POST['consumoCombustivel'] ?? '');
     $qtdKm                  = mysqli_real_escape_string($conexao, $_POST['qtdKm'] ?? '0');
+    $valorKm                = mysqli_real_escape_string($conexao, ($_POST['valorKm'] ?? '') !== '' ? $_POST['valorKm'] : '0');
     $preco                  = mysqli_real_escape_string($conexao, $_POST['preco'] ?? '0');
     $valorSinal             = mysqli_real_escape_string($conexao, ($_POST['valorSinal'] ?? '') !== '' ? $_POST['valorSinal'] : '0');
     $qtdPassageiros         = mysqli_real_escape_string($conexao, $_POST['qtdPassageiros'] ?? '0');
@@ -45,10 +46,10 @@ if (isset($_POST['salvar'])) {
     // Comando SQL
     $sql = "INSERT INTO `tbFretamento` (
         `idVeiculo`, `idCliente`, `idFuncionario`, `cidadeOrigem`, `locaisEmbarque`, `dataHoraSaida`,
-        `destino`, `dataHoraRetorno`, `valorCombustivel`, `qtdKm`, `consumoCombustivel`, `preco`, `valorSinal`, `qtdPassageiros`, `status`
+        `destino`, `dataHoraRetorno`, `valorCombustivel`, `qtdKm`, `valorKm`, `consumoCombustivel`, `preco`, `valorSinal`, `qtdPassageiros`, `status`
     ) VALUES (
         '$idVeiculo', '$idCliente', '$idFuncionario', '$cidadeOrigem', '$locaisEmbarque', '$dataHoraSaida',
-        '$destino', '$dataHoraRetorno', '$valorCombustivel', '$qtdKm', '$consumoCombustivel', '$preco', '$valorSinal', '$qtdPassageiros', '$status'
+        '$destino', '$dataHoraRetorno', '$valorCombustivel', '$qtdKm', '$valorKm', '$consumoCombustivel', '$preco', '$valorSinal', '$qtdPassageiros', '$status'
     )";
 
     // Validações: datas, agenda do veículo e sinal
@@ -170,41 +171,63 @@ $resultadoFuncionarios = mysqli_query($conexao, "SELECT * FROM tbFuncionario WHE
                             <div class="row">
                                 <div class="col-md-6">
                                     <label class="form-label pt-2">Quantidade de Km</label>
-                                    <input type="number" class="form-control" name="qtdKm" id="qtdKm" step="0.01" min="0" placeholder="0" oninput="calcularGasto()" value="<?= valor('qtdKm') ?>" required>
+                                    <input type="number" class="form-control" name="qtdKm" id="qtdKm" step="0.01" min="0" placeholder="0" oninput="calcularValores()" value="<?= valor('qtdKm') ?>" required>
                                     <small class="text-muted">Calculado automaticamente (ida e volta) ao selecionar origem e destino — pode ajustar</small>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label pt-2">Valor do Combustível</label>
                                     <div class="input-group">
                                         <span class="input-group-text">R$</span>
-                                        <input type="number" class="form-control" id="preco" name="valorCombustivel" step="0.01" min="0" placeholder="0,00" oninput="calcularGasto()" value="<?= valor('valorCombustivel') ?>" required>
+                                        <input type="number" class="form-control" id="preco" name="valorCombustivel" step="0.01" min="0" placeholder="0,00" oninput="calcularValores()" value="<?= valor('valorCombustivel') ?>" required>
                                     </div>
                                 </div>
 
                                 <div class="col-md-6">
                                     <label class="form-label pt-2">Kilometros por Litro</label>
                                     <div class="input-group">
-                                        <input type="number" id="consumo" class="form-control" name="consumoCombustivel" step="0.01" min="0" placeholder="Km/L" oninput="calcularGasto()" value="<?= valor('consumoCombustivel') ?>" required>
+                                        <input type="number" id="consumo" class="form-control" name="consumoCombustivel" step="0.01" min="0" placeholder="Km/L" oninput="calcularValores()" value="<?= valor('consumoCombustivel') ?>" required>
                                     </div>
                                 </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label pt-2">Valor do Km</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">R$</span>
+                                        <input type="number" id="valorKm" class="form-control" name="valorKm" step="0.01" min="0" placeholder="0,00" oninput="calcularValores()" value="<?= valor('valorKm') ?>">
+                                    </div>
+                                    <small class="text-muted">Orçamento = km × valor do km</small>
+                                </div>
                             </div>
+                            <small class="text-muted d-block mt-2" id="infoCombustivel"></small>
 
                             <script>
-                                // Orçamento = (km ÷ consumo) × preço do combustível
-                                function calcularGasto() {
-                                    const distancia = document.getElementById('qtdKm').value;
-                                    const consumo = document.getElementById('consumo').value;
-                                    const preco = document.getElementById('preco').value;
-                                    const campoGasto = document.getElementById('gasto');
+                                // Combustível estimado (km ÷ consumo × preço do litro): só informação, para ver quanto sobra do orçamento
+                                function atualizarCombustivel() {
+                                    const km = parseFloat(document.getElementById('qtdKm').value) || 0;
+                                    const consumo = parseFloat(document.getElementById('consumo').value) || 0;
+                                    const precoLitro = parseFloat(document.getElementById('preco').value) || 0;
+                                    const orcamento = parseFloat(document.getElementById('gasto').value) || 0;
+                                    const info = document.getElementById('infoCombustivel');
 
-                                    if (distancia !== '' && consumo !== '' && preco !== '' && parseFloat(consumo) > 0) {
-                                        const litros = parseFloat(distancia) / parseFloat(consumo);
-                                        const gasto = litros * parseFloat(preco);
-                                        campoGasto.value = gasto.toFixed(2);
+                                    if (km > 0 && consumo > 0 && precoLitro > 0) {
+                                        const combustivel = (km / consumo) * precoLitro;
+                                        info.textContent = 'Combustível estimado: ' + reais(combustivel)
+                                            + (orcamento > 0 ? ' (' + Math.round(100 * combustivel / orcamento) + '% do orçamento)' : '');
                                     } else {
-                                        campoGasto.value = '';
+                                        info.textContent = '';
+                                    }
+                                }
+
+                                // Orçamento = km × valor do km (o campo continua editável)
+                                function calcularValores() {
+                                    const km = parseFloat(document.getElementById('qtdKm').value) || 0;
+                                    const valorKm = parseFloat(document.getElementById('valorKm').value) || 0;
+
+                                    if (km > 0 && valorKm > 0) {
+                                        document.getElementById('gasto').value = (km * valorKm).toFixed(2);
                                     }
 
+                                    atualizarCombustivel();
                                     atualizarSinal();
                                 }
                             </script>
@@ -287,6 +310,7 @@ $resultadoFuncionarios = mysqli_query($conexao, "SELECT * FROM tbFuncionario WHE
             c.addEventListener('change', atualizarSinal);
         });
         atualizarSinal();
+        atualizarCombustivel();
     </script>
     <script>
         // Aviso de disponibilidade: consulta a agenda assim que veículo e datas estão preenchidos

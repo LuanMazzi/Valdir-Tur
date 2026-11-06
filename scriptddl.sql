@@ -102,6 +102,7 @@ CREATE TABLE tbFretamento (
     valorCombustivel DOUBLE NOT NULL,
     qtdPassageiros INT NOT NULL,
     qtdKm DOUBLE NOT NULL,
+    valorKm DOUBLE NOT NULL DEFAULT 0,
     consumoCombustivel DOUBLE NOT NULL,
     preco DOUBLE NOT NULL,
     valorSinal DOUBLE NOT NULL DEFAULT 0,

@@ -94,6 +94,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     const distanciaMetros = dados.routes[0].distance;
                     const idaEVoltaKm = (distanciaMetros / 1000) * 2;
                     campoKm.value = idaEVoltaKm.toFixed(1);
+                    // Avisa a tela que o km mudou (recalcula o orçamento)
+                    campoKm.dispatchEvent(new Event('input', { bubbles: true }));
                 }
             })
             .catch(function () {

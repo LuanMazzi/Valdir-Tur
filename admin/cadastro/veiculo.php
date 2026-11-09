@@ -153,7 +153,7 @@ if (isset($_POST['salvar'])) {
                                 placeholder="Ônibus 2026 DD" required>
 
                             <label class="py-2">Numeração</label>
-                            <input class="form-control" type="number" name="numeracao" value="<?= valor('numeracao') ?>" placeholder="4000" required>
+                            <input class="form-control" type="text" name="numeracao" value="<?= valor('numeracao') ?>" placeholder="4000" required>
 
                             <div class="mb-3">
                                 <label class="py-2">Descrição</label>

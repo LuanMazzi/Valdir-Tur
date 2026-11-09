@@ -168,7 +168,7 @@ $doisAndares = isset($_POST['salvar'])
                                 value="<?= htmlspecialchars($veiculo['nomeIdentificacao']) ?>" required>
 
                             <label class="py-2">Numeração</label>
-                            <input class="form-control" type="number" name="numeracao"
+                            <input class="form-control" type="text" name="numeracao"
                                 value="<?= htmlspecialchars($veiculo['numeracao']) ?>" required>
 
                             <div class="mb-3">

@@ -5,7 +5,7 @@ CREATE TABLE tbVeiculo (
     idVeiculo INT PRIMARY KEY AUTO_INCREMENT,
     tipoVeiculo VARCHAR(20) NOT NULL,
     nomeIdentificacao VARCHAR(250) NOT NULL,
-    numeracao INT NOT NULL,
+    numeracao VARCHAR(20) NOT NULL,
     capacidadeTotal INT NOT NULL,
     capacidadePrimeiroAndar INT NULL,
     capacidadeSegundoAndar INT NULL,

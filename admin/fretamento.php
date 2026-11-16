@@ -11,6 +11,7 @@ if (!isset($_SESSION['admin'])) {
 require_once(__DIR__ . '/../config/config.php');
 require_once(__DIR__ . '/../config/conexao.php');
 require_once(__DIR__ . '/../includes/agenda.php');
+require_once(__DIR__ . '/../includes/validar-data.php');
 
 // Devolve o valor digitado (mantém os dados no formulário após um erro)
 function valor($campo)
@@ -54,6 +55,10 @@ if (isset($_POST['salvar'])) {
 
     // Validações: datas, agenda do veículo e sinal
     $erro = validarAgendaFretamento($conexao, $_POST['idVeiculo'] ?? 0, $_POST['dataHoraSaida'] ?? '', $_POST['dataHoraRetorno'] ?? '', $_POST['status'] ?? '');
+
+    if ($erro === '' && dataNoPassado($_POST['dataHoraSaida'] ?? '')) {
+        $erro = 'A data de saída não pode estar no passado.';
+    }
 
     if ($erro === '' && (float) $valorSinal > (float) $preco) {
         $erro = 'O sinal não pode ser maior que o valor do orçamento.';

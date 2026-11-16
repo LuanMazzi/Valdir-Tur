@@ -10,6 +10,7 @@ if (!isset($_SESSION['admin'])) {
 // Configurações e conexão com o banco
 require_once(__DIR__ . '/../../config/config.php');
 require_once(__DIR__ . '/../../config/conexao.php');
+require_once(__DIR__ . '/../../includes/validar-data.php');
 
 // Devolve o valor digitado (mantém os dados no formulário após um erro)
 function valor($campo)
@@ -23,7 +24,10 @@ if (isset($_GET['sucesso'])) {
 }
 
 // Salvar: recebe os dados do formulário e grava no banco
-if (isset($_POST["salvar"])) {
+if (isset($_POST["salvar"]) && dataNoPassado($_POST['dataHoraSaida'] ?? '')) {
+    // Não deixa cadastrar pacote com saída no passado
+    $mensagem = "<div class='alert alert-danger'>A data de saída não pode estar no passado.</div>";
+} elseif (isset($_POST["salvar"])) {
     $diretorio = __DIR__ . '/../../assets/uploads/';
 
 
@@ -114,13 +118,13 @@ if (isset($_POST["salvar"])) {
                     <div class="card-principal">
                         <div class="card-principal-conteudo">
                             <label class="py-2">Nome do Pacote</label>
-                            <input class="form-control" type="text" name="nomePacote" value="<?= valor('nomePacote') ?>" placeholder="Excursão Ody Park Aquático" required>
+                            <input class="form-control" type="text" name="nomePacote" value="<?= valor('nomePacote') ?>" placeholder="Nome do Pacote" >
 
                             <label class="py-2">Descrição Curta</label>
                             <input class="form-control" type="text" name="descricaoCurta" id="descricaoCurta" value="<?= valor('descricaoCurta') ?>" maxlength="100" placeholder="Aparece no card da viagem" required>
 
                             <label class="py-2">Descrição Longa</label>
-                            <textarea class="form-control" name="descricaoLonga" id="descricaoLonga" rows="5" placeholder="Detalhes completos da viagem" required><?= valor('descricaoLonga') ?></textarea>
+                            <textarea class="form-control" name="descricaoLonga" id="descricaoLonga" rows="5" placeholder="Detalhes completos da viagem" ><?= valor('descricaoLonga') ?></textarea>
 
                             <div class="mb-3">
                                 <label for="fileUpload" class="py-2">Conteúdo (Imagens ou Vídeos)</label>
@@ -129,7 +133,7 @@ if (isset($_POST["salvar"])) {
                             </div>
 
                             <label class="py-2">Destino</label>
-                            <input class="form-control" type="text" name="destino" value="<?= valor('destino') ?>" placeholder="Ody Park Aquático" required>
+                            <input class="form-control" type="text" name="destino" value="<?= valor('destino') ?>" placeholder="Destino da Viagem" required>
 
                             <label class="form-label pt-2">Data e Hora de Saída</label>
                             <input type="datetime-local" class="form-control" id="dataHoraSaida" name="dataHoraSaida" value="<?= valor('dataHoraSaida') ?>" required>

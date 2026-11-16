@@ -11,6 +11,7 @@ if (!isset($_SESSION['admin'])) {
 require_once(__DIR__ . '/../../config/config.php');
 require_once(__DIR__ . '/../../config/conexao.php');
 require_once(__DIR__ . '/../../includes/agenda.php');
+require_once(__DIR__ . '/../../includes/validar-data.php');
 
 $erro = "";
 $sucesso = false;
@@ -58,6 +59,14 @@ if (isset($_POST['salvar'])) {
 
     // Validações: datas, agenda do veículo (ignorando este próprio fretamento) e sinal
     $erro = validarAgendaFretamento($conexao, $_POST['idVeiculo'] ?? 0, $_POST['dataHoraSaida'] ?? '', $_POST['dataHoraRetorno'] ?? '', $_POST['status'] ?? '', $id);
+
+    // Não deixa mudar a saída para o passado (manter a data que já estava salva é permitido)
+    $saidaSalva = mysqli_fetch_assoc(mysqli_query($conexao, "SELECT dataHoraSaida FROM tbFretamento WHERE idFretamento = " . (int) $id))['dataHoraSaida'] ?? '';
+    $novaSaida  = $_POST['dataHoraSaida'] ?? '';
+
+    if ($erro === '' && strtotime($novaSaida) !== strtotime($saidaSalva) && dataNoPassado($novaSaida)) {
+        $erro = 'A data de saída não pode estar no passado.';
+    }
 
     if ($erro === '' && (float) $valorSinal > (float) $preco) {
         $erro = 'O sinal não pode ser maior que o valor do orçamento.';

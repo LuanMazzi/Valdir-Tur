@@ -97,6 +97,7 @@ $resultado = mysqli_query($conexao, $sql);
                                             <td><?= $linha['idCliente'] ?></td>
                                             <td><?= htmlspecialchars($linha['nome']) ?></td>
                                             <td><?= htmlspecialchars($linha['email']) ?></td>
+
                                             <td>
                                                 <a href="../editar/cliente.php?id=<?= $linha['idCliente'] ?>" class="text-decoration-none">
                                                     <button type="button" class="btn btn-warning"><i class="bi bi-pencil-square"></i></button>

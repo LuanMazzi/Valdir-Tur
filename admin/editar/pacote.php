@@ -10,13 +10,24 @@ if (!isset($_SESSION['admin'])) {
 // Configurações e conexão com o banco
 require_once(__DIR__ . '/../../config/config.php');
 require_once(__DIR__ . '/../../config/conexao.php');
+require_once(__DIR__ . '/../../includes/validar-data.php');
 
 $erro = "";
 $sucesso = false;
 $id = $_POST['id'] ?? $_GET['id'] ?? '';
 
-// Salvar: recebe os dados do formulário e atualiza no banco
+// Não deixa mudar a saída para o passado (manter a data que já estava salva é permitido)
 if (isset($_POST['salvar'])) {
+    $saidaSalva = mysqli_fetch_assoc(mysqli_query($conexao, "SELECT dataHoraSaida FROM tbpacote WHERE idPacote = " . (int) $id))['dataHoraSaida'] ?? '';
+    $novaSaida  = $_POST['dataHoraSaida'] ?? '';
+
+    if (strtotime($novaSaida) !== strtotime($saidaSalva) && dataNoPassado($novaSaida)) {
+        $erro = "A data de saída não pode estar no passado.";
+    }
+}
+
+// Salvar: recebe os dados do formulário e atualiza no banco
+if (isset($_POST['salvar']) && $erro === "") {
 
     $id               = mysqli_real_escape_string($conexao, $_POST['id'] ?? '');
     $nomePacote       = mysqli_real_escape_string($conexao, $_POST['nomePacote'] ?? '');

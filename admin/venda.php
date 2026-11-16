@@ -148,8 +148,7 @@ $resultadoFretamentos = mysqli_query($conexao, "SELECT * FROM tbFretamento WHERE
                                         <option value="PIX">PIX</option>
                                         <option value="Cartão de Crédito">Cartão de Crédito</option>
                                         <option value="Cartão de Débito">Cartão de Débito</option>
-                                        <option value="Boleto">Boleto</option>
-                                        <option value="Transferência">Transferência</option>
+                                        <option value="Transferência Bancária">Transferência Bancária</option>
                                     </select>
                                 </div>
                                 <div class="col-md-6">

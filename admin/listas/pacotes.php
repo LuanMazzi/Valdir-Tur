@@ -67,7 +67,7 @@ $resultado = mysqli_query($conexao, $sql);
 
         <!-- Campo de busca -->
         <form method="GET" class="d-flex mt-3" style="max-width: 400px;">
-            <input type="text" name="busca" class="form-control" placeholder="Buscar por nome ou destino..." value="<?= htmlspecialchars($busca) ?>">
+            <input type="text" name="busca" class="form-control" placeholder="Buscars..." value="<?= htmlspecialchars($busca) ?>">
             <button class="btn btn-outline-secondary ms-2" type="submit"><i class="bi bi-search"></i></button>
         </form>
 

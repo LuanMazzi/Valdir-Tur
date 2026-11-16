@@ -266,7 +266,7 @@ $resultadoFuncionarios = mysqli_query($conexao, "SELECT * FROM tbFuncionario WHE
                                     <option value="<?= $opcao ?>" <?= ($_POST['status'] ?? 'Orçamento') === $opcao ? 'selected' : '' ?>><?= $opcao ?></option>
                                 <?php endforeach; ?>
                             </select>
-                            <small class="text-muted d-block mt-2">Só fretamentos <strong>Aprovados</strong> reservam o ônibus na agenda.</small>
+                            <small class="text-muted d-block mt-2">Apenas fretamentos com status <strong>"Aprovado"</strong> reservam o ônibus na agenda.</small>
                         </div>
                     </div>
                 </div>

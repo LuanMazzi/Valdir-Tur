@@ -176,10 +176,10 @@ if ($erro !== "") {
                                     <label class="form-label pt-2">Forma de Recebimento</label>
                                     <select class="form-select" name="formaRecebimento" required>
                                         <option value="" disabled>Selecione</option>
-                                        <?php foreach (['Dinheiro', 'PIX', 'Cartão de Crédito', 'Cartão de Débito', 'Boleto', 'Transferência'] as $forma): ?>
+                                        <?php foreach (['Dinheiro', 'PIX', 'Cartão de Crédito', 'Cartão de Débito', 'Transferência Bancária'] as $forma): ?>
                                             <option value="<?= $forma ?>" <?= $venda['formaRecebimento'] === $forma ? 'selected' : '' ?>><?= $forma ?></option>
                                         <?php endforeach; ?>
-                                    </select>
+                                    </select>   
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label pt-2">Data do Recebimento</label>

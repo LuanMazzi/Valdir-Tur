@@ -354,6 +354,13 @@ $resultadoFuncionarios = mysqli_query($conexao, "SELECT * FROM tbFuncionario WHE
                 return;
             }
 
+            // Data de saída no passado (verificado no PHP)
+            if (respostaAgenda.passado) {
+                avisoAgenda.className = 'alert alert-danger py-2 mt-2 mb-0';
+                avisoAgenda.textContent = respostaAgenda.mensagem;
+                return;
+            }
+
             if (!respostaAgenda.conflito) {
                 avisoAgenda.className = 'alert alert-success py-2 mt-2 mb-0';
                 avisoAgenda.textContent = 'Veículo disponível neste período.';

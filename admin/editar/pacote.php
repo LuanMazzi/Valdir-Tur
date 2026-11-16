@@ -238,6 +238,7 @@ if ($pacote['duracaoViagem']) {
                             <select class="form-select" name="status">
                                 <option value="Ativo" <?= $pacote['status'] === 'Ativo' ? 'selected' : '' ?>>Ativo</option>
                                 <option value="Inativo" <?= $pacote['status'] === 'Inativo' ? 'selected' : '' ?>>Inativo</option>
+                                <option value="Finalizado" <?= $pacote['status'] === 'Finalizado' ? 'selected' : '' ?>>Finalizado</option>
                             </select>
 
                             <strong><label class="d-block pt-3">Pacote de Parceria</label></strong>

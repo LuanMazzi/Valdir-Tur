@@ -182,6 +182,7 @@ if (isset($_POST["salvar"])) {
                             <select class="form-select" name="status">
                                 <option value="Ativo">Ativo</option>
                                 <option value="Inativo" <?= ($_POST['status'] ?? '') === 'Inativo' ? 'selected' : '' ?>>Inativo</option>
+                                <option value="Finalizado" <?= ($_POST['status'] ?? '') === 'Finalizado' ? 'selected' : '' ?>>Finalizado</option>
                             </select>
 
                             <strong><label class="d-block pt-3">Pacote de Parceria</label></strong>

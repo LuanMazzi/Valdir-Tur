@@ -94,311 +94,338 @@ $resultadoFuncionarios = mysqli_query($conexao, "SELECT * FROM tbFuncionario WHE
     <?php include(__DIR__ . '/../includes/sidebar-admin.php'); ?>
 
     <main class="w-100 p-4" style="overflow-y: auto;">
-    <section class="container py-5">
-        <form method="POST">
-            <button class="botao-voltar" type="button" onclick="window.location.href='listas/fretamentos.php'">
-                <i class="bi bi-signpost-split-fill fs-4"></i>
-            </button>
-            <i class="bi bi-arrow-right-short"></i>
-            <label class="pb-2"><strong>Adicionar fretamento (orçamento)</strong></label>
+        <section class="container py-5">
+            <form method="POST">
+                <button class="botao-voltar" type="button" onclick="window.location.href='listas/fretamentos.php'">
+                    <i class="bi bi-signpost-split-fill fs-4"></i>
+                </button>
+                <i class="bi bi-arrow-right-short"></i>
+                <label class="pb-2"><strong>Adicionar fretamento (orçamento)</strong></label>
 
-            <?= $mensagem ?>
+                <?= $mensagem ?>
 
-            <div class="row">
-                <!-- Coluna da esquerda -->
-                <div class="col-lg-8 col-md-12">
-                    <!-- Card: Dados do fretamento -->
-                    <div class="card-principal">
-                        <div class="card-principal-conteudo">
-                            <strong><label>Cliente</label></strong>
-                            <select class="form-select" name="idCliente" required>
-                                <option value="" <?= empty($_POST['idCliente']) ? 'selected' : '' ?> disabled>Selecione um cliente ativo</option>
-                                <?php while ($cliente = mysqli_fetch_assoc($resultadoClientes)): ?>
-                                    <?php $nomeExibido = $cliente['tipoCliente'] === 'PJ' ? $cliente['razaoSocial'] : trim($cliente['nome'] . ' ' . $cliente['sobrenome']); ?>
-                                    <option value="<?= $cliente['idCliente'] ?>" <?= ($_POST['idCliente'] ?? '') == $cliente['idCliente'] ? 'selected' : '' ?>><?= htmlspecialchars($nomeExibido) ?></option>
-                                <?php endwhile; ?>
-                            </select>
+                <div class="row">
+                    <!-- Coluna da esquerda -->
+                    <div class="col-lg-8 col-md-12">
+                        <!-- Card: Dados do fretamento -->
+                        <div class="card-principal">
+                            <div class="card-principal-conteudo">
+                                <div class="d-flex align-items-center">
+                                    <strong><label>Cliente</label></strong>
 
-                            <strong><label class="d-block pt-3">Veículo</label></strong>
-                            <select class="form-select" name="idVeiculo" required>
-                                <option value="" <?= empty($_POST['idVeiculo']) ? 'selected' : '' ?> disabled>Selecione um veículo ativo</option>
-                                <?php while ($veiculo = mysqli_fetch_assoc($resultadoVeiculos)): ?>
-                                    <option value="<?= $veiculo['idVeiculo'] ?>" <?= ($_POST['idVeiculo'] ?? '') == $veiculo['idVeiculo'] ? 'selected' : '' ?>>
-                                        <?= htmlspecialchars($veiculo['nomeIdentificacao']) ?> (<?= htmlspecialchars($veiculo['numeracao']) ?>)
-                                    </option>
-                                <?php endwhile; ?>
-                            </select>
+                                    <a href="cadastro/cliente.php" class="ms-auto text-decoration-none">
+                                        <button class="btn btn-sm btn-dark my-1" type="button"><i class="bi bi-person-add"></i></button>
+                                    </a>
 
-                            <strong><label class="d-block pt-3">Funcionário responsável</label></strong>
-                            <select class="form-select" name="idFuncionario" required>
-                                <option value="" <?= empty($_POST['idFuncionario']) ? 'selected' : '' ?> disabled>Selecione um funcionário ativo</option>
-                                <?php while ($funcionario = mysqli_fetch_assoc($resultadoFuncionarios)): ?>
-                                    <option value="<?= $funcionario['idFuncionario'] ?>" <?= ($_POST['idFuncionario'] ?? '') == $funcionario['idFuncionario'] ? 'selected' : '' ?>>
-                                        <?= htmlspecialchars($funcionario['nome'] . ' ' . $funcionario['sobrenome']) ?> - <?= htmlspecialchars($funcionario['funcao']) ?>
-                                    </option>
-                                <?php endwhile; ?>
-                            </select>
-
-                            <label class="form-label pt-3">Origem</label>
-                            <div class="position-relative">
-                                <input class="form-control" type="text" name="cidadeOrigem" id="cidadeOrigem" placeholder="Cascavel" autocomplete="off" value="<?= valor('cidadeOrigem') ?>" required>
-                            </div>
-                            <input type="hidden" id="cidadeOrigemLat">
-                            <input type="hidden" id="cidadeOrigemLon">
-
-                            <label class="form-label pt-3">Destino</label>
-                            <div class="position-relative">
-                                <input class="form-control" type="text" name="destino" id="destino" placeholder="Foz do Iguaçu" autocomplete="off" value="<?= valor('destino') ?>" required>
-                            </div>
-                            <input type="hidden" id="destinoLat">
-                            <input type="hidden" id="destinoLon">
-
-                            <label class="form-label pt-2">Locais de Embarque</label>
-                            <input class="form-control" type="text" name="locaisEmbarque" placeholder="Rodoviária, Praça Central..." value="<?= valor('locaisEmbarque') ?>" required>
-
-                            <label class="form-label pt-2">Quantidade de Passageiros</label>
-                            <input class="form-control" type="number" name="qtdPassageiros" min="0" placeholder="40" value="<?= valor('qtdPassageiros') ?>" required>
-
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label class="form-label pt-2">Data e Hora de Saída</label>
-                                    <input type="datetime-local" class="form-control" name="dataHoraSaida" value="<?= valor('dataHoraSaida') ?>" required>
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label pt-2">Data e Hora de Retorno</label>
-                                    <input type="datetime-local" class="form-control" name="dataHoraRetorno" value="<?= valor('dataHoraRetorno') ?>" required>
-                                </div>
-                            </div>
 
-                            <!-- Aviso de disponibilidade do veículo -->
-                            <div id="avisoAgenda" class="d-none"></div>
+                                <select class="form-select" name="idCliente" required>
+                                    <option value="" <?= empty($_POST['idCliente']) ? 'selected' : '' ?> disabled>Selecione um cliente ativo</option>
+                                    <?php while ($cliente = mysqli_fetch_assoc($resultadoClientes)): ?>
+                                        <?php $nomeExibido = $cliente['tipoCliente'] === 'PJ' ? $cliente['razaoSocial'] : trim($cliente['nome'] . ' ' . $cliente['sobrenome']); ?>
+                                        <option value="<?= $cliente['idCliente'] ?>" <?= ($_POST['idCliente'] ?? '') == $cliente['idCliente'] ? 'selected' : '' ?>><?= htmlspecialchars($nomeExibido) ?></option>
+                                    <?php endwhile; ?>
+                                </select>
 
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label class="form-label pt-2">Quantidade de Km</label>
-                                    <input type="number" class="form-control" name="qtdKm" id="qtdKm" step="0.01" min="0" placeholder="0" oninput="calcularValores()" value="<?= valor('qtdKm') ?>" required>
-                                    <small class="text-muted">Calculado automaticamente (ida e volta) ao selecionar origem e destino — pode ajustar</small>
+                                <div class="d-flex align-items-center">
+                                    <strong><label class="d-block pt-3">Veículo</label></strong>
+
+                                    <a href="cadastro/cliente.php" class="ms-auto text-decoration-none">
+                                        <button class="btn btn-sm btn-dark my-1" type="button"><i class="bi bi-person-add"></i></button>
+                                    </a>
+
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label pt-2">Valor do Combustível</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text">R$</span>
-                                        <input type="number" class="form-control" id="preco" name="valorCombustivel" step="0.01" min="0" placeholder="0,00" oninput="calcularValores()" value="<?= valor('valorCombustivel') ?>" required>
+
+                                <select class="form-select" name="idVeiculo" required>
+                                    <option value="" <?= empty($_POST['idVeiculo']) ? 'selected' : '' ?> disabled>Selecione um veículo ativo</option>
+                                    <?php while ($veiculo = mysqli_fetch_assoc($resultadoVeiculos)): ?>
+                                        <option value="<?= $veiculo['idVeiculo'] ?>" <?= ($_POST['idVeiculo'] ?? '') == $veiculo['idVeiculo'] ? 'selected' : '' ?>>
+                                            <?= htmlspecialchars($veiculo['nomeIdentificacao']) ?> (<?= htmlspecialchars($veiculo['numeracao']) ?>)
+                                        </option>
+                                    <?php endwhile; ?>
+                                </select>
+
+                                <div class="d-flex align-items-center">
+                                    <strong><label class="d-block pt-3">Funcionário responsável</label></strong>
+
+                                    <a href="cadastro/cliente.php" class="ms-auto text-decoration-none">
+                                        <button class="btn btn-sm btn-dark my-1" type="button"><i class="bi bi-person-add"></i></button>
+                                    </a>
+
+                                </div>
+
+                                <select class="form-select" name="idFuncionario" required>
+                                    <option value="" <?= empty($_POST['idFuncionario']) ? 'selected' : '' ?> disabled>Selecione um funcionário ativo</option>
+                                    <?php while ($funcionario = mysqli_fetch_assoc($resultadoFuncionarios)): ?>
+                                        <option value="<?= $funcionario['idFuncionario'] ?>" <?= ($_POST['idFuncionario'] ?? '') == $funcionario['idFuncionario'] ? 'selected' : '' ?>>
+                                            <?= htmlspecialchars($funcionario['nome'] . ' ' . $funcionario['sobrenome']) ?> - <?= htmlspecialchars($funcionario['funcao']) ?>
+                                        </option>
+                                    <?php endwhile; ?>
+                                </select>
+
+                                <label class="form-label pt-3">Origem</label>
+                                <div class="position-relative">
+                                    <input class="form-control" type="text" name="cidadeOrigem" id="cidadeOrigem" placeholder="Cidade de origem" autocomplete="off" value="<?= valor('cidadeOrigem') ?>" required>
+                                </div>
+                                <input type="hidden" id="cidadeOrigemLat">
+                                <input type="hidden" id="cidadeOrigemLon">
+
+                                <label class="form-label pt-3">Destino</label>
+                                <div class="position-relative">
+                                    <input class="form-control" type="text" name="destino" id="destino" placeholder="Cidade de destino" autocomplete="off" value="<?= valor('destino') ?>" required>
+                                </div>
+                                <input type="hidden" id="destinoLat">
+                                <input type="hidden" id="destinoLon">
+
+                                <label class="form-label pt-2">Locais de Embarque</label>
+                                <input class="form-control" type="text" name="locaisEmbarque" placeholder="Local(is) de Embarque" value="<?= valor('locaisEmbarque') ?>" required>
+
+                                <label class="form-label pt-2">Quantidade de Passageiros</label>
+                                <input class="form-control" type="number" name="qtdPassageiros" min="0" placeholder="Quantidade de passageiros" value="<?= valor('qtdPassageiros') ?>" required>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label class="form-label pt-2">Data e Hora de Saída</label>
+                                        <input type="datetime-local" class="form-control" name="dataHoraSaida" value="<?= valor('dataHoraSaida') ?>" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label pt-2">Data e Hora de Retorno</label>
+                                        <input type="datetime-local" class="form-control" name="dataHoraRetorno" value="<?= valor('dataHoraRetorno') ?>" required>
                                     </div>
                                 </div>
 
-                                <div class="col-md-6">
-                                    <label class="form-label pt-2">Kilometros por Litro</label>
-                                    <div class="input-group">
-                                        <input type="number" id="consumo" class="form-control" name="consumoCombustivel" step="0.01" min="0" placeholder="Km/L" oninput="calcularValores()" value="<?= valor('consumoCombustivel') ?>" required>
+                                <!-- Aviso de disponibilidade do veículo -->
+                                <div id="avisoAgenda" class="d-none"></div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label class="form-label pt-2">Quantidade de Km</label>
+                                        <input type="number" class="form-control" name="qtdKm" id="qtdKm" step="0.01" min="0" placeholder="0" oninput="calcularValores()" value="<?= valor('qtdKm') ?>" required>
+                                        <small class="text-muted">Calculado automaticamente (ida e volta) ao selecionar origem e destino</small>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label pt-2">Valor do Combustível</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">R$</span>
+                                            <input type="number" class="form-control" id="preco" name="valorCombustivel" step="0.01" min="0" placeholder="0,00" oninput="calcularValores()" value="<?= valor('valorCombustivel') ?>" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label pt-2">Kilometros por Litro</label>
+                                        <div class="input-group">
+                                            <input type="number" id="consumo" class="form-control" name="consumoCombustivel" step="0.01" min="0" placeholder="Km/L" oninput="calcularValores()" value="<?= valor('consumoCombustivel') ?>" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label pt-2">Valor do Km</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">R$</span>
+                                            <input type="number" id="valorKm" class="form-control" name="valorKm" step="0.01" min="0" placeholder="0,00" oninput="calcularValores()" value="<?= valor('valorKm') ?>">
+                                        </div>
+                                        <!-- <small class="text-muted">Orçamento = km × valor do km</small> -->
                                     </div>
                                 </div>
+                                <small class="text-muted d-block mt-2" id="infoCombustivel"></small>
 
-                                <div class="col-md-6">
-                                    <label class="form-label pt-2">Valor do Km</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text">R$</span>
-                                        <input type="number" id="valorKm" class="form-control" name="valorKm" step="0.01" min="0" placeholder="0,00" oninput="calcularValores()" value="<?= valor('valorKm') ?>">
-                                    </div>
-                                    <small class="text-muted">Orçamento = km × valor do km</small>
-                                </div>
-                            </div>
-                            <small class="text-muted d-block mt-2" id="infoCombustivel"></small>
+                                <script>
+                                    // Combustível estimado (km ÷ consumo × preço do litro): só informação, para ver quanto sobra do orçamento
+                                    function atualizarCombustivel() {
+                                        const km = parseFloat(document.getElementById('qtdKm').value) || 0;
+                                        const consumo = parseFloat(document.getElementById('consumo').value) || 0;
+                                        const precoLitro = parseFloat(document.getElementById('preco').value) || 0;
+                                        const orcamento = parseFloat(document.getElementById('gasto').value) || 0;
+                                        const info = document.getElementById('infoCombustivel');
 
-                            <script>
-                                // Combustível estimado (km ÷ consumo × preço do litro): só informação, para ver quanto sobra do orçamento
-                                function atualizarCombustivel() {
-                                    const km = parseFloat(document.getElementById('qtdKm').value) || 0;
-                                    const consumo = parseFloat(document.getElementById('consumo').value) || 0;
-                                    const precoLitro = parseFloat(document.getElementById('preco').value) || 0;
-                                    const orcamento = parseFloat(document.getElementById('gasto').value) || 0;
-                                    const info = document.getElementById('infoCombustivel');
-
-                                    if (km > 0 && consumo > 0 && precoLitro > 0) {
-                                        const combustivel = (km / consumo) * precoLitro;
-                                        info.textContent = 'Combustível estimado: ' + reais(combustivel)
-                                            + (orcamento > 0 ? ' (' + Math.round(100 * combustivel / orcamento) + '% do orçamento)' : '');
-                                    } else {
-                                        info.textContent = '';
+                                        if (km > 0 && consumo > 0 && precoLitro > 0) {
+                                            const combustivel = (km / consumo) * precoLitro;
+                                            info.textContent = 'Combustível estimado: ' + reais(combustivel) +
+                                                (orcamento > 0 ? ' (' + Math.round(100 * combustivel / orcamento) + '% do orçamento)' : '');
+                                        } else {
+                                            info.textContent = '';
+                                        }
                                     }
-                                }
 
-                                // Orçamento = km × valor do km (o campo continua editável)
-                                function calcularValores() {
-                                    const km = parseFloat(document.getElementById('qtdKm').value) || 0;
-                                    const valorKm = parseFloat(document.getElementById('valorKm').value) || 0;
+                                    // Orçamento = km × valor do km (o campo continua editável)
+                                    function calcularValores() {
+                                        const km = parseFloat(document.getElementById('qtdKm').value) || 0;
+                                        const valorKm = parseFloat(document.getElementById('valorKm').value) || 0;
 
-                                    if (km > 0 && valorKm > 0) {
-                                        document.getElementById('gasto').value = (km * valorKm).toFixed(2);
+                                        if (km > 0 && valorKm > 0) {
+                                            document.getElementById('gasto').value = (km * valorKm).toFixed(2);
+                                        }
+
+                                        atualizarCombustivel();
+                                        atualizarSinal();
                                     }
-
-                                    atualizarCombustivel();
-                                    atualizarSinal();
-                                }
-                            </script>
+                                </script>
 
 
-                            <label class="form-label pt-2">Valor do Orçamento</label>
-                            <div class="input-group">
-                                <span class="input-group-text">R$</span>
-                                <input type="number" id="gasto" class="form-control" name="preco" step="0.01" min="0" placeholder="0,00" value="<?= valor('preco') ?>" required>
+                                <label class="form-label pt-2">Valor do Orçamento</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">R$</span>
+                                    <input type="number" id="gasto" class="form-control" name="preco" step="0.01" min="0" placeholder="0,00" value="<?= valor('preco') ?>" required>
+                                </div>
+
+                                <label class="form-label pt-2">Sinal (entrada para reservar a data)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">R$</span>
+                                    <input type="number" id="valorSinal" class="form-control" name="valorSinal" step="0.01" min="0" placeholder="0,00" value="<?= valor('valorSinal') ?>">
+                                </div>
+                                <small class="text-muted d-block" id="infoSinal"></small>
+                                <small class="text-warning-emphasis d-none" id="avisoSinal">Atenção: o sinal está abaixo de 10% do valor do orçamento.</small>
                             </div>
+                        </div>
+                    </div>
 
-                            <label class="form-label pt-2">Sinal (entrada para reservar a data)</label>
-                            <div class="input-group">
-                                <span class="input-group-text">R$</span>
-                                <input type="number" id="valorSinal" class="form-control" name="valorSinal" step="0.01" min="0" placeholder="0,00" value="<?= valor('valorSinal') ?>">
+                    <!-- Coluna da direita -->
+                    <div class="col-lg-4 col-md-12">
+                        <!-- Card: Status -->
+                        <div class="card-principal">
+                            <div class="card-principal-conteudo">
+                                <strong><label>Status</label></strong>
+                                <select class="form-select" name="status" id="status" required>
+                                    <?php foreach (['Orçamento', 'Aprovado', 'Cancelado', 'Rascunho'] as $opcao): ?>
+                                        <option value="<?= $opcao ?>" <?= ($_POST['status'] ?? 'Orçamento') === $opcao ? 'selected' : '' ?>><?= $opcao ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <small class="text-muted d-block mt-2">Apenas fretamentos com status <strong>"Aprovado"</strong> reservam o ônibus na agenda.</small>
                             </div>
-                            <small class="text-muted d-block" id="infoSinal"></small>
-                            <small class="text-warning-emphasis d-none" id="avisoSinal">Atenção: o sinal está abaixo de 10% do valor do orçamento.</small>
                         </div>
                     </div>
                 </div>
 
-                <!-- Coluna da direita -->
-                <div class="col-lg-4 col-md-12">
-                    <!-- Card: Status -->
-                    <div class="card-principal">
-                        <div class="card-principal-conteudo">
-                            <strong><label>Status</label></strong>
-                            <select class="form-select" name="status" id="status" required>
-                                <?php foreach (['Orçamento', 'Aprovado', 'Cancelado', 'Rascunho'] as $opcao): ?>
-                                    <option value="<?= $opcao ?>" <?= ($_POST['status'] ?? 'Orçamento') === $opcao ? 'selected' : '' ?>><?= $opcao ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                            <small class="text-muted d-block mt-2">Apenas fretamentos com status <strong>"Aprovado"</strong> reservam o ônibus na agenda.</small>
-                        </div>
-                    </div>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                    <button name="salvar" style="background-color: #0b5ed7; color: white;" class="btn me-md-2" type="submit">Salvar</button>
                 </div>
-            </div>
+            </form>
+        </section>
 
-            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                <button name="salvar" style="background-color: #0b5ed7; color: white;" class="btn me-md-2" type="submit">Salvar</button>
-            </div>
-        </form>
-    </section>
+        <script>
+            // Sinal: mostra os 10% sugeridos, o saldo a pagar e o prazo (véspera da viagem)
+            const campoOrcamento = document.getElementById('gasto');
+            const campoSinal = document.getElementById('valorSinal');
+            const campoSaida = document.querySelector('[name="dataHoraSaida"]');
+            const campoStatus = document.getElementById('status');
+            const infoSinal = document.getElementById('infoSinal');
+            const avisoSinal = document.getElementById('avisoSinal');
 
-    <script>
-        // Sinal: mostra os 10% sugeridos, o saldo a pagar e o prazo (véspera da viagem)
-        const campoOrcamento = document.getElementById('gasto');
-        const campoSinal = document.getElementById('valorSinal');
-        const campoSaida = document.querySelector('[name="dataHoraSaida"]');
-        const campoStatus = document.getElementById('status');
-        const infoSinal = document.getElementById('infoSinal');
-        const avisoSinal = document.getElementById('avisoSinal');
-
-        function reais(valor) {
-            return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-        }
-
-        function atualizarSinal() {
-            const total = parseFloat(campoOrcamento.value) || 0;
-            const sinal = parseFloat(campoSinal.value) || 0;
-            let texto = '';
-
-            if (total > 0) {
-                texto = 'Sinal mínimo sugerido (10%): ' + reais(total * 0.10) + ' | Saldo a pagar: ' + reais(total - sinal);
-
-                if (campoSaida.value) {
-                    const vespera = new Date(campoSaida.value);
-                    vespera.setDate(vespera.getDate() - 1);
-                    texto += ' até ' + vespera.toLocaleDateString('pt-BR');
-                }
-            }
-
-            infoSinal.textContent = texto;
-            avisoSinal.classList.toggle('d-none', !(campoStatus.value === 'Aprovado' && total > 0 && sinal < total * 0.10));
-        }
-
-        [campoOrcamento, campoSinal, campoSaida, campoStatus].forEach(c => {
-            c.addEventListener('input', atualizarSinal);
-            c.addEventListener('change', atualizarSinal);
-        });
-        atualizarSinal();
-        atualizarCombustivel();
-    </script>
-    <script>
-        // Aviso de disponibilidade: consulta a agenda assim que veículo e datas estão preenchidos
-        // (usa campoSaida e campoStatus, definidos no script acima)
-        const urlAgenda = 'api/disponibilidade-veiculo.php';
-        const campoVeiculo = document.querySelector('[name="idVeiculo"]');
-        const campoRetorno = document.querySelector('[name="dataHoraRetorno"]');
-        const avisoAgenda = document.getElementById('avisoAgenda');
-        const idDoFretamento = document.querySelector('[name="id"]')?.value || 0;
-        let respostaAgenda = null;
-        let timerAgenda;
-        let numeroConsulta = 0;
-
-        // Monta o aviso conforme o resultado da consulta e o status escolhido
-        function mostrarAvisoAgenda() {
-            if (!respostaAgenda) {
-                avisoAgenda.className = 'd-none';
-                return;
-            }
-
-            // Data de saída no passado (verificado no PHP)
-            if (respostaAgenda.passado) {
-                avisoAgenda.className = 'alert alert-danger py-2 mt-2 mb-0';
-                avisoAgenda.textContent = respostaAgenda.mensagem;
-                return;
-            }
-
-            if (!respostaAgenda.conflito) {
-                avisoAgenda.className = 'alert alert-success py-2 mt-2 mb-0';
-                avisoAgenda.textContent = 'Veículo disponível neste período.';
-                return;
-            }
-
-            const aprovando = campoStatus.value === 'Aprovado';
-            avisoAgenda.className = 'alert py-2 mt-2 mb-0 ' + (aprovando ? 'alert-danger' : 'alert-warning');
-            avisoAgenda.textContent = respostaAgenda.mensagem + (aprovando
-                ? ' Não será possível salvar como Aprovado: escolha outro veículo ou outras datas.'
-                : ' Você ainda pode salvar como orçamento, mas não poderá aprovar enquanto houver conflito.');
-        }
-
-        function verificarAgenda() {
-            clearTimeout(timerAgenda);
-            const consulta = ++numeroConsulta;
-            respostaAgenda = null;
-            mostrarAvisoAgenda();
-
-            if (!campoVeiculo.value || !campoSaida.value || !campoRetorno.value) return;
-
-            if (new Date(campoRetorno.value) <= new Date(campoSaida.value)) {
-                avisoAgenda.className = 'alert alert-warning py-2 mt-2 mb-0';
-                avisoAgenda.textContent = 'A data de retorno deve ser depois da data de saída.';
-                return;
-            }
-
-            // Espera um instante após a última alteração antes de consultar
-            timerAgenda = setTimeout(function () {
-                const parametros = new URLSearchParams({
-                    idVeiculo: campoVeiculo.value,
-                    saida: campoSaida.value,
-                    retorno: campoRetorno.value,
-                    ignorar: idDoFretamento
+            function reais(valor) {
+                return valor.toLocaleString('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL'
                 });
+            }
 
-                fetch(urlAgenda + '?' + parametros)
-                    .then(resposta => resposta.json())
-                    .then(dados => {
-                        if (consulta !== numeroConsulta) return; // chegou uma resposta mais nova
-                        respostaAgenda = dados;
-                        mostrarAvisoAgenda();
-                    })
-                    .catch(() => {}); // sem resposta: o servidor confere de novo ao salvar
-            }, 300);
-        }
+            function atualizarSinal() {
+                const total = parseFloat(campoOrcamento.value) || 0;
+                const sinal = parseFloat(campoSinal.value) || 0;
+                let texto = '';
 
-        [campoVeiculo, campoSaida, campoRetorno].forEach(c => {
-            c.addEventListener('input', verificarAgenda);
-            c.addEventListener('change', verificarAgenda);
-        });
-        campoStatus.addEventListener('change', mostrarAvisoAgenda);
-        verificarAgenda();
-    </script>
-    <script src="/ValdirTur/assets/js/mapa-livre.js"></script>
-    <script src="/ValdirTur/assets/js/protecao-form.js"></script>
+                if (total > 0) {
+                    texto = 'Sinal mínimo sugerido (10%): ' + reais(total * 0.10) + ' | Saldo a pagar: ' + reais(total - sinal);
+
+                    if (campoSaida.value) {
+                        const vespera = new Date(campoSaida.value);
+                        vespera.setDate(vespera.getDate() - 1);
+                        texto += ' até ' + vespera.toLocaleDateString('pt-BR');
+                    }
+                }
+
+                infoSinal.textContent = texto;
+                avisoSinal.classList.toggle('d-none', !(campoStatus.value === 'Aprovado' && total > 0 && sinal < total * 0.10));
+            }
+
+            [campoOrcamento, campoSinal, campoSaida, campoStatus].forEach(c => {
+                c.addEventListener('input', atualizarSinal);
+                c.addEventListener('change', atualizarSinal);
+            });
+            atualizarSinal();
+            atualizarCombustivel();
+        </script>
+        <script>
+            // Aviso de disponibilidade: consulta a agenda assim que veículo e datas estão preenchidos
+            // (usa campoSaida e campoStatus, definidos no script acima)
+            const urlAgenda = 'api/disponibilidade-veiculo.php';
+            const campoVeiculo = document.querySelector('[name="idVeiculo"]');
+            const campoRetorno = document.querySelector('[name="dataHoraRetorno"]');
+            const avisoAgenda = document.getElementById('avisoAgenda');
+            const idDoFretamento = document.querySelector('[name="id"]')?.value || 0;
+            let respostaAgenda = null;
+            let timerAgenda;
+            let numeroConsulta = 0;
+
+            // Monta o aviso conforme o resultado da consulta e o status escolhido
+            function mostrarAvisoAgenda() {
+                if (!respostaAgenda) {
+                    avisoAgenda.className = 'd-none';
+                    return;
+                }
+
+                // Data de saída no passado (verificado no PHP)
+                if (respostaAgenda.passado) {
+                    avisoAgenda.className = 'alert alert-danger py-2 mt-2 mb-0';
+                    avisoAgenda.textContent = respostaAgenda.mensagem;
+                    return;
+                }
+
+                if (!respostaAgenda.conflito) {
+                    avisoAgenda.className = 'alert alert-success py-2 mt-2 mb-0';
+                    avisoAgenda.textContent = 'Veículo disponível neste período.';
+                    return;
+                }
+
+                const aprovando = campoStatus.value === 'Aprovado';
+                avisoAgenda.className = 'alert py-2 mt-2 mb-0 ' + (aprovando ? 'alert-danger' : 'alert-warning');
+                avisoAgenda.textContent = respostaAgenda.mensagem + (aprovando ?
+                    ' Não será possível salvar como Aprovado: escolha outro veículo ou outras datas.' :
+                    ' Você ainda pode salvar como orçamento, mas não poderá aprovar enquanto houver conflito.');
+            }
+
+            function verificarAgenda() {
+                clearTimeout(timerAgenda);
+                const consulta = ++numeroConsulta;
+                respostaAgenda = null;
+                mostrarAvisoAgenda();
+
+                if (!campoVeiculo.value || !campoSaida.value || !campoRetorno.value) return;
+
+                if (new Date(campoRetorno.value) <= new Date(campoSaida.value)) {
+                    avisoAgenda.className = 'alert alert-warning py-2 mt-2 mb-0';
+                    avisoAgenda.textContent = 'A data de retorno deve ser depois da data de saída.';
+                    return;
+                }
+
+                // Espera um instante após a última alteração antes de consultar
+                timerAgenda = setTimeout(function() {
+                    const parametros = new URLSearchParams({
+                        idVeiculo: campoVeiculo.value,
+                        saida: campoSaida.value,
+                        retorno: campoRetorno.value,
+                        ignorar: idDoFretamento
+                    });
+
+                    fetch(urlAgenda + '?' + parametros)
+                        .then(resposta => resposta.json())
+                        .then(dados => {
+                            if (consulta !== numeroConsulta) return; // chegou uma resposta mais nova
+                            respostaAgenda = dados;
+                            mostrarAvisoAgenda();
+                        })
+                        .catch(() => {}); // sem resposta: o servidor confere de novo ao salvar
+                }, 300);
+            }
+
+            [campoVeiculo, campoSaida, campoRetorno].forEach(c => {
+                c.addEventListener('input', verificarAgenda);
+                c.addEventListener('change', verificarAgenda);
+            });
+            campoStatus.addEventListener('change', mostrarAvisoAgenda);
+            verificarAgenda();
+        </script>
+        <script src="/ValdirTur/assets/js/mapa-livre.js"></script>
+        <script src="/ValdirTur/assets/js/protecao-form.js"></script>
     </main>
 </body>
 

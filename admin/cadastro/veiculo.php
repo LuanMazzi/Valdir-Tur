@@ -150,14 +150,14 @@ if (isset($_POST['salvar'])) {
                         <div class="card-principal-conteudo">
                             <label class="py-2">Nome de identificação</label>
                             <input class="form-control" type="text" name="nomeIdentificacao" value="<?= valor('nomeIdentificacao') ?>"
-                                placeholder="Ônibus 2026 DD" required>
+                                placeholder="Nome de identificação" required>
 
                             <label class="py-2">Numeração</label>
-                            <input class="form-control" type="text" name="numeracao" value="<?= valor('numeracao') ?>" placeholder="4000" required>
+                            <input class="form-control" type="text" name="numeracao" value="<?= valor('numeracao') ?>" placeholder="Numeração do veículo" required>
 
                             <div class="mb-3">
                                 <label class="py-2">Descrição</label>
-                                <textarea class="form-control" name="descricao" id="descricao" rows="3"><?= valor('descricao') ?></textarea>
+                                <textarea class="form-control" name="descricao" id="descricao" placeholder="Descrição de Veículo..." rows="3"><?= valor('descricao') ?></textarea>
                             </div>
 
                             <div class="mb-3">
@@ -189,7 +189,7 @@ if (isset($_POST['salvar'])) {
 
                                 <div class="col-auto">
                                     <label class="d-block py-2">Capacidade total</label>
-                                    <input style="width: 100px;" class="form-control" type="number"
+                                    <input style="width: 100px;" placeholder="Cap."class="form-control" type="number"
                                         name="capacidadeTotal" value="<?= valor('capacidadeTotal') ?>" required>
                                 </div>
 

@@ -111,11 +111,11 @@ $funcoes = ['Motorista', 'Agente de Viagens', 'Mecânico', 'Vendedor'];
                     <div class="card-principal">
                         <div class="card-principal-conteudo">
                             <label class="py-2">Nome</label>
-                            <input class="form-control" type="text" name="nome" placeholder="João"
+                            <input class="form-control" type="text" name="nome" placeholder="Nome"
                                 value="<?= valor('nome') ?>" required>
 
                             <label class="py-2">Sobrenome</label>
-                            <input class="form-control" type="text" name="sobrenome" placeholder="Souza"
+                            <input class="form-control" type="text" name="sobrenome" placeholder="Sobrenome"
                                 value="<?= valor('sobrenome') ?>" required>
 
                             <label class="py-2">Data de nascimento</label>
@@ -136,7 +136,7 @@ $funcoes = ['Motorista', 'Agente de Viagens', 'Mecânico', 'Vendedor'];
                             <label class="py-2">CPF</label>
                             <input class="form-control" type="text" name="CPF" placeholder="CPF" maxlength="11"
                                 value="<?= valor('CPF') ?>" required>
-                            <small class="text-muted">Escrever sem pontos e traços</small>
+                            <small class="text-muted">Escreva sem pontos e traços</small>
 
                             <?php $semRG = isset($_POST['semRG']); ?>
                             <label class="d-block py-2">RG</label>
@@ -202,18 +202,20 @@ $funcoes = ['Motorista', 'Agente de Viagens', 'Mecânico', 'Vendedor'];
                                 <div class="col-auto">
                                     <label class="d-block py-2">Logradouro</label>
                                     <input class="form-control" type="text" name="logradouro"
-                                        placeholder="Avenida Manoel" value="<?= valor('logradouro') ?>" required>
+                                        placeholder="Logradouro" value="<?= valor('logradouro') ?>" required>
                                 </div>
 
                                 <div class="col-auto">
                                     <label class="d-block py-2">Bairro</label>
-                                    <input class="form-control" type="text" name="bairro" placeholder="Centro"
+                                    <input class="form-control" type="text" name="bairro" placeholder="Bairro"
+                                        value="<?= valor('bairro') ?>" required>
+                                </div>
                                         value="<?= valor('bairro') ?>" required>
                                 </div>
 
                                 <div class="col-auto">
                                     <label class="d-block py-2">Número</label>
-                                    <input class="form-control" type="text" name="numero" placeholder="979"
+                                    <input class="form-control" type="text" name="numero" placeholder="Número"
                                         value="<?= valor('numero') ?>" required>
                                 </div>
                             </div>

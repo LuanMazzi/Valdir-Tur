@@ -121,7 +121,7 @@ if (isset($_POST["salvar"]) && dataNoPassado($_POST['dataHoraSaida'] ?? '')) {
                             <input class="form-control" type="text" name="nomePacote" value="<?= valor('nomePacote') ?>" placeholder="Nome do Pacote" >
 
                             <label class="py-2">Descrição Curta</label>
-                            <input class="form-control" type="text" name="descricaoCurta" id="descricaoCurta" value="<?= valor('descricaoCurta') ?>" maxlength="100" placeholder="Aparece no card da viagem" required>
+                            <input class="form-control" type="text" name="descricaoCurta" id="descricaoCurta" value="<?= valor('descricaoCurta') ?>" maxlength="100" placeholder="Descrição Curta" required>
 
                             <label class="py-2">Descrição Longa</label>
                             <textarea class="form-control" name="descricaoLonga" id="descricaoLonga" rows="5" placeholder="Detalhes completos da viagem" ><?= valor('descricaoLonga') ?></textarea>
@@ -135,11 +135,11 @@ if (isset($_POST["salvar"]) && dataNoPassado($_POST['dataHoraSaida'] ?? '')) {
                             <label class="py-2">Destino</label>
                             <input class="form-control" type="text" name="destino" value="<?= valor('destino') ?>" placeholder="Destino da Viagem" required>
 
+                            <label class="py-2">Locais de Embarque</label>
+                            <input class="form-control" type="text" name="locaisEmbarque" value="<?= valor('locaisEmbarque') ?>" placeholder="Locais de Embarque" required>
+
                             <label class="form-label pt-2">Data e Hora de Saída</label>
                             <input type="datetime-local" class="form-control" id="dataHoraSaida" name="dataHoraSaida" value="<?= valor('dataHoraSaida') ?>" required>
-
-                            <label class="py-2">Local de Saída</label>
-                            <input class="form-control" type="text" name="locaisEmbarque" value="<?= valor('locaisEmbarque') ?>" placeholder="Rodoviária" required>
 
                             <label class="form-label pt-2">Data e Hora de Retorno</label>
                             <input type="datetime-local" class="form-control" id="dataHoraRetorno" name="dataHoraRetorno" value="<?= valor('dataHoraRetorno') ?>" required>
@@ -160,7 +160,7 @@ if (isset($_POST["salvar"]) && dataNoPassado($_POST['dataHoraSaida'] ?? '')) {
                             <label class="form-label pt-2">Parcelas</label>
                             <input type="number" class="form-control" name="parcelas" id="parcelas" value="<?= valor('parcelas') ?>" min="1" placeholder="1">
 
-                             <label class="form-label pt-2">Juros (%)</label>
+                            <label class="form-label pt-2">Juros (%)</label>
                             <div class="input-group">
                                 <input type="number" class="form-control" name="juros" id="juros" value="<?= valor('juros') ?>" step="1" min="0" placeholder="0">
                                 <span class="input-group-text">%</span>
@@ -172,7 +172,7 @@ if (isset($_POST["salvar"]) && dataNoPassado($_POST['dataHoraSaida'] ?? '')) {
                             </div>
 
                             <label class="form-label pt-2">Vagas Disponíveis</label>
-                            <input type="number" class="form-control" name="vagasDisponiveis" value="<?= valor('vagasDisponiveis') ?>" min="0" placeholder="40" required>
+                            <input type="number" class="form-control" name="vagasDisponiveis" value="<?= valor('vagasDisponiveis') ?>" min="0" placeholder="Quantidade de vagas disponíveis" required>
                         </div>
                     </div>
                 </div>

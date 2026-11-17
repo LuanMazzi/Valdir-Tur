@@ -125,17 +125,17 @@ $tipoSelecionado = $_POST['tipoCliente'] ?? 'PF';
                             <!-- Form Pessoa Física -->
 
                             <label class="py-2">Nome</label>
-                            <input class="form-control" type="text" name="nome" placeholder="João" value="<?= valor('nome') ?>">
+                            <input class="form-control" type="text" name="nome" placeholder="Nome" value="<?= valor('nome') ?>">
 
                             <label class="py-2">Sobrenome</label>
-                            <input class="form-control" type="text" name="sobrenome" placeholder="Souza" value="<?= valor('sobrenome') ?>">
+                            <input class="form-control" type="text" name="sobrenome" placeholder="Sobrenome" value="<?= valor('sobrenome') ?>">
 
                             <label class="py-2">Data de nascimento</label>
                             <input type="date" class="form-control" id="dataNascimento" name="dataNascimento" value="<?= valor('dataNascimento') ?>">
 
                             <label class="py-2">CPF</label>
                             <input class="form-control" type="text" name="CPF" placeholder="CPF" maxlength="11" value="<?= valor('CPF') ?>">
-                            <small class="text-muted">Escrever sem pontos e traços</small>
+                            <small class="text-muted">Escreva sem pontos e traços</small>
 
                             <?php $semRG = isset($_POST['semRG']); ?>
                             <label class="d-block py-2">RG</label>
@@ -165,7 +165,7 @@ $tipoSelecionado = $_POST['tipoCliente'] ?? 'PF';
                             <div id="formPJ" style="display: <?= $tipoSelecionado === 'PJ' ? 'block' : 'none' ?>;">
 
                                 <label class="py-2">Razão Social</label>
-                                <input class="form-control" type="text" name="razaoSocial" placeholder="Empresa LTDA" value="<?= valor('razaoSocial') ?>">
+                                <input class="form-control" type="text" name="razaoSocial" placeholder="Razão Social" value="<?= valor('razaoSocial') ?>">
 
                                 <label class="py-2">Nome Fantasia</label>
                                 <input class="form-control" type="text" name="nomeFantasia" placeholder="Nome Fantasia" value="<?= valor('nomeFantasia') ?>">
@@ -176,7 +176,7 @@ $tipoSelecionado = $_POST['tipoCliente'] ?? 'PF';
 
                                 <label class="py-2">CNPJ</label>
                                 <input class="form-control" type="text" name="CNPJ" placeholder="CNPJ" maxlength="14" value="<?= valor('CNPJ') ?>">
-                                <small class="text-muted">Escrever sem pontos, barras e traços</small>
+                                <small class="text-muted">Escreva sem pontos, barras e traços</small>
 
                             </div>
                         </div>
@@ -206,16 +206,16 @@ $tipoSelecionado = $_POST['tipoCliente'] ?? 'PF';
                                 </div>
                                 <div class="col-md-3">
                                     <label class="d-block py-2">Bairro</label>
-                                    <input class="form-control" type="text" name="bairro" placeholder="Centro" value="<?= valor('bairro') ?>" required>
+                                    <input class="form-control" type="text" name="bairro" placeholder="Bairro" value="<?= valor('bairro') ?>" required>
                                 </div>
                                 <div class="col-md-9">
                                     <label class="d-block py-2">Logradouro</label>
                                     <input class="form-control" type="text" name="logradouro"
-                                        placeholder="Avenida Manoel" value="<?= valor('logradouro') ?>" required>
+                                        placeholder="Logradouro" value="<?= valor('logradouro') ?>" required>
                                 </div>
                                 <div class="col-md-3">
                                     <label class="d-block py-2">Número</label>
-                                    <input class="form-control" type="text" name="numero" placeholder="979" value="<?= valor('numero') ?>" required>
+                                    <input class="form-control" type="text" name="numero" placeholder="Número" value="<?= valor('numero') ?>" required>
                                 </div>
                             </div>
                         </div>

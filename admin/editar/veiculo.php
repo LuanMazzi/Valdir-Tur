@@ -17,22 +17,21 @@ $id = $_POST['id'] ?? $_GET['id'] ?? '';
 
 // Salvar: recebe os dados do formulário e atualiza no banco
 if (isset($_POST['salvar'])) {
-
-    $id                      = mysqli_real_escape_string($conexao, $_POST['id'] ?? '');
-    $tipoVeiculo             = mysqli_real_escape_string($conexao, $_POST['tipoVeiculo'] ?? '');
-    $nomeIdentificacao       = mysqli_real_escape_string($conexao, $_POST['nomeIdentificacao'] ?? '');
-    $numeracao               = mysqli_real_escape_string($conexao, $_POST['numeracao'] ?? '');
-    $capacidadeTotal         = mysqli_real_escape_string($conexao, $_POST['capacidadeTotal'] ?? '');
+    $id = mysqli_real_escape_string($conexao, $_POST['id'] ?? '');
+    $tipoVeiculo = mysqli_real_escape_string($conexao, $_POST['tipoVeiculo'] ?? '');
+    $nomeIdentificacao = mysqli_real_escape_string($conexao, $_POST['nomeIdentificacao'] ?? '');
+    $numeracao = mysqli_real_escape_string($conexao, $_POST['numeracao'] ?? '');
+    $capacidadeTotal = mysqli_real_escape_string($conexao, $_POST['capacidadeTotal'] ?? '');
     $capacidadePrimeiroAndar = mysqli_real_escape_string($conexao, $_POST['capacidadePrimeiroAndar'] ?? '');
-    $capacidadeSegundoAndar  = mysqli_real_escape_string($conexao, $_POST['capacidadeSegundoAndar'] ?? '');
-    $descricao               = mysqli_real_escape_string($conexao, $_POST['descricao'] ?? '');
-    $tags                    = mysqli_real_escape_string($conexao, $_POST['tags'] ?? '');
-    $ano                     = mysqli_real_escape_string($conexao, $_POST['ano'] ?? '');
-    $placa                   = mysqli_real_escape_string($conexao, strtoupper($_POST['placa'] ?? ''));
-    $tipoLeito               = mysqli_real_escape_string($conexao, $_POST['tipoLeito'] ?? '');
-    $leitoPrimeiroAndar      = mysqli_real_escape_string($conexao, $_POST['leitoPrimeiroAndar'] ?? '');
-    $leitoSegundoAndar       = mysqli_real_escape_string($conexao, $_POST['leitoSegundoAndar'] ?? '');
-    $status                  = mysqli_real_escape_string($conexao, $_POST['status'] ?? '');
+    $capacidadeSegundoAndar = mysqli_real_escape_string($conexao, $_POST['capacidadeSegundoAndar'] ?? '');
+    $descricao = mysqli_real_escape_string($conexao, $_POST['descricao'] ?? '');
+    $tags = mysqli_real_escape_string($conexao, $_POST['tags'] ?? '');
+    $ano = mysqli_real_escape_string($conexao, $_POST['ano'] ?? '');
+    $placa = mysqli_real_escape_string($conexao, strtoupper($_POST['placa'] ?? ''));
+    $tipoLeito = mysqli_real_escape_string($conexao, $_POST['tipoLeito'] ?? '');
+    $leitoPrimeiroAndar = mysqli_real_escape_string($conexao, $_POST['leitoPrimeiroAndar'] ?? '');
+    $leitoSegundoAndar = mysqli_real_escape_string($conexao, $_POST['leitoSegundoAndar'] ?? '');
+    $status = mysqli_real_escape_string($conexao, $_POST['status'] ?? '');
 
     // Tipo de leito único (1 andar) OU por andar (2 andares), nunca os dois
     if (isset($_POST['doisAndares'])) {
@@ -41,42 +40,44 @@ if (isset($_POST['salvar'])) {
         $capacidadePrimeiroAndar = $capacidadeSegundoAndar = $leitoPrimeiroAndar = $leitoSegundoAndar = '';
     }
 
+    // Recupera as mídias antigas que o usuário manteve na interface
+    $midiasMantidas = isset($_POST['midias_existentes']) && is_array($_POST['midias_existentes'])
+        ? array_filter(array_map('basename', $_POST['midias_existentes']))
+        : [];
+
     $extensoesPermitidas = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4', 'mov', 'avi', 'webm'];
-    $novaMidiaSql = "";
     $nomesMidia = [];
-    $diretorio  = __DIR__ . '/../../assets/uploads/';
+    $diretorio = __DIR__ . '/../../assets/uploads/';
 
     if (isset($_FILES['midia']) && is_array($_FILES['midia']['name'])) {
         foreach ($_FILES['midia']['name'] as $i => $nomeOriginal) {
             if ($_FILES['midia']['error'][$i] !== UPLOAD_ERR_OK || $nomeOriginal === '') {
                 continue;
             }
-
             $extensao = strtolower(pathinfo($nomeOriginal, PATHINFO_EXTENSION));
-
             if (!in_array($extensao, $extensoesPermitidas, true)) {
                 $erro = "Tipo de arquivo não permitido. Envie apenas imagens ou vídeos.";
                 break;
             }
-
             $nomeSeguro = preg_replace('/[^A-Za-z0-9_\-\.]/', '_', basename($nomeOriginal));
-            $nomeSalvo  = time() . "_" . $i . "_" . $nomeSeguro;
-            move_uploaded_file($_FILES['midia']['tmp_name'][$i], $diretorio . $nomeSalvo);
-            $nomesMidia[] = $nomeSalvo;
+            $nomeSalvo = time() . "_" . $i . "_" . $nomeSeguro;
+            if (move_uploaded_file($_FILES['midia']['tmp_name'][$i], $diretorio . $nomeSalvo)) {
+                $nomesMidia[] = $nomeSalvo;
+            }
         }
     }
 
-    if ($nomesMidia) {
-        $novaMidiaSql = "`midia` = '" . implode(',', $nomesMidia) . "',";
-    }
-
     if ($erro === "") {
-      
+        // Mescla mídias existentes mantidas com as novas enviadas
+        $todasMidias = array_merge($midiasMantidas, $nomesMidia);
+        $midiaFinalEscaped = mysqli_real_escape_string($conexao, implode(',', $todasMidias));
+        $novaMidiaSql = $midiaFinalEscaped === '' ? "`midia` = NULL," : "`midia` = '$midiaFinalEscaped',";
+
         $capacidadePrimeiroAndarSql = $capacidadePrimeiroAndar === '' ? "NULL" : "'$capacidadePrimeiroAndar'";
-        $capacidadeSegundoAndarSql  = $capacidadeSegundoAndar === '' ? "NULL" : "'$capacidadeSegundoAndar'";
-        $tipoLeitoSql               = $tipoLeito === '' ? "NULL" : "'$tipoLeito'";
-        $leitoPrimeiroAndarSql      = $leitoPrimeiroAndar === '' ? "NULL" : "'$leitoPrimeiroAndar'";
-        $leitoSegundoAndarSql       = $leitoSegundoAndar === '' ? "NULL" : "'$leitoSegundoAndar'";
+        $capacidadeSegundoAndarSql = $capacidadeSegundoAndar === '' ? "NULL" : "'$capacidadeSegundoAndar'";
+        $tipoLeitoSql = $tipoLeito === '' ? "NULL" : "'$tipoLeito'";
+        $leitoPrimeiroAndarSql = $leitoPrimeiroAndar === '' ? "NULL" : "'$leitoPrimeiroAndar'";
+        $leitoSegundoAndarSql = $leitoSegundoAndar === '' ? "NULL" : "'$leitoSegundoAndar'";
 
         // Comando SQL
         $sql = "UPDATE `tbVeiculo` SET
@@ -95,11 +96,11 @@ if (isset($_POST['salvar'])) {
             `leitoPrimeiroAndar` = $leitoPrimeiroAndarSql,
             `leitoSegundoAndar` = $leitoSegundoAndarSql,
             `status` = '$status'
-            WHERE `idVeiculo` = '$id'";
+        WHERE `idVeiculo` = '$id'";
 
         try {
             mysqli_query($conexao, $sql);
-            $sucesso = true; 
+            $sucesso = true;
         } catch (mysqli_sql_exception $e) {
             if (str_contains($e->getMessage(), 'Duplicate entry')) {
                 $erro = "Já existe outro veículo cadastrado com essa placa.";
@@ -111,11 +112,11 @@ if (isset($_POST['salvar'])) {
 }
 
 $idBusca = mysqli_real_escape_string($conexao, $id);
+
 // Busca o registro atual para preencher o formulário
 $sql = "SELECT * FROM tbVeiculo WHERE idVeiculo = '$idBusca'";
 $resultado = mysqli_query($conexao, $sql);
-$veiculo = mysqli_fetch_array($resultado);
-
+$veiculo = mysqli_fetch_array($resultado) ?: [];
 
 if ($erro !== "") {
     $veiculo = array_merge($veiculo, $_POST);
@@ -123,10 +124,13 @@ if ($erro !== "") {
 
 $doisAndares = isset($_POST['salvar'])
     ? isset($_POST['doisAndares'])
-    : (!empty($veiculo['capacidadePrimeiroAndar']) || !empty($veiculo['capacidadeSegundoAndar'])
-        || !empty($veiculo['leitoPrimeiroAndar']) || !empty($veiculo['leitoSegundoAndar']));
-?>
+    : (!empty($veiculo['capacidadePrimeiroAndar']) || !empty($veiculo['capacidadeSegundoAndar']) || !empty($veiculo['leitoPrimeiroAndar']) || !empty($veiculo['leitoSegundoAndar']));
 
+// Define o array de mídias iniciais para o JavaScript
+$midiasIniciais = !empty($veiculo['midia'])
+    ? array_values(array_filter(explode(',', $veiculo['midia'])))
+    : [];
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <title>Alterar veículo</title>
@@ -134,205 +138,315 @@ $doisAndares = isset($_POST['salvar'])
 
 <body class="d-flex flex-nowrap" style="background-color: #f1f1f1">
     <script src="/ValdirTur/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
     <?php include(__DIR__ . '/../../includes/sidebar-admin.php'); ?>
 
     <main class="w-100 p-4" style="overflow-y: auto;">
-    <section class="container py-5">
+        <section class="container py-5">
+            <form method="POST" enctype="multipart/form-data">
+                <button type="button" class="botao-voltar" onclick="window.location.href='../listas/veiculos.php'">
+                    <i class="bi bi-bus-front-fill fs-4"></i>
+                </button>
+                <i class="bi bi-arrow-right-short"></i>
+                <label class="pb-2"><strong>Alterar veículo</strong></label>
 
-        <form method="POST" enctype="multipart/form-data">
-            <button type="button" class="botao-voltar" onclick="window.location.href='../listas/veiculos.php'">
-                <i class="bi bi-bus-front-fill fs-4"></i>
-            </button>
-            <i class="bi bi-arrow-right-short"></i>
-            <label class="pb-2"><strong>Alterar veículo</strong></label>
+                <?php if ($sucesso): ?>
+                    <div class="alert alert-success">Edição feita com sucesso!</div>
+                <?php endif; ?>
 
-            <?php if ($sucesso): ?>
-                <div class="alert alert-success">Edição feita com sucesso!</div>
-            <?php endif; ?>
-            <?php if ($erro !== ""): ?>
-                <div class="alert alert-danger"><?= htmlspecialchars($erro) ?></div>
-            <?php endif; ?>
+                <?php if ($erro !== ""): ?>
+                    <div class="alert alert-danger"><?= htmlspecialchars($erro) ?></div>
+                <?php endif; ?>
 
-            <!-- ID do registro (campo oculto) -->
-            <input type="hidden" name="id" value="<?= $veiculo['idVeiculo'] ?>">
+                <!-- ID do registro (campo oculto) -->
+                <input type="hidden" name="id" value="<?= htmlspecialchars($veiculo['idVeiculo'] ?? '') ?>">
 
-            <div class="row">
-                <!-- Coluna da esquerda -->
-                <div class="col-lg-8 col-md-12">
-                    <!-- Card: Dados do veículo -->
-                    <div class="card-principal">
-                        <div class="card-principal-conteudo">
-                            <label class="py-2">Nome de identificação</label>
-                            <input class="form-control" type="text" name="nomeIdentificacao"
-                                value="<?= htmlspecialchars($veiculo['nomeIdentificacao']) ?>" required>
+                <div class="row">
+                    <!-- Coluna da esquerda -->
+                    <div class="col-lg-8 col-md-12">
+                        <!-- Card: Dados do veículo -->
+                        <div class="card-principal">
+                            <div class="card-principal-conteudo">
+                                <label class="py-2">Nome de identificação</label>
+                                <input class="form-control" type="text" name="nomeIdentificacao" value="<?= htmlspecialchars($veiculo['nomeIdentificacao'] ?? '') ?>" required>
 
-                            <label class="py-2">Numeração</label>
-                            <input class="form-control" type="text" name="numeracao"
-                                value="<?= htmlspecialchars($veiculo['numeracao']) ?>" required>
+                                <label class="py-2">Numeração</label>
+                                <input class="form-control" type="text" name="numeracao" value="<?= htmlspecialchars($veiculo['numeracao'] ?? '') ?>" required>
 
-                            <div class="mb-3">
-                                <label class="py-2">Descrição</label>
-                                <textarea class="form-control" name="descricao" id="descricao" rows="3"><?= htmlspecialchars($veiculo['descricao']) ?></textarea>
-                            </div>
+                                <div class="mb-3">
+                                    <label class="py-2">Descrição</label>
+                                    <textarea class="form-control" name="descricao" id="descricao" rows="3"><?= htmlspecialchars($veiculo['descricao'] ?? '') ?></textarea>
+                                </div>
 
-                            <div class="mb-3">
-                                <label for="fileUpload" class="form-label py-1">Mídia (Imagens ou Vídeos)</label>
-                                <input class="form-control" type="file" name="midia[]" id="fileUpload" accept="image/*,video/*" multiple>
-                                <div class="form-text">
-                                    <?php $qtdMidiaAtual = count(midiaLista($veiculo['midia'])); ?>
-                                    <?= $qtdMidiaAtual ? "Atualmente: {$qtdMidiaAtual} arquivo(s). " : '' ?>
-                                    Selecionar novos arquivos substitui todos os atuais. Deixe em branco pra manter.
+                                <div class="mb-3">
+                                    <label for="fileUpload" class="py-2">Conteúdo (Imagens ou Vídeos)</label>
+                                    <input class="form-control" type="file" name="midia[]" id="fileUpload" accept="image/*,video/*" multiple>
+                                    <div class="form-text">Adicione novos arquivos em etapas ou remova os existentes abaixo.</div>
+
+                                    <!-- Inputs ocultos das mídias já salvas (gerenciados via JS) -->
+                                    <div id="inputsMidiasExistentes"></div>
+
+                                    <!-- Grade unificada de visualização (salvos + novos) -->
+                                    <div id="listaArquivos" class="d-flex flex-wrap gap-2 mt-3"></div>
                                 </div>
                             </div>
-
                         </div>
-                    </div>
 
-                    <!-- Card: Informações do veículo -->
-                    <div class="card-principal mt-4">
-                        <div class="card-principal-conteudo">
-                            <strong><label>Informações</label></strong> <br>
-
-                            <div class="row g-4 align-items-end">
-                                <div class="col-auto">
-                                    <label class="d-block py-2">Tipo de Veículo</label>
-                                    <select class="form-select" name="tipoVeiculo" required>
-                                        <option value="" disabled>Selecione</option>
-                                        <option value="Ônibus" <?= $veiculo['tipoVeiculo'] === 'Ônibus' ? 'selected' : '' ?>>Ônibus</option>
-                                        <option value="Micro-ônibus" <?= $veiculo['tipoVeiculo'] === 'Micro-ônibus' ? 'selected' : '' ?>>Micro-ônibus</option>
-                                        <option value="Van" <?= $veiculo['tipoVeiculo'] === 'Van' ? 'selected' : '' ?>>Van</option>
-                                        <option value="Carro" <?= $veiculo['tipoVeiculo'] === 'Carro' ? 'selected' : '' ?>>Carro</option>
-                                    </select>
-                                </div>
-
-                                <div class="col-auto">
-                                    <label class="d-block py-2">Capacidade total</label>
-                                    <input style="width: 100px;" class="form-control" type="number"
-                                        name="capacidadeTotal" value="<?= htmlspecialchars($veiculo['capacidadeTotal']) ?>" required>
-                                </div>
-
-                                <div class="col-auto <?= $doisAndares ? 'd-none' : '' ?>" id="blocoTipoLeito">
-                                    <label class="d-block py-2">Tipo de leito</label>
-                                    <select class="form-select" name="tipoLeito">
-                                        <option value="" <?= empty($veiculo['tipoLeito']) ? 'selected' : '' ?>>Selecione</option>
-                                        <option value="Convencional" <?= $veiculo['tipoLeito'] === 'Convencional' ? 'selected' : '' ?>>Convencional</option>
-                                        <option value="Semi-leito" <?= $veiculo['tipoLeito'] === 'Semi-leito' ? 'selected' : '' ?>>Semi-leito</option>
-                                        <option value="Leito" <?= $veiculo['tipoLeito'] === 'Leito' ? 'selected' : '' ?>>Leito</option>
-                                        <option value="Leito Cama" <?= $veiculo['tipoLeito'] === 'Leito Cama' ? 'selected' : '' ?>>Leito Cama</option>
-                                    </select>
-                                </div>
-
-                                <div class="col-auto">
-                                    <label class="d-block py-2">Ano</label>
-                                    <input style="width: 100px;" class="form-control" type="number" name="ano"
-                                        value="<?= htmlspecialchars($veiculo['ano']) ?>" required>
-                                </div>
-
-                                <div class="col-auto">
-                                    <label class="d-block py-2">Placa</label>
-                                    <input style="width: 100px;" class="form-control" type="text" name="placa"
-                                        value="<?= htmlspecialchars($veiculo['placa']) ?>" maxlength="7" required>
-                                </div>
-                            </div>
-
-                            <hr class="my-4">
-
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="doisAndares" id="doisAndares"
-                                    <?= $doisAndares ? 'checked' : '' ?>>
-                                <label class="form-check-label" for="doisAndares">Veículo de 2 andares</label>
-                            </div>
-                            <small class="text-muted">Nesse caso, o tipo de leito é definido por andar</small>
-                            <div class="row g-3 mt-1 <?= $doisAndares ? '' : 'd-none' ?>" id="blocoAndares">
-                                <div class="col-md-6 border-end">
-                                    <small class="text-muted">1º Andar</small>
-                                    <div class="d-flex gap-2 mt-2">
-                                        <input style="width: 100px;" class="form-control" type="number"
-                                            name="capacidadePrimeiroAndar" value="<?= htmlspecialchars($veiculo['capacidadePrimeiroAndar'] ?? '') ?>" placeholder="Cap.">
-                                        <select class="form-select" name="leitoPrimeiroAndar">
-                                            <option value="" <?= empty($veiculo['leitoPrimeiroAndar']) ? 'selected' : '' ?>>Leito 1º andar</option>
-                                            <option value="Convencional" <?= $veiculo['leitoPrimeiroAndar'] === 'Convencional' ? 'selected' : '' ?>>Convencional</option>
-                                            <option value="Semi-Leito" <?= $veiculo['leitoPrimeiroAndar'] === 'Semi-Leito' ? 'selected' : '' ?>>Semi-Leito</option>
-                                            <option value="Leito" <?= $veiculo['leitoPrimeiroAndar'] === 'Leito' ? 'selected' : '' ?>>Leito</option>
-                                            <option value="Leito Cama" <?= $veiculo['leitoPrimeiroAndar'] === 'Leito Cama' ? 'selected' : '' ?>>Leito Cama</option>
+                        <!-- Card: Informações do veículo -->
+                        <div class="card-principal mt-4">
+                            <div class="card-principal-conteudo">
+                                <strong><label>Informações</label></strong>
+                                <br>
+                                <div class="row g-4 align-items-end">
+                                    <div class="col-auto">
+                                        <label class="d-block py-2">Tipo de Veículo</label>
+                                        <select class="form-select" name="tipoVeiculo" required>
+                                            <option value="" disabled>Selecione</option>
+                                            <option value="Ônibus" <?= ($veiculo['tipoVeiculo'] ?? '') === 'Ônibus' ? 'selected' : '' ?>>Ônibus</option>
+                                            <option value="Micro-ônibus" <?= ($veiculo['tipoVeiculo'] ?? '') === 'Micro-ônibus' ? 'selected' : '' ?>>Micro-ônibus</option>
+                                            <option value="Van" <?= ($veiculo['tipoVeiculo'] ?? '') === 'Van' ? 'selected' : '' ?>>Van</option>
+                                            <option value="Carro" <?= ($veiculo['tipoVeiculo'] ?? '') === 'Carro' ? 'selected' : '' ?>>Carro</option>
                                         </select>
+                                    </div>
+
+                                    <div class="col-auto">
+                                        <label class="d-block py-2">Capacidade total</label>
+                                        <input style="width: 100px;" class="form-control" type="number" name="capacidadeTotal" value="<?= htmlspecialchars($veiculo['capacidadeTotal'] ?? '') ?>" required>
+                                    </div>
+
+                                    <div class="col-auto <?= $doisAndares ? 'd-none' : '' ?>" id="blocoTipoLeito">
+                                        <label class="d-block py-2">Tipo de leito</label>
+                                        <select class="form-select" name="tipoLeito">
+                                            <option value="" <?= empty($veiculo['tipoLeito']) ? 'selected' : '' ?>>Selecione</option>
+                                            <option value="Convencional" <?= ($veiculo['tipoLeito'] ?? '') === 'Convencional' ? 'selected' : '' ?>>Convencional</option>
+                                            <option value="Semi-leito" <?= strcasecmp($veiculo['tipoLeito'] ?? '', 'Semi-leito') === 0 ? 'selected' : '' ?>>Semi-leito</option>
+                                            <option value="Leito" <?= ($veiculo['tipoLeito'] ?? '') === 'Leito' ? 'selected' : '' ?>>Leito</option>
+                                            <option value="Leito Cama" <?= ($veiculo['tipoLeito'] ?? '') === 'Leito Cama' ? 'selected' : '' ?>>Leito Cama</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-auto">
+                                        <label class="d-block py-2">Ano</label>
+                                        <input style="width: 100px;" class="form-control" type="number" name="ano" value="<?= htmlspecialchars($veiculo['ano'] ?? '') ?>" required>
+                                    </div>
+
+                                    <div class="col-auto">
+                                        <label class="d-block py-2">Placa</label>
+                                        <input style="width: 100px;" class="form-control" type="text" name="placa" value="<?= htmlspecialchars($veiculo['placa'] ?? '') ?>" maxlength="7" required>
                                     </div>
                                 </div>
 
-                                <div class="col-md-6">
-                                    <small class="text-muted">2º Andar</small>
-                                    <div class="d-flex gap-2 mt-2">
-                                        <input style="width: 100px;" class="form-control" type="number"
-                                            name="capacidadeSegundoAndar" value="<?= htmlspecialchars($veiculo['capacidadeSegundoAndar'] ?? '') ?>" placeholder="Cap.">
-                                        <select class="form-select" name="leitoSegundoAndar">
-                                            <option value="" <?= empty($veiculo['leitoSegundoAndar']) ? 'selected' : '' ?>>Leito 2º andar</option>
-                                            <option value="Convencional" <?= $veiculo['leitoSegundoAndar'] === 'Convencional' ? 'selected' : '' ?>>Convencional</option>
-                                            <option value="Semi-Leito" <?= $veiculo['leitoSegundoAndar'] === 'Semi-Leito' ? 'selected' : '' ?>>Semi-Leito</option>
-                                            <option value="Leito" <?= $veiculo['leitoSegundoAndar'] === 'Leito' ? 'selected' : '' ?>>Leito</option>
-                                            <option value="Leito Cama" <?= $veiculo['leitoSegundoAndar'] === 'Leito Cama' ? 'selected' : '' ?>>Leito Cama</option>
-                                        </select>
+                                <hr class="my-4">
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="doisAndares" id="doisAndares" <?= $doisAndares ? 'checked' : '' ?>>
+                                    <label class="form-check-label" for="doisAndares">Veículo de 2 andares</label>
+                                </div>
+                                <small class="text-muted">Nesse caso, o tipo de leito é definido por andar</small>
+
+                                <div class="row g-3 mt-1 <?= $doisAndares ? '' : 'd-none' ?>" id="blocoAndares">
+                                    <div class="col-md-6 border-end">
+                                        <small class="text-muted">1º Andar</small>
+                                        <div class="d-flex gap-2 mt-2">
+                                            <input style="width: 100px;" class="form-control" type="number" name="capacidadePrimeiroAndar" value="<?= htmlspecialchars($veiculo['capacidadePrimeiroAndar'] ?? '') ?>" placeholder="Cap.">
+                                            <select class="form-select" name="leitoPrimeiroAndar">
+                                                <option value="" <?= empty($veiculo['leitoPrimeiroAndar']) ? 'selected' : '' ?>>Leito 1º andar</option>
+                                                <option value="Convencional" <?= ($veiculo['leitoPrimeiroAndar'] ?? '') === 'Convencional' ? 'selected' : '' ?>>Convencional</option>
+                                                <option value="Semi-leito" <?= strcasecmp($veiculo['leitoPrimeiroAndar'] ?? '', 'Semi-leito') === 0 ? 'selected' : '' ?>>Semi-leito</option>
+                                                <option value="Leito" <?= ($veiculo['leitoPrimeiroAndar'] ?? '') === 'Leito' ? 'selected' : '' ?>>Leito</option>
+                                                <option value="Leito Cama" <?= ($veiculo['leitoPrimeiroAndar'] ?? '') === 'Leito Cama' ? 'selected' : '' ?>>Leito Cama</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <small class="text-muted">2º Andar</small>
+                                        <div class="d-flex gap-2 mt-2">
+                                            <input style="width: 100px;" class="form-control" type="number" name="capacidadeSegundoAndar" value="<?= htmlspecialchars($veiculo['capacidadeSegundoAndar'] ?? '') ?>" placeholder="Cap.">
+                                            <select class="form-select" name="leitoSegundoAndar">
+                                                <option value="" <?= empty($veiculo['leitoSegundoAndar']) ? 'selected' : '' ?>>Leito 2º andar</option>
+                                                <option value="Convencional" <?= ($veiculo['leitoSegundoAndar'] ?? '') === 'Convencional' ? 'selected' : '' ?>>Convencional</option>
+                                                <option value="Semi-leito" <?= strcasecmp($veiculo['leitoSegundoAndar'] ?? '', 'Semi-leito') === 0 ? 'selected' : '' ?>>Semi-leito</option>
+                                                <option value="Leito" <?= ($veiculo['leitoSegundoAndar'] ?? '') === 'Leito' ? 'selected' : '' ?>>Leito</option>
+                                                <option value="Leito Cama" <?= ($veiculo['leitoSegundoAndar'] ?? '') === 'Leito Cama' ? 'selected' : '' ?>>Leito Cama</option>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                </div>
+                    <!-- Coluna da direita -->
+                    <div class="col-lg-4 col-md-12">
+                        <!-- Card: Status e tags -->
+                        <div class="card-principal sticky-top">
+                            <div class="card-principal-conteudo">
+                                <strong><label>Status</label></strong>
+                                <select class="form-select" name="status" required>
+                                    <option value="Ativo" <?= ($veiculo['status'] ?? '') === 'Ativo' ? 'selected' : '' ?>>Ativo</option>
+                                    <option value="Inativo" <?= ($veiculo['status'] ?? '') === 'Inativo' ? 'selected' : '' ?>>Inativo</option>
+                                </select>
 
-                <!-- Coluna da direita -->
-                <div class="col-lg-4 col-md-12">
-                    <!-- Card: Status e tags -->
-                    <div class="card-principal sticky-top">
-                        <div class="card-principal-conteudo">
-                            <strong><label>Status</label></strong>
-                            <select class="form-select" name="status" required>
-                                <option value="Ativo" <?= $veiculo['status'] === 'Ativo' ? 'selected' : '' ?>>Ativo</option>
-                                <option value="Inativo" <?= $veiculo['status'] === 'Inativo' ? 'selected' : '' ?>>Inativo</option>
-                            </select>
-
-                            <div class="mb-3">
-                                <label class="form-label pt-2">Tags</label>
-                                <div class="tag-container form-control d-flex flex-wrap align-items-center"
-                                    id="tagContainer">
-                                    <input type="text" id="tagInput" placeholder="Adicionar tags"
-                                        class="border-0 flex-grow-1" style="outline: none; min-width: 120px; background: transparent; color: black;">
+                                <div class="mb-3">
+                                    <label class="form-label pt-2">Tags</label>
+                                    <div class="tag-container form-control d-flex flex-wrap align-items-center" id="tagContainer">
+                                        <input type="text" id="tagInput" placeholder="Adicionar tags" class="border-0 flex-grow-1" style="outline: none; min-width: 120px; background: transparent; color: black;">
+                                    </div>
+                                    <input type="hidden" name="tags" id="tagsHidden" value="<?= htmlspecialchars($veiculo['tags'] ?? '') ?>">
                                 </div>
-                        
-                                <input type="hidden" name="tags" id="tagsHidden" value="<?= htmlspecialchars($veiculo['tags'] ?? '') ?>">
                             </div>
                         </div>
                     </div>
                 </div>
 
-            </div>
-            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                <button style="background-color: #0b5ed7; color: white;" class="btn me-md-2" name="salvar"
-                    type="submit">Salvar</button>
-            </div>
-        </form>
-    </section>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <button style="background-color: #0b5ed7; color: white;" class="btn me-md-2" name="salvar" type="submit">Salvar</button>
+                </div>
+            </form>
+        </section>
 
-    <script>
-        // Alterna entre tipo de leito único e leito por andar
-        const checkAndares = document.getElementById('doisAndares');
-        const blocoTipoLeito = document.getElementById('blocoTipoLeito');
-        const blocoAndares = document.getElementById('blocoAndares');
+        <!-- JAVA SCRIPT -->
+        <!-- GERENCIAMENTO DE MÍDIAS (EXISTENTES + NOVAS) -->
+        <script>
+            const fileUpload = document.getElementById('fileUpload');
+            const listaArquivos = document.getElementById('listaArquivos');
+            const inputsMidiasExistentes = document.getElementById('inputsMidiasExistentes');
+            const caminhoUploads = '/ValdirTur/assets/uploads/';
+            const extensoesVideo = ['mp4', 'mov', 'avi', 'webm'];
 
-        function alternarAndares() {
-            const dois = checkAndares.checked;
-            blocoTipoLeito.classList.toggle('d-none', dois);
-            blocoAndares.classList.toggle('d-none', !dois);
-            blocoTipoLeito.querySelectorAll('input, select').forEach(c => c.disabled = dois);
-            blocoAndares.querySelectorAll('input, select').forEach(c => c.disabled = !dois);
-        }
+            // Lista de arquivos já salvos no banco + novos arquivos selecionados
+            let midiasSalvas = <?= json_encode($midiasIniciais, JSON_UNESCAPED_UNICODE) ?>;
+            let arquivosNovos = [];
 
-        checkAndares.addEventListener('change', alternarAndares);
-        alternarAndares();
-    </script>
-    <script src="/ValdirTur/assets/js/script.js"></script>
-    <script src="/ValdirTur/assets/js/protecao-form.js"></script>
+            fileUpload.addEventListener('change', function() {
+                for (const novoArquivo of this.files) {
+                    const jaExiste = arquivosNovos.some(
+                        arq => arq.name === novoArquivo.name && arq.size === novoArquivo.size
+                    );
+                    if (!jaExiste) {
+                        arquivosNovos.push(novoArquivo);
+                    }
+                }
+                renderizarTudo();
+            });
+
+            function removerMidiaSalva(index) {
+                midiasSalvas.splice(index, 1);
+                renderizarTudo();
+            }
+
+            function removerArquivoNovo(index) {
+                arquivosNovos.splice(index, 1);
+                renderizarTudo();
+            }
+
+            function criarCardMidia({ src, isVideo, nomeTexto, onRemove }) {
+                const card = document.createElement('div');
+                card.className = 'border rounded p-2 bg-white position-relative d-flex flex-column align-items-center';
+                card.style.width = '120px';
+
+                const btnRemover = document.createElement('button');
+                btnRemover.type = 'button';
+                btnRemover.className = 'btn btn-danger btn-sm position-absolute top-0 end-0 m-1 py-0 px-1';
+                btnRemover.innerHTML = '&times;';
+                btnRemover.onclick = onRemove;
+                card.appendChild(btnRemover);
+
+                if (isVideo) {
+                    const icone = document.createElement('div');
+                    icone.className = 'd-flex align-items-center justify-content-center bg-light rounded mb-1';
+                    icone.style.width = '100px';
+                    icone.style.height = '70px';
+                    icone.innerHTML = '<i class="bi bi-film fs-2 text-secondary"></i>';
+                    card.appendChild(icone);
+                } else {
+                    const img = document.createElement('img');
+                    img.src = src;
+                    img.style.width = '100px';
+                    img.style.height = '70px';
+                    img.style.objectFit = 'cover';
+                    img.className = 'rounded mb-1';
+                    card.appendChild(img);
+                }
+
+                const nome = document.createElement('small');
+                nome.className = 'text-truncate w-100 text-center';
+                nome.title = nomeTexto;
+                nome.textContent = nomeTexto;
+                card.appendChild(nome);
+
+                return card;
+            }
+
+            function renderizarTudo() {
+                // 1. Atualiza o <input type="file"> com os novos arquivos acumulados
+                const dataTransfer = new DataTransfer();
+                arquivosNovos.forEach(arquivo => dataTransfer.items.add(arquivo));
+                fileUpload.files = dataTransfer.files;
+
+                // 2. Atualiza os inputs ocultos das mídias já existentes mantidas
+                inputsMidiasExistentes.innerHTML = '';
+                midiasSalvas.forEach(nomeArquivo => {
+                    const hidden = document.createElement('input');
+                    hidden.type = 'hidden';
+                    hidden.name = 'midias_existentes[]';
+                    hidden.value = nomeArquivo;
+                    inputsMidiasExistentes.appendChild(hidden);
+                });
+
+                // 3. Renderiza todos os cards na mesma grade
+                listaArquivos.innerHTML = '';
+
+                // Renderiza mídias já salvas
+                midiasSalvas.forEach((nomeArquivo, index) => {
+                    const ext = nomeArquivo.split('.').pop().toLowerCase();
+                    const isVideo = extensoesVideo.includes(ext);
+                    const card = criarCardMidia({
+                        src: caminhoUploads + nomeArquivo,
+                        isVideo: isVideo,
+                        nomeTexto: nomeArquivo,
+                        onRemove: () => removerMidiaSalva(index)
+                    });
+                    listaArquivos.appendChild(card);
+                });
+
+                // Renderiza novos arquivos selecionados
+                arquivosNovos.forEach((arquivo, index) => {
+                    const isVideo = arquivo.type.startsWith('video/');
+                    const card = criarCardMidia({
+                        src: isVideo ? '' : URL.createObjectURL(arquivo),
+                        isVideo: isVideo,
+                        nomeTexto: arquivo.name,
+                        onRemove: () => removerArquivoNovo(index)
+                    });
+                    listaArquivos.appendChild(card);
+                });
+            }
+
+            // Carrega as imagens/vídeos existentes assim que a página abre
+            renderizarTudo();
+        </script>
+
+        <script>
+            // Alterna entre tipo de leito único e leito por andar
+            const checkAndares = document.getElementById('doisAndares');
+            const blocoTipoLeito = document.getElementById('blocoTipoLeito');
+            const blocoAndares = document.getElementById('blocoAndares');
+
+            function alternarAndares() {
+                const dois = checkAndares.checked;
+                blocoTipoLeito.classList.toggle('d-none', dois);
+                blocoAndares.classList.toggle('d-none', !dois);
+                blocoTipoLeito.querySelectorAll('input, select').forEach(c => c.disabled = dois);
+                blocoAndares.querySelectorAll('input, select').forEach(c => c.disabled = !dois);
+            }
+
+            checkAndares.addEventListener('change', alternarAndares);
+            alternarAndares();
+        </script>
+
+        <script src="/ValdirTur/assets/js/script.js"></script>
+        <script src="/ValdirTur/assets/js/protecao-form.js"></script>
     </main>
 </body>
-
 </html>

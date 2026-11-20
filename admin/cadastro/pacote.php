@@ -121,7 +121,7 @@ if (isset($_POST["salvar"]) && dataNoPassado($_POST['dataHoraSaida'] ?? '')) {
                                 <input class="form-control" type="text" name="nomePacote" value="<?= valor('nomePacote') ?>" placeholder="Nome do Pacote">
 
                                 <label class="py-2">Descrição Curta</label>
-                                <input class="form-control" type="text" name="descricaoCurta" id="descricaoCurta" value="<?= valor('descricaoCurta') ?>" maxlength="100" placeholder="Descrição Curta" required>
+                                <input class="form-control" type="text" name="descricaoCurta" id="descricaoCurta" value="<?= valor('descricaoCurta') ?>" maxlength="100" placeholder="Descrição Curta">
 
                                 <label class="py-2">Descrição Longa</label>
                                 <textarea class="form-control" name="descricaoLonga" id="descricaoLonga" rows="5" placeholder="Detalhes completos da viagem"><?= valor('descricaoLonga') ?></textarea>

@@ -82,7 +82,7 @@ if (isset($_POST['salvar'])) {
     $nomeMidia = $nomesMidia ? implode(',', $nomesMidia) : null;
 
     if ($erro === "") {
-     
+
         $capacidadePrimeiroAndar = $capacidadePrimeiroAndar === '' ? "NULL" : "'$capacidadePrimeiroAndar'";
         $capacidadeSegundoAndar  = $capacidadeSegundoAndar === '' ? "NULL" : "'$capacidadeSegundoAndar'";
         $tipoLeito               = $tipoLeito === '' ? "NULL" : "'$tipoLeito'";
@@ -103,7 +103,7 @@ if (isset($_POST['salvar'])) {
 
         try {
             mysqli_query($conexao, $sql);
-            
+
             header('Location: veiculo.php?sucesso=1');
             exit;
         } catch (mysqli_sql_exception $e) {
@@ -128,190 +128,273 @@ if (isset($_POST['salvar'])) {
     <?php include(__DIR__ . '/../../includes/sidebar-admin.php'); ?>
 
     <main class="w-100 p-4" style="overflow-y: auto;">
-    <section class="container py-5">
+        <section class="container py-5">
 
-        <form method="POST" enctype="multipart/form-data">
-            <button type="button" class="botao-voltar" onclick="window.location.href='../listas/veiculos.php'">
-                <i class="bi bi-bus-front-fill fs-4"></i>
-            </button>
-            <i class="bi bi-arrow-right-short"></i>
-            <label class="pb-2"><strong>Adicionar veículo</strong></label>
+            <form method="POST" enctype="multipart/form-data">
+                <button type="button" class="botao-voltar" onclick="window.location.href='../listas/veiculos.php'">
+                    <i class="bi bi-bus-front-fill fs-4"></i>
+                </button>
+                <i class="bi bi-arrow-right-short"></i>
+                <label class="pb-2"><strong>Adicionar veículo</strong></label>
 
-            <?= $mensagem ?>
-            <?php if ($erro !== ""): ?>
-                <div class="alert alert-danger"><?= htmlspecialchars($erro) ?></div>
-            <?php endif; ?>
+                <?= $mensagem ?>
+                <?php if ($erro !== ""): ?>
+                    <div class="alert alert-danger"><?= htmlspecialchars($erro) ?></div>
+                <?php endif; ?>
 
-            <div class="row">
-                <!-- Coluna da esquerda -->
-                <div class="col-lg-8 col-md-12">
-                    <!-- Card: Dados do veículo -->
-                    <div class="card-principal">
-                        <div class="card-principal-conteudo">
-                            <label class="py-2">Nome de identificação</label>
-                            <input class="form-control" type="text" name="nomeIdentificacao" value="<?= valor('nomeIdentificacao') ?>"
-                                placeholder="Nome de identificação" required>
+                <div class="row">
+                    <!-- Coluna da esquerda -->
+                    <div class="col-lg-8 col-md-12">
+                        <!-- Card: Dados do veículo -->
+                        <div class="card-principal">
+                            <div class="card-principal-conteudo">
+                                <label class="py-2">Nome de identificação</label>
+                                <input class="form-control" type="text" name="nomeIdentificacao" value="<?= valor('nomeIdentificacao') ?>"
+                                    placeholder="Nome de identificação" required>
 
-                            <label class="py-2">Numeração</label>
-                            <input class="form-control" type="text" name="numeracao" value="<?= valor('numeracao') ?>" placeholder="Numeração do veículo" required>
+                                <label class="py-2">Numeração</label>
+                                <input class="form-control" type="text" name="numeracao" value="<?= valor('numeracao') ?>" placeholder="Numeração do veículo" required>
 
-                            <div class="mb-3">
-                                <label class="py-2">Descrição</label>
-                                <textarea class="form-control" name="descricao" id="descricao" placeholder="Descrição de Veículo..." rows="3"><?= valor('descricao') ?></textarea>
+                                <div class="mb-3">
+                                    <label class="py-2">Descrição</label>
+                                    <textarea class="form-control" name="descricao" id="descricao" placeholder="Descrição de Veículo..." rows="3"><?= valor('descricao') ?></textarea>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="fileUpload" class="py-2">Conteúdo (Imagens ou Vídeos)</label>
+                                    <input class="form-control" type="file" name="midia[]" id="fileUpload" accept="image/*,video/*" multiple>
+                                    <div class="form-text">Você pode selecionar arquivos em etapas; eles serão acumulados abaixo.</div>
+
+                                    <!-- Lista visual dos arquivos acumulados -->
+                                    <div id="listaArquivos" class="d-flex flex-wrap gap-2 mt-3"></div>
+                                </div>
+
+
                             </div>
-
-                            <div class="mb-3">
-                                <label for="fileUpload" class="form-label py-1">Mídia (Imagens ou Vídeos)</label>
-                                <input class="form-control" type="file" name="midia[]" id="fileUpload" accept="image/*,video/*" multiple>
-                                <div class="form-text">Você pode selecionar várias imagens e vídeos de uma vez.</div>
-                            </div>
-
-
                         </div>
+
+                        <!-- Card: Informações do veículo -->
+                        <div class="card-principal mt-4">
+                            <div class="card-principal-conteudo">
+                                <strong><label>Informações</label></strong> <br>
+
+                                <div class="row g-4 align-items-end">
+                                    <div class="col-auto">
+                                        <label class="d-block py-2">Tipo de Veículo</label>
+                                        <select class="form-select" name="tipoVeiculo" required>
+                                            <option value="" selected disabled>Selecione</option>
+                                            <option value="Ônibus" <?= selecionado('tipoVeiculo', 'Ônibus') ?>>Ônibus</option>
+                                            <option value="Micro-ônibus" <?= selecionado('tipoVeiculo', 'Micro-ônibus') ?>>Micro-ônibus</option>
+                                            <option value="Van" <?= selecionado('tipoVeiculo', 'Van') ?>>Van</option>
+                                            <option value="Carro" <?= selecionado('tipoVeiculo', 'Carro') ?>>Carro</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-auto">
+                                        <label class="d-block py-2">Capacidade total</label>
+                                        <input style="width: 100px;" placeholder="Cap." class="form-control" type="number"
+                                            name="capacidadeTotal" value="<?= valor('capacidadeTotal') ?>" required>
+                                    </div>
+
+                                    <div class="col-auto <?= $doisAndares ? 'd-none' : '' ?>" id="blocoTipoLeito">
+                                        <label class="d-block py-2">Tipo de leito</label>
+                                        <select class="form-select" name="tipoLeito">
+                                            <option value="" selected disabled>Selecione</option>
+                                            <option value="Convencional" <?= selecionado('tipoLeito', 'Convencional') ?>>Convencional</option>
+                                            <option value="Semi-leito" <?= selecionado('tipoLeito', 'Semi-leito') ?>>Semi-leito</option>
+                                            <option value="Leito" <?= selecionado('tipoLeito', 'Leito') ?>>Leito</option>
+                                            <option value="Leito Cama" <?= selecionado('tipoLeito', 'Leito Cama') ?>>Leito Cama</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-auto">
+                                        <label class="d-block py-2">Ano</label>
+                                        <input style="width: 100px;" class="form-control" type="number" name="ano" value="<?= valor('ano') ?>"
+                                            placeholder="2020" required>
+                                    </div>
+
+                                    <div class="col-auto">
+                                        <label class="d-block py-2">Placa</label>
+                                        <input style="width: 100px;" class="form-control" type="text" name="placa" value="<?= valor('placa') ?>"
+                                            placeholder="ABC1D23" maxlength="7" required>
+                                    </div>
+                                </div>
+
+                                <hr class="my-4">
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="doisAndares" id="doisAndares"
+                                        <?= $doisAndares ? 'checked' : '' ?>>
+                                    <label class="form-check-label" for="doisAndares">Veículo de 2 andares</label>
+                                </div>
+                                <div class="row g-3 mt-1 <?= $doisAndares ? '' : 'd-none' ?>" id="blocoAndares">
+                                    <div class="col-md-6 border-end">
+                                        <small class="text-muted">1º Andar</small>
+                                        <div class="d-flex gap-2 mt-2">
+                                            <input style="width: 100px;" class="form-control" type="number"
+                                                name="capacidadePrimeiroAndar" value="<?= valor('capacidadePrimeiroAndar') ?>" placeholder="Cap.">
+                                            <select class="form-select" name="leitoPrimeiroAndar">
+                                                <option value="" selected disabled>Leito 1º andar</option>
+                                                <option value="Convencional" <?= selecionado('leitoPrimeiroAndar', 'Convencional') ?>>Convencional</option>
+                                                <option value="Semi-Leito" <?= selecionado('leitoPrimeiroAndar', 'Semi-Leito') ?>>Semi-Leito</option>
+                                                <option value="Leito" <?= selecionado('leitoPrimeiroAndar', 'Leito') ?>>Leito</option>
+                                                <option value="Leito Cama" <?= selecionado('leitoPrimeiroAndar', 'Leito Cama') ?>>Leito Cama</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <small class="text-muted">2º Andar</small>
+                                        <div class="d-flex gap-2 mt-2">
+                                            <input style="width: 100px;" class="form-control" type="number"
+                                                name="capacidadeSegundoAndar" value="<?= valor('capacidadeSegundoAndar') ?>" placeholder="Cap.">
+                                            <select class="form-select" name="leitoSegundoAndar">
+                                                <option value="" selected disabled>Leito 2º andar</option>
+                                                <option value="Convencional" <?= selecionado('leitoSegundoAndar', 'Convencional') ?>>Convencional</option>
+                                                <option value="Semi-Leito" <?= selecionado('leitoSegundoAndar', 'Semi-Leito') ?>>Semi-Leito</option>
+                                                <option value="Leito" <?= selecionado('leitoSegundoAndar', 'Leito') ?>>Leito</option>
+                                                <option value="Leito Cama" <?= selecionado('leitoSegundoAndar', 'Leito Cama') ?>>Leito Cama</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
 
-                    <!-- Card: Informações do veículo -->
-                    <div class="card-principal mt-4">
-                        <div class="card-principal-conteudo">
-                            <strong><label>Informações</label></strong> <br>
+                    <!-- Coluna da direita -->
+                    <div class="col-lg-4 col-md-12">
+                        <!-- Card: Status e tags -->
+                        <div class="card-principal sticky-top">
+                            <div class="card-principal-conteudo">
+                                <strong><label>Status</label></strong>
+                                <select class="form-select" name="status" required>
+                                    <option value="Ativo" <?= selecionado('status', 'Ativo') ?>>Ativo</option>
+                                    <option value="Inativo" <?= selecionado('status', 'Inativo') ?>>Inativo</option>
+                                </select>
 
-                            <div class="row g-4 align-items-end">
-                                <div class="col-auto">
-                                    <label class="d-block py-2">Tipo de Veículo</label>
-                                    <select class="form-select" name="tipoVeiculo" required>
-                                        <option value="" selected disabled>Selecione</option>
-                                        <option value="Ônibus" <?= selecionado('tipoVeiculo', 'Ônibus') ?>>Ônibus</option>
-                                        <option value="Micro-ônibus" <?= selecionado('tipoVeiculo', 'Micro-ônibus') ?>>Micro-ônibus</option>
-                                        <option value="Van" <?= selecionado('tipoVeiculo', 'Van') ?>>Van</option>
-                                        <option value="Carro" <?= selecionado('tipoVeiculo', 'Carro') ?>>Carro</option>
-                                    </select>
-                                </div>
-
-                                <div class="col-auto">
-                                    <label class="d-block py-2">Capacidade total</label>
-                                    <input style="width: 100px;" placeholder="Cap."class="form-control" type="number"
-                                        name="capacidadeTotal" value="<?= valor('capacidadeTotal') ?>" required>
-                                </div>
-
-                                <div class="col-auto <?= $doisAndares ? 'd-none' : '' ?>" id="blocoTipoLeito">
-                                    <label class="d-block py-2">Tipo de leito</label>
-                                    <select class="form-select" name="tipoLeito">
-                                        <option value="" selected disabled>Selecione</option>
-                                        <option value="Convencional" <?= selecionado('tipoLeito', 'Convencional') ?>>Convencional</option>
-                                        <option value="Semi-leito" <?= selecionado('tipoLeito', 'Semi-leito') ?>>Semi-leito</option>
-                                        <option value="Leito" <?= selecionado('tipoLeito', 'Leito') ?>>Leito</option>
-                                        <option value="Leito Cama" <?= selecionado('tipoLeito', 'Leito Cama') ?>>Leito Cama</option>
-                                    </select>
-                                </div>
-
-                                <div class="col-auto">
-                                    <label class="d-block py-2">Ano</label>
-                                    <input style="width: 100px;" class="form-control" type="number" name="ano" value="<?= valor('ano') ?>"
-                                        placeholder="2020" required>
-                                </div>
-
-                                <div class="col-auto">
-                                    <label class="d-block py-2">Placa</label>
-                                    <input style="width: 100px;" class="form-control" type="text" name="placa" value="<?= valor('placa') ?>"
-                                        placeholder="ABC1D23" maxlength="7" required>
-                                </div>
-                            </div>
-
-                            <hr class="my-4">
-
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="doisAndares" id="doisAndares"
-                                    <?= $doisAndares ? 'checked' : '' ?>>
-                                <label class="form-check-label" for="doisAndares">Veículo de 2 andares</label>
-                            </div>
-                            <div class="row g-3 mt-1 <?= $doisAndares ? '' : 'd-none' ?>" id="blocoAndares">
-                                <div class="col-md-6 border-end">
-                                    <small class="text-muted">1º Andar</small>
-                                    <div class="d-flex gap-2 mt-2">
-                                        <input style="width: 100px;" class="form-control" type="number"
-                                            name="capacidadePrimeiroAndar" value="<?= valor('capacidadePrimeiroAndar') ?>" placeholder="Cap.">
-                                        <select class="form-select" name="leitoPrimeiroAndar">
-                                            <option value="" selected disabled>Leito 1º andar</option>
-                                            <option value="Convencional" <?= selecionado('leitoPrimeiroAndar', 'Convencional') ?>>Convencional</option>
-                                            <option value="Semi-Leito" <?= selecionado('leitoPrimeiroAndar', 'Semi-Leito') ?>>Semi-Leito</option>
-                                            <option value="Leito" <?= selecionado('leitoPrimeiroAndar', 'Leito') ?>>Leito</option>
-                                            <option value="Leito Cama" <?= selecionado('leitoPrimeiroAndar', 'Leito Cama') ?>>Leito Cama</option>
-                                        </select>
+                                <div class="mb-3">
+                                    <label class="form-label pt-2">Tags</label>
+                                    <div class="tag-container form-control d-flex flex-wrap align-items-center"
+                                        id="tagContainer">
+                                        <input type="text" id="tagInput" placeholder="Adicionar tags"
+                                            class="border-0 flex-grow-1" style="outline: none; min-width: 120px; background: transparent; color: black;">
                                     </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <small class="text-muted">2º Andar</small>
-                                    <div class="d-flex gap-2 mt-2">
-                                        <input style="width: 100px;" class="form-control" type="number"
-                                            name="capacidadeSegundoAndar" value="<?= valor('capacidadeSegundoAndar') ?>" placeholder="Cap.">
-                                        <select class="form-select" name="leitoSegundoAndar">
-                                            <option value="" selected disabled>Leito 2º andar</option>
-                                            <option value="Convencional" <?= selecionado('leitoSegundoAndar', 'Convencional') ?>>Convencional</option>
-                                            <option value="Semi-Leito" <?= selecionado('leitoSegundoAndar', 'Semi-Leito') ?>>Semi-Leito</option>
-                                            <option value="Leito" <?= selecionado('leitoSegundoAndar', 'Leito') ?>>Leito</option>
-                                            <option value="Leito Cama" <?= selecionado('leitoSegundoAndar', 'Leito Cama') ?>>Leito Cama</option>
-                                        </select>
-                                    </div>
+                                    <!-- Tags (preenchido pelo script) -->
+                                    <input type="hidden" name="tags" id="tagsHidden" value="<?= valor('tags') ?>">
                                 </div>
                             </div>
                         </div>
                     </div>
 
                 </div>
-
-                <!-- Coluna da direita -->
-                <div class="col-lg-4 col-md-12">
-                    <!-- Card: Status e tags -->
-                    <div class="card-principal sticky-top">
-                        <div class="card-principal-conteudo">
-                            <strong><label>Status</label></strong>
-                            <select class="form-select" name="status" required>
-                                <option value="Ativo" <?= selecionado('status', 'Ativo') ?>>Ativo</option>
-                                <option value="Inativo" <?= selecionado('status', 'Inativo') ?>>Inativo</option>
-                            </select>
-
-                            <div class="mb-3">
-                                <label class="form-label pt-2">Tags</label>
-                                <div class="tag-container form-control d-flex flex-wrap align-items-center"
-                                    id="tagContainer">
-                                    <input type="text" id="tagInput" placeholder="Adicionar tags"
-                                        class="border-0 flex-grow-1" style="outline: none; min-width: 120px; background: transparent; color: black;">
-                                </div>
-                                <!-- Tags (preenchido pelo script) -->
-                                <input type="hidden" name="tags" id="tagsHidden" value="<?= valor('tags') ?>">
-                            </div>
-                        </div>
-                    </div>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <button style="background-color: #0b5ed7; color: white;" class="btn me-md-2" name="salvar"
+                        type="submit">Salvar</button>
                 </div>
+            </form>
+        </section>
 
-            </div>
-            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                <button style="background-color: #0b5ed7; color: white;" class="btn me-md-2" name="salvar"
-                    type="submit">Salvar</button>
-            </div>
-        </form>
-    </section>
+        <!-- JAVA SCRIPT -->
 
-    <script>
+        <!-- ENVIO DE ARQUVIVOS -->
+        <script>
+            const fileUpload = document.getElementById('fileUpload');
+            const listaArquivos = document.getElementById('listaArquivos');
+            let arquivosAcumulados = []; // Guarda todos os arquivos selecionados
 
-        const checkAndares = document.getElementById('doisAndares');
-        const blocoTipoLeito = document.getElementById('blocoTipoLeito');
-        const blocoAndares = document.getElementById('blocoAndares');
+            fileUpload.addEventListener('change', function() {
+                // Adiciona os novos arquivos ao array sem duplicar (mesmo nome e tamanho)
+                for (const novoArquivo of this.files) {
+                    const jaExiste = arquivosAcumulados.some(
+                        arq => arq.name === novoArquivo.name && arq.size === novoArquivo.size
+                    );
+                    if (!jaExiste) {
+                        arquivosAcumulados.push(novoArquivo);
+                    }
+                }
 
-        function alternarAndares() {
-            const dois = checkAndares.checked;
-            blocoTipoLeito.classList.toggle('d-none', dois);
-            blocoAndares.classList.toggle('d-none', !dois);
-            blocoTipoLeito.querySelectorAll('input, select').forEach(c => c.disabled = dois);
-            blocoAndares.querySelectorAll('input, select').forEach(c => c.disabled = !dois);
-        }
+                atualizarInputEVisualizacao();
+            });
 
-        checkAndares.addEventListener('change', alternarAndares);
-        alternarAndares();
-    </script>
-    <script src="/ValdirTur/assets/js/script.js"></script>
-    <script src="/ValdirTur/assets/js/protecao-form.js"></script>
+            function removerArquivo(index) {
+                arquivosAcumulados.splice(index, 1);
+                atualizarInputEVisualizacao();
+            }
+
+            function atualizarInputEVisualizacao() {
+                // 1. Atualiza o input file real usando DataTransfer
+                const dataTransfer = new DataTransfer();
+                arquivosAcumulados.forEach(arquivo => dataTransfer.items.add(arquivo));
+                fileUpload.files = dataTransfer.files;
+
+                // 2. Renderiza as miniaturas/itens na tela
+                listaArquivos.innerHTML = '';
+
+                arquivosAcumulados.forEach((arquivo, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'border rounded p-2 bg-white position-relative d-flex flex-column align-items-center';
+                    card.style.width = '120px';
+
+                    // Botão de remover (X)
+                    const btnRemover = document.createElement('button');
+                    btnRemover.type = 'button';
+                    btnRemover.className = 'btn btn-danger btn-sm position-absolute top-0 end-0 m-1 py-0 px-1';
+                    btnRemover.innerHTML = '&times;';
+                    btnRemover.onclick = () => removerArquivo(index);
+                    card.appendChild(btnRemover);
+
+                    // Prévia de imagem ou ícone de vídeo
+                    if (arquivo.type.startsWith('image/')) {
+                        const img = document.createElement('img');
+                        img.src = URL.createObjectURL(arquivo);
+                        img.style.width = '100px';
+                        img.style.height = '70px';
+                        img.style.objectFit = 'cover';
+                        img.className = 'rounded mb-1';
+                        card.appendChild(img);
+                    } else {
+                        const icone = document.createElement('div');
+                        icone.className = 'd-flex align-items-center justify-content-center bg-light rounded mb-1';
+                        icone.style.width = '100px';
+                        icone.style.height = '70px';
+                        icone.innerHTML = '<i class="bi bi-film fs-2 text-secondary"></i>';
+                        card.appendChild(icone);
+                    }
+
+                    // Nome do arquivo
+                    const nome = document.createElement('small');
+                    nome.className = 'text-truncate w-100 text-center';
+                    nome.title = arquivo.name;
+                    nome.textContent = arquivo.name;
+                    card.appendChild(nome);
+
+                    listaArquivos.appendChild(card);
+                });
+            }
+        </script>
+
+
+
+        <script>
+            const checkAndares = document.getElementById('doisAndares');
+            const blocoTipoLeito = document.getElementById('blocoTipoLeito');
+            const blocoAndares = document.getElementById('blocoAndares');
+
+            function alternarAndares() {
+                const dois = checkAndares.checked;
+                blocoTipoLeito.classList.toggle('d-none', dois);
+                blocoAndares.classList.toggle('d-none', !dois);
+                blocoTipoLeito.querySelectorAll('input, select').forEach(c => c.disabled = dois);
+                blocoAndares.querySelectorAll('input, select').forEach(c => c.disabled = !dois);
+            }
+
+            checkAndares.addEventListener('change', alternarAndares);
+            alternarAndares();
+        </script>
+        <script src="/ValdirTur/assets/js/script.js"></script>
+        <script src="/ValdirTur/assets/js/protecao-form.js"></script>
     </main>
 </body>
 

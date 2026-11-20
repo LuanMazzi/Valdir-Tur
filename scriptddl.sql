@@ -85,6 +85,7 @@ CREATE TABLE tbPacote (
     duracaoViagem TIME NOT NULL,
     vagasDisponiveis INT NOT NULL,
     pacoteParceiro VARCHAR (100) NOT NULL,
+    nomeParceiro VARCHAR(150),
     midia TEXT,
     status VARCHAR(100) NOT NULL
 );

@@ -179,7 +179,7 @@ $funcoes = ['Motorista', 'Agente de Viagens', 'Mecânico', 'Vendedor'];
                                 <input class="form-check-input" type="checkbox" name="semRG" id="semRG"
                                     <?= $semRG ? 'checked' : '' ?>
                                     onchange="const rg = document.getElementById('campoRG'); rg.disabled = this.checked; rg.required = !this.checked; if (this.checked) rg.value = '';">
-                                <label class="form-check-label" for="semRG">Não usa RG</label>
+                                <label class="form-check-label" for="semRG">Não usar RG</label>
                             </div>
 
                             <div class="row">

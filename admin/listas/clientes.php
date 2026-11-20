@@ -48,76 +48,78 @@ $resultado = mysqli_query($conexao, $sql);
     <?php include(__DIR__ . '/../../includes/sidebar-admin.php'); ?>
 
     <main class="w-100 p-4" style="overflow-y: auto;">
-    <section class="container py-5">
+        <section class="container py-5">
 
-        <div class="d-flex align-items-center">
-            <!-- <button type="button" class="botao-voltar" onclick="window.location.href='../adminvt.php'">
+            <div class="d-flex align-items-center">
+                <!-- <button type="button" class="botao-voltar" onclick="window.location.href='../adminvt.php'">
                 <i class="bi bi-person-fill fs-4"></i>
             </button>
             <i class="bi bi-arrow-right-short"></i> -->
-            <h3><strong>Clientes</strong></h3>
+                <h3><strong>Clientes</strong></h3>
 
-            <a href="../cadastro/cliente.php" class="ms-auto text-decoration-none">
-                <button class="btn btn-dark" type="button">Adicionar cliente</button>
-            </a>
-        </div>
+                <a href="../cadastro/cliente.php" class="ms-auto text-decoration-none">
+                    <button class="btn btn-dark" type="button">Adicionar cliente</button>
+                </a>
+            </div>
 
-        <?php if ($erroExclusao !== ""): ?>
-            <div class="alert alert-danger mt-3"><?= htmlspecialchars($erroExclusao) ?></div>
-        <?php endif; ?>
+            <?php if ($erroExclusao !== ""): ?>
+                <div class="alert alert-danger mt-3"><?= htmlspecialchars($erroExclusao) ?></div>
+            <?php endif; ?>
 
-        <!-- Campo de busca -->
-        <form method="GET" class="d-flex mt-3" style="max-width: 400px;">
-            <input type="text" name="busca" class="form-control" placeholder="Buscar..." value="<?= htmlspecialchars($busca) ?>">
-            <button class="btn btn-outline-secondary ms-2" type="submit"><i class="bi bi-search"></i></button>
-        </form>
+            <!-- Campo de busca -->
+            <form method="GET" class="d-flex mt-3" style="max-width: 400px;">
+                <input type="text" name="busca" class="form-control" placeholder="Buscar..." value="<?= htmlspecialchars($busca) ?>">
+                <button class="btn btn-outline-secondary ms-2" type="submit"><i class="bi bi-search"></i></button>
+            </form>
 
-        <div class="row mt-3">
-            <!-- Tabela -->
-            <div class="col-md-12">
-                <div class="card-principal">
-                    <div class="card-principal-conteudo">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th scope="col">N°</th>
-                                    <th scope="col">Nome</th>
-                                    <th scope="col">Email</th>
-                                    <th scope="col">Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php if (mysqli_num_rows($resultado) === 0) { ?>
-                                    <tr>
-                                        <td colspan="4" class="text-center text-muted py-4">Nenhum cliente cadastrado.</td>
-                                    </tr>
-                                <?php } else { ?>
-                                    <?php while ($linha = mysqli_fetch_array($resultado)) { ?>
+            <?php if (mysqli_num_rows($resultado) === 0): ?>
+                <!-- Sem registros: só a mensagem -->
+                <div class="text-center text-muted py-5">
+                    <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                    <?= $busca !== '' ? 'Nenhum resultado para "' . htmlspecialchars($busca) . '".' : 'Nenhum cliente cadastrado.' ?>
+                </div>
+            <?php else: ?>
+                <div class="row mt-3">
+                    <!-- Tabela -->
+                    <div class="col-md-12">
+                        <div class="card-principal">
+                            <div class="card-principal-conteudo">
+                                <table class="table">
+                                    <thead>
                                         <tr>
-                                            <td><?= $linha['idCliente'] ?></td>
-                                            <td><?= htmlspecialchars($linha['nome']) ?></td>
-                                            <td><?= htmlspecialchars($linha['email']) ?></td>
-
-                                            <td>
-                                                <a href="../editar/cliente.php?id=<?= $linha['idCliente'] ?>" class="text-decoration-none">
-                                                    <button type="button" class="btn btn-warning"><i class="bi bi-pencil-square"></i></button>
-                                                </a>
-                                                <a href="clientes.php?excluir=<?= $linha['idCliente'] ?>" class="text-decoration-none"
-                                                    onclick="return confirm('Tem certeza que deseja excluir este cliente?')">
-                                                    <button type="button" class="btn btn-danger"><i class="bi bi-trash"></i></button>
-                                                </a>
-                                            </td>
+                                            <th scope="col">N°</th>
+                                            <th scope="col">Nome</th>
+                                            <th scope="col">Email</th>
+                                            <th scope="col">Ações</th>
                                         </tr>
-                                    <?php } ?>
-                                <?php } ?>
-                            </tbody>
-                        </table>
+                                    </thead>
+                                    <tbody>
+                                        <?php while ($linha = mysqli_fetch_array($resultado)) { ?>
+                                            <tr>
+                                                <td><?= $linha['idCliente'] ?></td>
+                                                <td><?= htmlspecialchars($linha['nome']) ?></td>
+                                                <td><?= htmlspecialchars($linha['email']) ?></td>
+
+                                                <td>
+                                                    <a href="../editar/cliente.php?id=<?= $linha['idCliente'] ?>" class="text-decoration-none">
+                                                        <button type="button" class="btn btn-warning"><i class="bi bi-pencil-square"></i></button>
+                                                    </a>
+                                                    <a href="clientes.php?excluir=<?= $linha['idCliente'] ?>" class="text-decoration-none"
+                                                        onclick="return confirm('Tem certeza que deseja excluir este cliente?')">
+                                                        <button type="button" class="btn btn-danger"><i class="bi bi-trash"></i></button>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        <?php } ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            <?php endif; ?>
 
-    </section>
+        </section>
     </main>
 </body>
 

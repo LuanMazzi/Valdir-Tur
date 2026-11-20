@@ -71,6 +71,13 @@ $resultado = mysqli_query($conexao, $sql);
             <button class="btn btn-outline-secondary ms-2" type="submit"><i class="bi bi-search"></i></button>
         </form>
 
+        <?php if (mysqli_num_rows($resultado) === 0): ?>
+            <!-- Sem registros: só a mensagem -->
+            <div class="text-center text-muted py-5">
+                <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                <?= $busca !== '' ? 'Nenhum resultado para "' . htmlspecialchars($busca) . '".' : 'Nenhum veículo cadastrado.' ?>
+            </div>
+        <?php else: ?>
         <div class="row mt-3">
             <!-- Tabela -->
             <div class="col-md-12">
@@ -89,12 +96,7 @@ $resultado = mysqli_query($conexao, $sql);
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php if (mysqli_num_rows($resultado) === 0) { ?>
-                                    <tr>
-                                        <td colspan="7" class="text-center text-muted py-4">Nenhum veículo cadastrado.</td>
-                                    </tr>
-                                <?php } else { ?>
-                                    <?php while ($linha = mysqli_fetch_array($resultado)) { ?>
+                                                                    <?php while ($linha = mysqli_fetch_array($resultado)) { ?>
                                         <tr>
                                             <td><?= $linha['idVeiculo'] ?></td>
                                             <td><?= htmlspecialchars($linha['nomeIdentificacao']) ?></td>
@@ -113,13 +115,13 @@ $resultado = mysqli_query($conexao, $sql);
                                             </td>
                                         </tr>
                                     <?php } ?>
-                                <?php } ?>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
         </div>
+<?php endif; ?>
 
     </section>
     </main>

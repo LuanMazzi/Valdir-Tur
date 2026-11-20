@@ -146,7 +146,7 @@ $funcoes = ['Motorista', 'Agente de Viagens', 'Mecânico', 'Vendedor'];
                                 <input class="form-check-input" type="checkbox" name="semRG" id="semRG"
                                     <?= $semRG ? 'checked' : '' ?>
                                     onchange="const rg = document.getElementById('campoRG'); rg.disabled = this.checked; rg.required = !this.checked; if (this.checked) rg.value = '';">
-                                <label class="form-check-label" for="semRG">Não usa RG</label>
+                                <label class="form-check-label" for="semRG">Não usar RG</label>
                             </div>
 
                             <div class="row">
@@ -210,8 +210,7 @@ $funcoes = ['Motorista', 'Agente de Viagens', 'Mecânico', 'Vendedor'];
                                     <input class="form-control" type="text" name="bairro" placeholder="Bairro"
                                         value="<?= valor('bairro') ?>" required>
                                 </div>
-                                        value="<?= valor('bairro') ?>" required>
-                                </div>
+                          
 
                                 <div class="col-auto">
                                     <label class="d-block py-2">Número</label>
@@ -243,6 +242,8 @@ $funcoes = ['Motorista', 'Agente de Viagens', 'Mecânico', 'Vendedor'];
                 <button style="background-color: #0b5ed7; color: white;" class="btn me-md-2" name="salvar"
                     type="submit">Salvar</button>
             </div>
+
+            
         </form>
     </section>
     <script src="/ValdirTur/assets/js/protecao-form.js"></script>

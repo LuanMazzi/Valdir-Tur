@@ -146,3 +146,29 @@ body.d-flex.flex-nowrap {
     height: 100vh;
     overflow: hidden;
 }
+/* Galeria das telas de pacote e de veículo (includes/galeria.php) */
+.galeria-palco {
+    aspect-ratio: 16 / 9;
+    width: 100%;
+    max-height: 340px;
+}
+
+.galeria-miniatura {
+    flex: 0 0 auto;
+    width: 88px;
+    height: 62px;
+    border: 2px solid transparent;
+    border-radius: .5rem;
+    overflow: hidden;
+    opacity: .6;
+    background: none;
+}
+
+.galeria-miniatura:hover {
+    opacity: 1;
+}
+
+.galeria-miniatura.ativa {
+    opacity: 1;
+    border-color: var(--bs-primary);
+}

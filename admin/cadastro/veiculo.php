@@ -236,7 +236,7 @@ if (isset($_POST['salvar'])) {
                                             <select class="form-select" name="leitoPrimeiroAndar">
                                                 <option value="" selected disabled>Leito 1º andar</option>
                                                 <option value="Convencional" <?= selecionado('leitoPrimeiroAndar', 'Convencional') ?>>Convencional</option>
-                                                <option value="Semi-Leito" <?= selecionado('leitoPrimeiroAndar', 'Semi-Leito') ?>>Semi-Leito</option>
+                                                <option value="Semi-leito" <?= selecionado('leitoPrimeiroAndar', 'Semi-leito') ?>>Semi-leito</option>
                                                 <option value="Leito" <?= selecionado('leitoPrimeiroAndar', 'Leito') ?>>Leito</option>
                                                 <option value="Leito Cama" <?= selecionado('leitoPrimeiroAndar', 'Leito Cama') ?>>Leito Cama</option>
                                             </select>
@@ -251,7 +251,7 @@ if (isset($_POST['salvar'])) {
                                             <select class="form-select" name="leitoSegundoAndar">
                                                 <option value="" selected disabled>Leito 2º andar</option>
                                                 <option value="Convencional" <?= selecionado('leitoSegundoAndar', 'Convencional') ?>>Convencional</option>
-                                                <option value="Semi-Leito" <?= selecionado('leitoSegundoAndar', 'Semi-Leito') ?>>Semi-Leito</option>
+                                                <option value="Semi-leito" <?= selecionado('leitoSegundoAndar', 'Semi-leito') ?>>Semi-leito</option>
                                                 <option value="Leito" <?= selecionado('leitoSegundoAndar', 'Leito') ?>>Leito</option>
                                                 <option value="Leito Cama" <?= selecionado('leitoSegundoAndar', 'Leito Cama') ?>>Leito Cama</option>
                                             </select>

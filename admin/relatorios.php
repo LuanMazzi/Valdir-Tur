@@ -71,7 +71,16 @@ $resumoFretamentos = mysqli_fetch_assoc(mysqli_query($conexao, "SELECT COUNT(*) 
                     <label class="form-label mb-1">Até</label>
                     <input type="date" class="form-control" name="dataFim" value="<?= htmlspecialchars($dataFim) ?>">
                 </div>
-                <button class="btn btn-dark" type="submit">Filtrar</button>
+                <button class="btn btn-dark" type="submit">Filtrar</button> 
+
+                <button type="button" class="ms-auto text-decoration-none btn btn-dark my-1" onclick="window.print()">Imprimir relatório</button>
+
+<script>
+    function printReport() {
+        window.print();
+    }
+</script>
+
             </form>
 
             <div class="row g-4 mt-2">

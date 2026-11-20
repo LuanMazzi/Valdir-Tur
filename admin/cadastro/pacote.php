@@ -316,18 +316,32 @@ if (isset($_POST["salvar"]) && dataNoPassado($_POST['dataHoraSaida'] ?? '')) {
                 if (inputSaida.value && inputRetorno.value) {
                     const dataSaida = new Date(inputSaida.value);
                     const dataRetorno = new Date(inputRetorno.value);
+
                     if (dataRetorno > dataSaida) {
                         const diffMilisegundos = dataRetorno - dataSaida;
                         const diffMinutosTotal = Math.round(diffMilisegundos / (1000 * 60));
                         const horasTotal = Math.floor(diffMinutosTotal / 60);
                         const minutos = diffMinutosTotal % 60;
-
-
                         const dias = Math.floor(horasTotal / 24);
                         const horasRestantes = horasTotal % 24;
-                        let resultado = (dias > 0 ? dias + " dia(s) " : "") + (horasRestantes > 0 || dias === 0 ? "e " + horasRestantes + " horas" : "");
-                        displayDuracao.value = resultado;
 
+                        let partes = [];
+
+                        if (dias > 0) {
+                            partes.push(`${dias} ${dias === 1 ? 'dia' : 'dias'}`);
+                        }
+
+                        if (horasRestantes > 0) {
+                            partes.push(`${horasRestantes} ${horasRestantes === 1 ? 'hora' : 'horas'}`);
+                        }
+
+                        // Caso a duração seja menor que 1 hora, mostra os minutos
+                        if (dias === 0 && horasRestantes === 0 && minutos > 0) {
+                            partes.push(`${minutos} ${minutos === 1 ? 'minuto' : 'minutos'}`);
+                        }
+
+                        // Junta os itens com " e " apenas se houver dias E horas
+                        displayDuracao.value = partes.join(' e ');
 
                         const horasStr = String(horasTotal).padStart(2, '0');
                         const minutosStr = String(minutos).padStart(2, '0');
@@ -335,6 +349,7 @@ if (isset($_POST["salvar"]) && dataNoPassado($_POST['dataHoraSaida'] ?? '')) {
                     }
                 }
             }
+
             inputSaida.addEventListener('change', calcularDuracao);
             inputRetorno.addEventListener('change', calcularDuracao);
 

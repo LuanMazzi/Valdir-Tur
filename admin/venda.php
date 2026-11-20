@@ -45,7 +45,7 @@ if (isset($_POST['salvar'])) {
     )";
 
     if (mysqli_query($conexao, $sql)) {
-       
+
         header('Location: venda.php?sucesso=1');
         exit;
     } else {
@@ -72,162 +72,178 @@ $resultadoFretamentos = mysqli_query($conexao, "SELECT * FROM tbFretamento WHERE
     <?php include(__DIR__ . '/../includes/sidebar-admin.php'); ?>
 
     <main class="w-100 p-4" style="overflow-y: auto;">
-    <section class="container py-5">
-        <form method="POST">
-            <button class="botao-voltar" type="button" onclick="window.location.href='listas/vendas.php'">
-                <i class="bi bi-cash-coin fs-4"></i>
-            </button>
-            <i class="bi bi-arrow-right-short"></i>
-            <label class="pb-2"><strong>Adicionar venda</strong></label>
+        <section class="container py-5">
+            <form method="POST">
+                <button class="botao-voltar" type="button" onclick="window.location.href='listas/vendas.php'">
+                    <i class="bi bi-cash-coin fs-4"></i>
+                </button>
+                <i class="bi bi-arrow-right-short"></i>
+                <label class="pb-2"><strong>Adicionar venda</strong></label>
 
-            <?= $mensagem ?>
+                <?= $mensagem ?>
 
-            <div class="row">
-                <!-- Coluna da esquerda -->
-                <div class="col-lg-8 col-md-12">
-                    <!-- Card: Dados da venda -->
-                    <div class="card-principal">
-                        <div class="card-principal-conteudo">
-                            <strong><label>Cliente</label></strong>
-                            <select class="form-select" name="idCliente" required>
-                                <option value="" selected disabled>Selecione um cliente ativo</option>
-                                <?php while ($cliente = mysqli_fetch_assoc($resultadoClientes)): ?>
-                                    <?php $nomeExibido = $cliente['tipoCliente'] === 'PJ' ? $cliente['razaoSocial'] : trim($cliente['nome'] . ' ' . $cliente['sobrenome']); ?>
-                                    <option value="<?= $cliente['idCliente'] ?>"><?= htmlspecialchars($nomeExibido) ?></option>
-                                <?php endwhile; ?>
-                            </select>
+                <div class="row">
+                    <!-- Coluna da esquerda -->
+                    <div class="col-lg-8 col-md-12">
+                        <!-- Card: Dados da venda -->
+                        <div class="card-principal">
+                            <div class="card-principal-conteudo">
 
-                            <strong><label class="d-block pt-3">Funcionário responsável</label></strong>
-                            <select class="form-select" name="idFuncionario" required>
-                                <option value="" selected disabled>Selecione um funcionário ativo</option>
-                                <?php while ($funcionario = mysqli_fetch_assoc($resultadoFuncionarios)): ?>
-                                    <option value="<?= $funcionario['idFuncionario'] ?>">
-                                        <?= htmlspecialchars($funcionario['nome'] . ' ' . $funcionario['sobrenome']) ?> - <?= htmlspecialchars($funcionario['funcao']) ?>
-                                    </option>
-                                <?php endwhile; ?>
-                            </select>
+                                <div class="d-flex align-items-center">
+                                    <strong><label>Cliente</label></strong>
+                                    <a href="cadastro/cliente.php" class="ms-auto text-decoration-none">
+                                        <button class="btn btn-sm btn-dark my-1" type="button"><i class="bi bi-plus-circle"></i></button>
+                                    </a>
+                                </div>
 
-                            <strong><label class="d-block pt-3">Vínculo da venda</label></strong>
-                            <select class="form-select" name="tipoVinculo" id="selectTipoVinculo">
-                                <option value="nenhum" selected>Nenhum</option>
-                                <option value="pacote">Pacote</option>
-                                <option value="fretamento">Fretamento</option>
-                            </select>
-
-                            <div id="blocoPacote" class="pt-2" style="display: none;">
-                                <label class="d-block py-2">Pacote</label>
-                                <select class="form-select" name="idPacote" id="selectPacote">
-                                    <option value="" selected>Selecione um pacote</option>
-                                    <?php while ($pacote = mysqli_fetch_assoc($resultadoPacotes)): ?>
-                                        <option value="<?= $pacote['idPacote'] ?>" data-preco="<?= htmlspecialchars($pacote['preco']) ?>"><?= htmlspecialchars($pacote['nomePacote']) ?></option>
+                                <select class="form-select" name="idCliente" required>
+                                    <option value="" selected disabled>Selecione um cliente ativo</option>
+                                    <?php while ($cliente = mysqli_fetch_assoc($resultadoClientes)): ?>
+                                        <?php $nomeExibido = $cliente['tipoCliente'] === 'PJ' ? $cliente['razaoSocial'] : trim($cliente['nome'] . ' ' . $cliente['sobrenome']); ?>
+                                        <option value="<?= $cliente['idCliente'] ?>"><?= htmlspecialchars($nomeExibido) ?></option>
                                     <?php endwhile; ?>
                                 </select>
-                            </div>
 
-                            <div id="blocoFretamento" class="pt-2" style="display: none;">
-                                <label class="d-block py-2">Fretamento</label>
-                                <select class="form-select" name="idFretamento" id="selectFretamento">
-                                    <option value="" selected>Selecione um fretamento aprovado</option>
-                                    <?php while ($fretamento = mysqli_fetch_assoc($resultadoFretamentos)): ?>
-                                        <option value="<?= $fretamento['idFretamento'] ?>" data-preco="<?= htmlspecialchars($fretamento['preco']) ?>">
-                                            <?= htmlspecialchars($fretamento['destino']) ?> - <?= date('d/m/Y', strtotime($fretamento['dataHoraSaida'])) ?>
+
+                                <div class="d-flex align-items-center">
+                                    <strong><label class="d-block pt-3">Funcionário responsável</label></strong>
+
+                                    <a href="cadastro/funcionario.php" class="ms-auto text-decoration-none">
+                                        <button class="btn btn-sm btn-dark my-1" type="button"><i class="bi bi-plus-circle"></i></button>
+                                    </a>
+                                </div>
+
+
+                                <select class="form-select" name="idFuncionario" required>
+                                    <option value="" selected disabled>Selecione um funcionário ativo</option>
+                                    <?php while ($funcionario = mysqli_fetch_assoc($resultadoFuncionarios)): ?>
+                                        <option value="<?= $funcionario['idFuncionario'] ?>">
+                                            <?= htmlspecialchars($funcionario['nome'] . ' ' . $funcionario['sobrenome']) ?> - <?= htmlspecialchars($funcionario['funcao']) ?>
                                         </option>
                                     <?php endwhile; ?>
                                 </select>
-                            </div>
 
-                            <label class="form-label pt-3">Data da Venda</label>
-                            <input type="date" class="form-control" name="dataVenda" required>
+                                <strong><label class="d-block pt-3">Vínculo da venda</label></strong>
+                                <select class="form-select" name="tipoVinculo" id="selectTipoVinculo">
+                                    <option value="nenhum" selected>Nenhum</option>
+                                    <option value="pacote">Pacote</option>
+                                    <option value="fretamento">Fretamento</option>
+                                </select>
 
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label class="form-label pt-2">Forma de Recebimento</label>
-                                    <select class="form-select" name="formaRecebimento" required>
-                                        <option value="" selected disabled>Selecione</option>
-                                        <option value="Dinheiro">Dinheiro</option>
-                                        <option value="PIX">PIX</option>
-                                        <option value="Cartão de Crédito">Cartão de Crédito</option>
-                                        <option value="Cartão de Débito">Cartão de Débito</option>
-                                        <option value="Transferência Bancária">Transferência Bancária</option>
+                                <div id="blocoPacote" class="pt-2" style="display: none;">
+                                    <label class="d-block py-2">Pacote</label>
+                                    <select class="form-select" name="idPacote" id="selectPacote">
+                                        <option value="" selected>Selecione um pacote</option>
+                                        <?php while ($pacote = mysqli_fetch_assoc($resultadoPacotes)): ?>
+                                            <option value="<?= $pacote['idPacote'] ?>" data-preco="<?= htmlspecialchars($pacote['preco']) ?>"><?= htmlspecialchars($pacote['nomePacote']) ?></option>
+                                        <?php endwhile; ?>
                                     </select>
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label pt-2">Data do Recebimento</label>
-                                    <input type="date" class="form-control" name="dataRecebimento" required>
-                                </div>
-                            </div>
 
-                            <label class="form-label pt-2">Valor Recebido</label>
-                            <div class="input-group">
-                                <span class="input-group-text">R$</span>
-                                <input type="number" class="form-control" name="valorRecebido" id="valorRecebido" step="0.01" min="0" placeholder="0,00" required>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label class="form-label pt-2">Quantidade de Parcelas</label>
-                                    <input type="number" class="form-control" name="qtdParcelas" min="1" placeholder="1">
+                                <div id="blocoFretamento" class="pt-2" style="display: none;">
+                                    <label class="d-block py-2">Fretamento</label>
+                                    <select class="form-select" name="idFretamento" id="selectFretamento">
+                                        <option value="" selected>Selecione um fretamento aprovado</option>
+                                        <?php while ($fretamento = mysqli_fetch_assoc($resultadoFretamentos)): ?>
+                                            <option value="<?= $fretamento['idFretamento'] ?>" data-preco="<?= htmlspecialchars($fretamento['preco']) ?>">
+                                                <?= htmlspecialchars($fretamento['destino']) ?> - <?= date('d/m/Y', strtotime($fretamento['dataHoraSaida'])) ?>
+                                            </option>
+                                        <?php endwhile; ?>
+                                    </select>
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label pt-2">Juros (%)</label>
-                                    <div class="input-group">
-                                        <input type="number" class="form-control" name="juros" step="0.01" min="0" placeholder="0">
-                                        <span class="input-group-text">%</span>
+
+                                <label class="form-label pt-3">Data da Venda</label>
+                                <input type="date" class="form-control" name="dataVenda" required>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label class="form-label pt-2">Forma de Recebimento</label>
+                                        <select class="form-select" name="formaRecebimento" required>
+                                            <option value="" selected disabled>Selecione</option>
+                                            <option value="Dinheiro">Dinheiro</option>
+                                            <option value="PIX">PIX</option>
+                                            <option value="Cartão de Crédito">Cartão de Crédito</option>
+                                            <option value="Cartão de Débito">Cartão de Débito</option>
+                                            <option value="Transferência Bancária">Transferência Bancária</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label pt-2">Data do Recebimento</label>
+                                        <input type="date" class="form-control" name="dataRecebimento" required>
+                                    </div>
+                                </div>
+
+                                <label class="form-label pt-2">Valor Recebido</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">R$</span>
+                                    <input type="number" class="form-control" name="valorRecebido" id="valorRecebido" step="0.01" min="0" placeholder="0,00" required>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label class="form-label pt-2">Quantidade de Parcelas</label>
+                                        <input type="number" class="form-control" name="qtdParcelas" min="1" placeholder="1">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label pt-2">Juros (%)</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" name="juros" step="0.01" min="0" placeholder="0">
+                                            <span class="input-group-text">%</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Coluna da direita -->
-                <div class="col-lg-4 col-md-12">
-                    <!-- Card: Status -->
-                    <div class="card-principal">
-                        <div class="card-principal-conteudo">
-                            <strong><label>Status</label></strong>
-                            <select class="form-select" name="status" required>
-                                <option value="Em andamento" selected>Em andamento</option>
-                                <option value="Concluído">Concluído</option>
-                                <option value="Cancelado">Cancelado</option>
-                            </select>
+                    <!-- Coluna da direita -->
+                    <div class="col-lg-4 col-md-12">
+                        <!-- Card: Status -->
+                        <div class="card-principal sticky-top">
+                            <div class="card-principal-conteudo">
+                                <strong><label>Status</label></strong>
+                                <select class="form-select" name="status" required>
+                                    <option value="Em andamento" selected>Em andamento</option>
+                                    <option value="Concluído">Concluído</option>
+                                    <option value="Cancelado">Cancelado</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                <button name="salvar" style="background-color: #0b5ed7; color: white;" class="btn me-md-2" type="submit">Salvar</button>
-            </div>
-        </form>
-    </section>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                    <button name="salvar" style="background-color: #0b5ed7; color: white;" class="btn me-md-2" type="submit">Salvar</button>
+                </div>
+            </form>
+        </section>
 
-    <script>
-        const selectTipoVinculo = document.getElementById('selectTipoVinculo');
-        const blocoPacote = document.getElementById('blocoPacote');
-        const blocoFretamento = document.getElementById('blocoFretamento');
-        const selectPacote = document.getElementById('selectPacote');
-        const selectFretamento = document.getElementById('selectFretamento');
-        const inputValorRecebido = document.getElementById('valorRecebido');
+        <script>
+            const selectTipoVinculo = document.getElementById('selectTipoVinculo');
+            const blocoPacote = document.getElementById('blocoPacote');
+            const blocoFretamento = document.getElementById('blocoFretamento');
+            const selectPacote = document.getElementById('selectPacote');
+            const selectFretamento = document.getElementById('selectFretamento');
+            const inputValorRecebido = document.getElementById('valorRecebido');
 
-        selectTipoVinculo.addEventListener('change', function() {
-            blocoPacote.style.display = this.value === 'pacote' ? 'block' : 'none';
-            blocoFretamento.style.display = this.value === 'fretamento' ? 'block' : 'none';
+            selectTipoVinculo.addEventListener('change', function() {
+                blocoPacote.style.display = this.value === 'pacote' ? 'block' : 'none';
+                blocoFretamento.style.display = this.value === 'fretamento' ? 'block' : 'none';
 
-            if (this.value !== 'pacote') selectPacote.value = '';
-            if (this.value !== 'fretamento') selectFretamento.value = '';
-        });
+                if (this.value !== 'pacote') selectPacote.value = '';
+                if (this.value !== 'fretamento') selectFretamento.value = '';
+            });
 
-        function preencherValorRecebido() {
-            const preco = this.options[this.selectedIndex].dataset.preco;
-            if (preco) {
-                inputValorRecebido.value = parseFloat(preco).toFixed(2);
+            function preencherValorRecebido() {
+                const preco = this.options[this.selectedIndex].dataset.preco;
+                if (preco) {
+                    inputValorRecebido.value = parseFloat(preco).toFixed(2);
+                }
             }
-        }
-        selectPacote.addEventListener('change', preencherValorRecebido);
-        selectFretamento.addEventListener('change', preencherValorRecebido);
-    </script>
-    <script src="/ValdirTur/assets/js/protecao-form.js"></script>
+            selectPacote.addEventListener('change', preencherValorRecebido);
+            selectFretamento.addEventListener('change', preencherValorRecebido);
+        </script>
+        <script src="/ValdirTur/assets/js/protecao-form.js"></script>
     </main>
 </body>
 

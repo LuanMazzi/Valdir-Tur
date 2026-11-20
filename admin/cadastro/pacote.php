@@ -101,207 +101,294 @@ if (isset($_POST["salvar"]) && dataNoPassado($_POST['dataHoraSaida'] ?? '')) {
     <?php include(__DIR__ . '/../../includes/sidebar-admin.php'); ?>
 
     <main class="w-100 p-4" style="overflow-y: auto;">
-    <section class="container py-5">
-        <form method="POST" enctype="multipart/form-data">
-            <button class="botao-voltar" type="button" onclick="window.location.href='../listas/pacotes.php'">
-                <i class="bi bi-luggage-fill fs-4"></i>
-            </button>
-            <i class="bi bi-arrow-right-short"></i>
-            <label class="pb-2"><strong>Adicionar pacote de viagem</strong></label>
+        <section class="container py-5">
+            <form method="POST" enctype="multipart/form-data">
+                <button class="botao-voltar" type="button" onclick="window.location.href='../listas/pacotes.php'">
+                    <i class="bi bi-luggage-fill fs-4"></i>
+                </button>
+                <i class="bi bi-arrow-right-short"></i>
+                <label class="pb-2"><strong>Adicionar pacote de viagem</strong></label>
 
-            <?= $mensagem ?>
+                <?= $mensagem ?>
 
-            <div class="row">
-                <!-- Coluna da esquerda -->
-                <div class="col-lg-8 col-md-12">
-                    <!-- Card: Dados do pacote -->
-                    <div class="card-principal">
-                        <div class="card-principal-conteudo">
-                            <label class="py-2">Nome do Pacote</label>
-                            <input class="form-control" type="text" name="nomePacote" value="<?= valor('nomePacote') ?>" placeholder="Nome do Pacote" >
+                <div class="row">
+                    <!-- Coluna da esquerda -->
+                    <div class="col-lg-8 col-md-12">
+                        <!-- Card: Dados do pacote -->
+                        <div class="card-principal">
+                            <div class="card-principal-conteudo">
+                                <label class="py-2">Nome do Pacote</label>
+                                <input class="form-control" type="text" name="nomePacote" value="<?= valor('nomePacote') ?>" placeholder="Nome do Pacote">
 
-                            <label class="py-2">Descrição Curta</label>
-                            <input class="form-control" type="text" name="descricaoCurta" id="descricaoCurta" value="<?= valor('descricaoCurta') ?>" maxlength="100" placeholder="Descrição Curta" required>
+                                <label class="py-2">Descrição Curta</label>
+                                <input class="form-control" type="text" name="descricaoCurta" id="descricaoCurta" value="<?= valor('descricaoCurta') ?>" maxlength="100" placeholder="Descrição Curta" required>
 
-                            <label class="py-2">Descrição Longa</label>
-                            <textarea class="form-control" name="descricaoLonga" id="descricaoLonga" rows="5" placeholder="Detalhes completos da viagem" ><?= valor('descricaoLonga') ?></textarea>
+                                <label class="py-2">Descrição Longa</label>
+                                <textarea class="form-control" name="descricaoLonga" id="descricaoLonga" rows="5" placeholder="Detalhes completos da viagem"><?= valor('descricaoLonga') ?></textarea>
 
-                            <div class="mb-3">
-                                <label for="fileUpload" class="py-2">Conteúdo (Imagens ou Vídeos)</label>
-                                <input class="form-control" type="file" name="midia[]" id="fileUpload" accept="image/*,video/*" multiple>
-                                <div class="form-text">Você pode selecionar várias imagens e vídeos de uma vez.</div>
+                                <div class="mb-3">
+                                    <label for="fileUpload" class="py-2">Conteúdo (Imagens ou Vídeos)</label>
+                                    <input class="form-control" type="file" name="midia[]" id="fileUpload" accept="image/*,video/*" multiple>
+                                    <div class="form-text">Você pode selecionar arquivos em etapas; eles serão acumulados abaixo.</div>
+
+                                    <!-- Lista visual dos arquivos acumulados -->
+                                    <div id="listaArquivos" class="d-flex flex-wrap gap-2 mt-3"></div>
+                                </div>
+
+
+                                <label class="py-2">Destino</label>
+                                <input class="form-control" type="text" name="destino" value="<?= valor('destino') ?>" placeholder="Destino da Viagem" required>
+
+                                <label class="py-2">Locais de Embarque</label>
+                                <input class="form-control" type="text" name="locaisEmbarque" value="<?= valor('locaisEmbarque') ?>" placeholder="Locais de Embarque" required>
+
+                                <label class="form-label pt-2">Data e Hora de Saída</label>
+                                <input type="datetime-local" class="form-control" id="dataHoraSaida" name="dataHoraSaida" value="<?= valor('dataHoraSaida') ?>" required>
+
+                                <label class="form-label pt-2">Data e Hora de Retorno</label>
+                                <input type="datetime-local" class="form-control" id="dataHoraRetorno" name="dataHoraRetorno" value="<?= valor('dataHoraRetorno') ?>" required>
+
+                                <label class="form-label pt-2">Duração Estimada</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control bg-light" id="duracao_display" placeholder="Calculado automaticamente" readonly>
+                                    <span class="input-group-text"><i class="bi bi-clock"></i></span>
+                                </div>
+                                <input type="hidden" name="duracao_viagem" id="duracao_valor">
+
+                                <label class="form-label pt-2">Valor do pacote</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">R$</span>
+                                    <input type="number" class="form-control" name="preco" id="preco" value="<?= valor('preco') ?>" step="0.01" min="0" placeholder="0,00" required>
+                                </div>
+
+                                <label class="form-label pt-2">Parcelas</label>
+                                <input type="number" class="form-control" name="parcelas" id="parcelas" value="<?= valor('parcelas') ?>" min="1" placeholder="1">
+
+                                <label class="form-label pt-2">Juros (%)</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" name="juros" id="juros" value="<?= valor('juros') ?>" step="1" min="0" placeholder="0">
+                                    <span class="input-group-text">%</span>
+                                </div>
+
+                                <div class="input-group mt-2">
+                                    <span class="input-group-text">Valor da parcela</span>
+                                    <input type="text" class="form-control bg-light" id="valorParcelaDisplay" placeholder="Calculado automaticamente" readonly>
+                                </div>
+
+                                <label class="form-label pt-2">Vagas Disponíveis</label>
+                                <input type="number" class="form-control" name="vagasDisponiveis" value="<?= valor('vagasDisponiveis') ?>" min="0" placeholder="Quantidade de vagas disponíveis" required>
                             </div>
+                        </div>
+                    </div>
 
-                            <label class="py-2">Destino</label>
-                            <input class="form-control" type="text" name="destino" value="<?= valor('destino') ?>" placeholder="Destino da Viagem" required>
+                    <!-- Coluna da direita -->
+                    <div class="col-lg-4 col-md-12">
+                        <!-- Card: Status e parceria -->
+                        <div class="card-principal sticky-top">
+                            <div class="card-principal-conteudo">
+                                <strong><label>Status</label></strong>
+                                <select class="form-select" name="status">
+                                    <option value="Ativo">Ativo</option>
+                                    <option value="Inativo" <?= ($_POST['status'] ?? '') === 'Inativo' ? 'selected' : '' ?>>Inativo</option>
+                                    <option value="Finalizado" <?= ($_POST['status'] ?? '') === 'Finalizado' ? 'selected' : '' ?>>Finalizado</option>
+                                </select>
 
-                            <label class="py-2">Locais de Embarque</label>
-                            <input class="form-control" type="text" name="locaisEmbarque" value="<?= valor('locaisEmbarque') ?>" placeholder="Locais de Embarque" required>
+                                <strong><label class="d-block pt-3">Pacote de Parceria</label></strong>
+                                <?php
+                                // pacoteParceiro guarda "Não", "Sim" ou o nome do parceiro
+                                $parceiro     = $_POST['pacoteParceiro'] ?? 'Não';
+                                $temParceria  = $parceiro !== 'Não';
+                                $nomeParceiro = $parceiro === 'Sim' || $parceiro === 'Não' ? '' : $parceiro;
+                                ?>
+                                <select class="form-select" id="selectParceria">
+                                    <option value="Não" <?= !$temParceria ? 'selected' : '' ?>>Não</option>
+                                    <option value="Sim" <?= $temParceria ? 'selected' : '' ?>>Sim</option>
+                                </select>
 
-                            <label class="form-label pt-2">Data e Hora de Saída</label>
-                            <input type="datetime-local" class="form-control" id="dataHoraSaida" name="dataHoraSaida" value="<?= valor('dataHoraSaida') ?>" required>
+                                <div id="qualParceria" class="pt-2 <?= $temParceria ? '' : 'd-none' ?>">
+                                    <label class="py-2">Nome do Parceiro(a)</label>
+                                    <input class="form-control" type="text" id="qualParceriaInput" name="nomeParceiro" placeholder="Nome do parceiro(a)"
+                                        value="<?= htmlspecialchars($nomeParceiro) ?>">
+                                </div>
 
-                            <label class="form-label pt-2">Data e Hora de Retorno</label>
-                            <input type="datetime-local" class="form-control" id="dataHoraRetorno" name="dataHoraRetorno" value="<?= valor('dataHoraRetorno') ?>" required>
 
-                            <label class="form-label pt-2">Duração Estimada</label>
-                            <div class="input-group">
-                                <input type="text" class="form-control bg-light" id="duracao_display" placeholder="Calculado automaticamente" readonly>
-                                <span class="input-group-text"><i class="bi bi-clock"></i></span>
+                                <input type="hidden" name="pacoteParceiro" id="pacoteParceiroHidden" value="<?= htmlspecialchars($parceiro) ?>">
                             </div>
-                            <input type="hidden" name="duracao_viagem" id="duracao_valor">
-
-                            <label class="form-label pt-2">Valor do pacote</label>
-                            <div class="input-group">
-                                <span class="input-group-text">R$</span>
-                                <input type="number" class="form-control" name="preco" id="preco" value="<?= valor('preco') ?>" step="0.01" min="0" placeholder="0,00" required>
-                            </div>
-
-                            <label class="form-label pt-2">Parcelas</label>
-                            <input type="number" class="form-control" name="parcelas" id="parcelas" value="<?= valor('parcelas') ?>" min="1" placeholder="1">
-
-                            <label class="form-label pt-2">Juros (%)</label>
-                            <div class="input-group">
-                                <input type="number" class="form-control" name="juros" id="juros" value="<?= valor('juros') ?>" step="1" min="0" placeholder="0">
-                                <span class="input-group-text">%</span>
-                            </div>
-
-                            <div class="input-group mt-2">
-                                <span class="input-group-text">Valor da parcela</span>
-                                <input type="text" class="form-control bg-light" id="valorParcelaDisplay" placeholder="Calculado automaticamente" readonly>
-                            </div>
-
-                            <label class="form-label pt-2">Vagas Disponíveis</label>
-                            <input type="number" class="form-control" name="vagasDisponiveis" value="<?= valor('vagasDisponiveis') ?>" min="0" placeholder="Quantidade de vagas disponíveis" required>
                         </div>
                     </div>
                 </div>
 
-                <!-- Coluna da direita -->
-                <div class="col-lg-4 col-md-12">
-                    <!-- Card: Status e parceria -->
-                    <div class="card-principal">
-                        <div class="card-principal-conteudo">
-                            <strong><label>Status</label></strong>
-                            <select class="form-select" name="status">
-                                <option value="Ativo">Ativo</option>
-                                <option value="Inativo" <?= ($_POST['status'] ?? '') === 'Inativo' ? 'selected' : '' ?>>Inativo</option>
-                                <option value="Finalizado" <?= ($_POST['status'] ?? '') === 'Finalizado' ? 'selected' : '' ?>>Finalizado</option>
-                            </select>
-
-                            <strong><label class="d-block pt-3">Pacote de Parceria</label></strong>
-                            <?php
-                            // pacoteParceiro guarda "Não", "Sim" ou o nome do parceiro
-                            $parceiro     = $_POST['pacoteParceiro'] ?? 'Não';
-                            $temParceria  = $parceiro !== 'Não';
-                            $nomeParceiro = $parceiro === 'Sim' || $parceiro === 'Não' ? '' : $parceiro;
-                            ?>
-                            <select class="form-select" id="selectParceria">
-                                <option value="Não" <?= !$temParceria ? 'selected' : '' ?>>Não</option>
-                                <option value="Sim" <?= $temParceria ? 'selected' : '' ?>>Sim</option>
-                            </select>
-
-                            <div id="qualParceria" class="pt-2 <?= $temParceria ? '' : 'd-none' ?>">
-                                <label class="py-2">Qual?</label>
-                                <input class="form-control" type="text" id="qualParceriaInput" placeholder="Nome do parceiro"
-                                    value="<?= htmlspecialchars($nomeParceiro) ?>">
-                            </div>
-
-
-                            <input type="hidden" name="pacoteParceiro" id="pacoteParceiroHidden" value="<?= htmlspecialchars($parceiro) ?>">
-                        </div>
-                    </div>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                    <button name="salvar" style="background-color: #0b5ed7; color: white;" class="btn me-md-2" type="submit">Salvar</button>
                 </div>
-            </div>
+            </form>
+        </section>
 
-            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                <button name="salvar" style="background-color: #0b5ed7; color: white;" class="btn me-md-2" type="submit">Salvar</button>
-            </div>
-        </form>
-    </section>
 
-    <script>
+        <!-- JAVASCRIPT -->
 
-        // Duração da viagem (calculada pelas datas de saída e retorno)
-        const inputSaida = document.getElementById('dataHoraSaida');
-        const inputRetorno = document.getElementById('dataHoraRetorno');
-        const displayDuracao = document.getElementById('duracao_display');
-        const valorDuracao = document.getElementById('duracao_valor');
 
-        function calcularDuracao() {
-            if (inputSaida.value && inputRetorno.value) {
-                const dataSaida = new Date(inputSaida.value);
-                const dataRetorno = new Date(inputRetorno.value);
-                if (dataRetorno > dataSaida) {
-                    const diffMilisegundos = dataRetorno - dataSaida;
-                    const diffMinutosTotal = Math.round(diffMilisegundos / (1000 * 60));
-                    const horasTotal = Math.floor(diffMinutosTotal / 60);
-                    const minutos = diffMinutosTotal % 60;
+        <!-- ENVIO DE ARQUVIVOS -->
+        <script>
+            const fileUpload = document.getElementById('fileUpload');
+            const listaArquivos = document.getElementById('listaArquivos');
+            let arquivosAcumulados = []; // Guarda todos os arquivos selecionados
 
-           
-                    const dias = Math.floor(horasTotal / 24);
-                    const horasRestantes = horasTotal % 24;
-                    let resultado = (dias > 0 ? dias + " dia(s) " : "") + (horasRestantes > 0 || dias === 0 ? "e " + horasRestantes + " horas" : "");
-                    displayDuracao.value = resultado;
+            fileUpload.addEventListener('change', function() {
+                // Adiciona os novos arquivos ao array sem duplicar (mesmo nome e tamanho)
+                for (const novoArquivo of this.files) {
+                    const jaExiste = arquivosAcumulados.some(
+                        arq => arq.name === novoArquivo.name && arq.size === novoArquivo.size
+                    );
+                    if (!jaExiste) {
+                        arquivosAcumulados.push(novoArquivo);
+                    }
+                }
 
-                    
-                    const horasStr = String(horasTotal).padStart(2, '0');
-                    const minutosStr = String(minutos).padStart(2, '0');
-                    valorDuracao.value = `${horasStr}:${minutosStr}:00`;
+                atualizarInputEVisualizacao();
+            });
+
+            function removerArquivo(index) {
+                arquivosAcumulados.splice(index, 1);
+                atualizarInputEVisualizacao();
+            }
+
+            function atualizarInputEVisualizacao() {
+                // 1. Atualiza o input file real usando DataTransfer
+                const dataTransfer = new DataTransfer();
+                arquivosAcumulados.forEach(arquivo => dataTransfer.items.add(arquivo));
+                fileUpload.files = dataTransfer.files;
+
+                // 2. Renderiza as miniaturas/itens na tela
+                listaArquivos.innerHTML = '';
+
+                arquivosAcumulados.forEach((arquivo, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'border rounded p-2 bg-white position-relative d-flex flex-column align-items-center';
+                    card.style.width = '120px';
+
+                    // Botão de remover (X)
+                    const btnRemover = document.createElement('button');
+                    btnRemover.type = 'button';
+                    btnRemover.className = 'btn btn-danger btn-sm position-absolute top-0 end-0 m-1 py-0 px-1';
+                    btnRemover.innerHTML = '&times;';
+                    btnRemover.onclick = () => removerArquivo(index);
+                    card.appendChild(btnRemover);
+
+                    // Prévia de imagem ou ícone de vídeo
+                    if (arquivo.type.startsWith('image/')) {
+                        const img = document.createElement('img');
+                        img.src = URL.createObjectURL(arquivo);
+                        img.style.width = '100px';
+                        img.style.height = '70px';
+                        img.style.objectFit = 'cover';
+                        img.className = 'rounded mb-1';
+                        card.appendChild(img);
+                    } else {
+                        const icone = document.createElement('div');
+                        icone.className = 'd-flex align-items-center justify-content-center bg-light rounded mb-1';
+                        icone.style.width = '100px';
+                        icone.style.height = '70px';
+                        icone.innerHTML = '<i class="bi bi-film fs-2 text-secondary"></i>';
+                        card.appendChild(icone);
+                    }
+
+                    // Nome do arquivo
+                    const nome = document.createElement('small');
+                    nome.className = 'text-truncate w-100 text-center';
+                    nome.title = arquivo.name;
+                    nome.textContent = arquivo.name;
+                    card.appendChild(nome);
+
+                    listaArquivos.appendChild(card);
+                });
+            }
+        </script>
+
+        <script>
+            // Duração da viagem (calculada pelas datas de saída e retorno)
+            const inputSaida = document.getElementById('dataHoraSaida');
+            const inputRetorno = document.getElementById('dataHoraRetorno');
+            const displayDuracao = document.getElementById('duracao_display');
+            const valorDuracao = document.getElementById('duracao_valor');
+
+            function calcularDuracao() {
+                if (inputSaida.value && inputRetorno.value) {
+                    const dataSaida = new Date(inputSaida.value);
+                    const dataRetorno = new Date(inputRetorno.value);
+                    if (dataRetorno > dataSaida) {
+                        const diffMilisegundos = dataRetorno - dataSaida;
+                        const diffMinutosTotal = Math.round(diffMilisegundos / (1000 * 60));
+                        const horasTotal = Math.floor(diffMinutosTotal / 60);
+                        const minutos = diffMinutosTotal % 60;
+
+
+                        const dias = Math.floor(horasTotal / 24);
+                        const horasRestantes = horasTotal % 24;
+                        let resultado = (dias > 0 ? dias + " dia(s) " : "") + (horasRestantes > 0 || dias === 0 ? "e " + horasRestantes + " horas" : "");
+                        displayDuracao.value = resultado;
+
+
+                        const horasStr = String(horasTotal).padStart(2, '0');
+                        const minutosStr = String(minutos).padStart(2, '0');
+                        valorDuracao.value = `${horasStr}:${minutosStr}:00`;
+                    }
                 }
             }
-        }
-        inputSaida.addEventListener('change', calcularDuracao);
-        inputRetorno.addEventListener('change', calcularDuracao);
+            inputSaida.addEventListener('change', calcularDuracao);
+            inputRetorno.addEventListener('change', calcularDuracao);
 
 
-        // Valor da parcela (preço, juros e quantidade de parcelas)
-        const inputPreco = document.getElementById('preco');
-        const inputJuros = document.getElementById('juros');
-        const inputParcelas = document.getElementById('parcelas');
-        const valorParcelaDisplay = document.getElementById('valorParcelaDisplay');
+            // Valor da parcela (preço, juros e quantidade de parcelas)
+            const inputPreco = document.getElementById('preco');
+            const inputJuros = document.getElementById('juros');
+            const inputParcelas = document.getElementById('parcelas');
+            const valorParcelaDisplay = document.getElementById('valorParcelaDisplay');
 
-        function calcularParcela() {
-            const preco = parseFloat(inputPreco.value) || 0;
-            const juros = parseFloat(inputJuros.value) || 0;
-            const parcelas = parseInt(inputParcelas.value) || 0;
+            function calcularParcela() {
+                const preco = parseFloat(inputPreco.value) || 0;
+                const juros = parseFloat(inputJuros.value) || 0;
+                const parcelas = parseInt(inputParcelas.value) || 0;
 
-            if (preco > 0 && parcelas > 0) {
-                const totalComJuros = preco * (1 + juros / 100);
-                const valorParcela = totalComJuros / parcelas;
-                valorParcelaDisplay.value = valorParcela.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-            } else {
-                valorParcelaDisplay.value = '';
+                if (preco > 0 && parcelas > 0) {
+                    const totalComJuros = preco * (1 + juros / 100);
+                    const valorParcela = totalComJuros / parcelas;
+                    valorParcelaDisplay.value = valorParcela.toLocaleString('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL'
+                    });
+                } else {
+                    valorParcelaDisplay.value = '';
+                }
             }
-        }
-        inputPreco.addEventListener('input', calcularParcela);
-        inputJuros.addEventListener('input', calcularParcela);
-        inputParcelas.addEventListener('input', calcularParcela);
+            inputPreco.addEventListener('input', calcularParcela);
+            inputJuros.addEventListener('input', calcularParcela);
+            inputParcelas.addEventListener('input', calcularParcela);
 
-        // Recalcula duração e parcela quando a página volta com erro
-        calcularDuracao();
-        calcularParcela();
+            // Recalcula duração e parcela quando a página volta com erro
+            calcularDuracao();
+            calcularParcela();
 
 
-        // Pacote de parceria (mostra o campo "Qual?")
-        const selectParceria = document.getElementById('selectParceria');
-        const qualParceria = document.getElementById('qualParceria');
-        const qualParceriaInput = document.getElementById('qualParceriaInput');
-        const pacoteParceiroHidden = document.getElementById('pacoteParceiroHidden');
+            // Pacote de parceria (mostra o campo "Qual?")
+            const selectParceria = document.getElementById('selectParceria');
+            const qualParceria = document.getElementById('qualParceria');
+            const qualParceriaInput = document.getElementById('qualParceriaInput');
+            const pacoteParceiroHidden = document.getElementById('pacoteParceiroHidden');
 
-        function atualizarParceiro() {
-            pacoteParceiroHidden.value = selectParceria.value === 'Sim'
-                ? (qualParceriaInput.value.trim() || 'Sim')
-                : 'Não';
-        }
+            function atualizarParceiro() {
+                pacoteParceiroHidden.value = selectParceria.value === 'Sim' ?
+                    (qualParceriaInput.value.trim() || 'Sim') :
+                    'Não';
+            }
 
-        selectParceria.addEventListener('change', function() {
-            qualParceria.classList.toggle('d-none', this.value !== 'Sim');
-            atualizarParceiro();
-        });
-        qualParceriaInput.addEventListener('input', atualizarParceiro);
-    </script>
-    <script src="/ValdirTur/assets/js/protecao-form.js"></script>
+            selectParceria.addEventListener('change', function() {
+                qualParceria.classList.toggle('d-none', this.value !== 'Sim');
+                atualizarParceiro();
+            });
+            qualParceriaInput.addEventListener('input', atualizarParceiro);
+        </script>
+        <script src="/ValdirTur/assets/js/protecao-form.js"></script>
     </main>
 </body>
 

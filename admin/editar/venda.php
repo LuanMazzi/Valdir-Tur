@@ -213,7 +213,7 @@ if ($erro !== "") {
                 <!-- Coluna da direita -->
                 <div class="col-lg-4 col-md-12">
                     <!-- Card: Status -->
-                    <div class="card-principal">
+                    <div class="card-principal sticky-top">
                         <div class="card-principal-conteudo">
                             <strong><label>Status</label></strong>
                             <select class="form-select" name="status" required>

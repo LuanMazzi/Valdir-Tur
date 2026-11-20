@@ -26,7 +26,7 @@ CREATE TABLE tbFuncionario (
     nome VARCHAR(250) NOT NULL,
     sobrenome VARCHAR(250) NOT NULL,
     CPF VARCHAR(14) NOT NULL UNIQUE,
-    RG VARCHAR(14) NOT NULL,
+    RG VARCHAR(14),
     dataNascimento DATE NOT NULL,
     telefone VARCHAR(15) NOT NULL,
     email VARCHAR(150) NOT NULL,
@@ -50,7 +50,7 @@ CREATE TABLE tbCliente (
     sobrenome VARCHAR(250) NULL,
     dataNascimento DATE NULL,
     CPF VARCHAR(14) NULL UNIQUE,
-    RG VARCHAR(14) NULL UNIQUE,
+    RG VARCHAR(14),
 
     -- Pessoa Juridica
     razaoSocial VARCHAR(150) NULL,

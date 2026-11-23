@@ -11,6 +11,7 @@ if (!isset($_SESSION['admin'])) {
 require_once(__DIR__ . '/../../config/config.php');
 require_once(__DIR__ . '/../../config/conexao.php');
 require_once(__DIR__ . '/../../includes/validar-cpf.php');
+require_once(__DIR__ . '/../../includes/validar-contato.php');
 require_once(__DIR__ . '/../../includes/validar-cnpj.php');
 
 // Devolve o valor digitado (mantém os dados no formulário após um erro)
@@ -63,7 +64,13 @@ if (isset($_POST["salvar"])) {
     )";
 
     // CPF e CNPJ são opcionais: só valida se preenchidos
-    if ($CPF !== '' && !validarCPF($_POST['CPF'])) {
+    if (($_POST['RG'] ?? '') !== '' && !validarRG($_POST['RG'])) {
+        $mensagem = "<div class='alert alert-danger'>RG inválido. Digite só números (o último pode ser X), de 5 a 14 caracteres.</div>";
+    } elseif (($_POST['telefone'] ?? '') !== '' && !validarTelefone($_POST['telefone'])) {
+        $mensagem = "<div class='alert alert-danger'>Telefone inválido. Digite apenas o DDD e o número.</div>";
+    } elseif (!validarCEP($_POST['CEP'] ?? '')) {
+        $mensagem = "<div class='alert alert-danger'>CEP inválido. Digite os 8 números do CEP, sem traço.</div>";
+    } elseif ($CPF !== '' && !validarCPF($_POST['CPF'])) {
         $mensagem = "<div class='alert alert-danger'>CPF inválido.</div>";
     } elseif ($CNPJ !== '' && !validarCNPJ($CNPJ)) {
         $mensagem = "<div class='alert alert-danger'>CNPJ inválido.</div>";
@@ -139,7 +146,7 @@ $tipoSelecionado = $_POST['tipoCliente'] ?? 'PF';
 
                             <?php $semRG = isset($_POST['semRG']); ?>
                             <label class="d-block py-2">RG</label>
-                            <input class="form-control" type="text" name="RG" id="campoRG" placeholder="RG"
+                            <input class="form-control" type="text" name="RG" id="campoRG" placeholder="RG" oninput="this.value = this.value.replace(/[^0-9Xx]/g, '').toUpperCase()" maxlength="14" inputmode="text"
                                 value="<?= valor('RG') ?>" <?= $semRG ? 'disabled' : '' ?>>
                             <div class="form-check mt-1">
                                 <input class="form-check-input" type="checkbox" name="semRG" id="semRG"
@@ -151,8 +158,8 @@ $tipoSelecionado = $_POST['tipoCliente'] ?? 'PF';
                             <div class="row">
                                 <div class="col-md-6">
                                     <label class="form-label pt-2">Telefone</label>
-                                    <input class="form-control" type="text" name="telefone"
-                                        placeholder="Número de Telefone" value="<?= valor('telefone') ?>">
+                                    <input class="form-control" type="text" name="telefone" oninput="this.value = this.value.replace(/[^0-9]/g, '')" maxlength="11" inputmode="numeric"
+                                        placeholder="DDD + número (só números)" value="<?= valor('telefone') ?>">
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label pt-2">E-Mail</label>
@@ -202,7 +209,7 @@ $tipoSelecionado = $_POST['tipoCliente'] ?? 'PF';
                                 </div>
                                 <div class="col-md-3">
                                     <label class="d-block py-2">CEP</label>
-                                    <input class="form-control" type="text" name="CEP" placeholder="CEP" value="<?= valor('CEP') ?>" required>
+                                    <input class="form-control" type="text" name="CEP" oninput="this.value = this.value.replace(/[^0-9]/g, '')" maxlength="8" inputmode="numeric" placeholder="Só números" value="<?= valor('CEP') ?>" required>
                                 </div>
                                 <div class="col-md-3">
                                     <label class="d-block py-2">Bairro</label>

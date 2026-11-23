@@ -372,7 +372,7 @@ $resultadoFuncionarios = mysqli_query($conexao, "SELECT * FROM tbFuncionario WHE
 
                 if (!respostaAgenda.conflito) {
                     avisoAgenda.className = 'alert alert-success py-2 mt-2 mb-0';
-                    avisoAgenda.textContent = '<i class="bi bi-check2"></i> Veículo disponível neste período. ';
+                    avisoAgenda.textContent = 'Veículo disponível neste período. ';
                     return;
                 }
 

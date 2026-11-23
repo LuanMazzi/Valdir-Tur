@@ -11,6 +11,7 @@ if (!isset($_SESSION['admin'])) {
 require_once(__DIR__ . '/../../config/config.php');
 require_once(__DIR__ . '/../../config/conexao.php');
 require_once(__DIR__ . '/../../includes/validar-cpf.php');
+require_once(__DIR__ . '/../../includes/validar-contato.php');
 require_once(__DIR__ . '/../../includes/validar-idade.php');
 
 $erro = "";
@@ -67,7 +68,13 @@ if (isset($_POST['salvar'])) {
         WHERE `idFuncionario` = '$id'";
 
     // Validações: CPF, idade mínima (18 anos) e confirmação de senha
-    if (!validarCPF($_POST['CPF'] ?? '')) {
+    if (($_POST['RG'] ?? '') !== '' && !validarRG($_POST['RG'])) {
+        $erro = "RG inválido. Digite só números (o último pode ser X), de 5 a 14 caracteres.";
+    } elseif (!validarTelefone($_POST['telefone'] ?? '')) {
+        $erro = "Telefone inválido. Digite apenas o DDD e o número.";
+    } elseif (!validarCEP($_POST['CEP'] ?? '')) {
+        $erro = "CEP inválido. Digite os 8 números do CEP, sem traço.";
+    } elseif (!validarCPF($_POST['CPF'] ?? '')) {
         $erro = "CPF inválido.";
     } elseif (!maiorDeIdade($_POST['dataNascimento'] ?? '')) {
         $erro = "O funcionário precisa ter 18 anos ou mais. Confira a data de nascimento.";
@@ -173,7 +180,7 @@ $funcoes = ['Motorista', 'Agente de Viagens', 'Mecânico', 'Vendedor'];
                             $semRG = isset($_POST['salvar']) ? isset($_POST['semRG']) : trim($funcionario['RG'] ?? '') === '';
                             ?>
                             <label class="d-block py-2">RG</label>
-                            <input class="form-control" type="text" name="RG" id="campoRG"
+                            <input class="form-control" type="text" name="RG" id="campoRG" oninput="this.value = this.value.replace(/[^0-9Xx]/g, '').toUpperCase()" maxlength="14" inputmode="text"
                                 value="<?= $semRG ? '' : htmlspecialchars($funcionario['RG'] ?? '') ?>" <?= $semRG ? 'disabled' : 'required' ?>>
                             <div class="form-check mt-1">
                                 <input class="form-check-input" type="checkbox" name="semRG" id="semRG"
@@ -185,7 +192,7 @@ $funcoes = ['Motorista', 'Agente de Viagens', 'Mecânico', 'Vendedor'];
                             <div class="row">
                                 <div class="col-md-6">
                                     <label class="form-label pt-2">Telefone</label>
-                                    <input class="form-control" type="text" name="telefone"
+                                    <input class="form-control" type="text" name="telefone" oninput="this.value = this.value.replace(/[^0-9]/g, '')" maxlength="11" inputmode="numeric"
                                         value="<?= htmlspecialchars($funcionario['telefone']) ?>" required>
                                 </div>
                                 <div class="col-md-6">
@@ -228,7 +235,7 @@ $funcoes = ['Motorista', 'Agente de Viagens', 'Mecânico', 'Vendedor'];
 
                                 <div class="col-auto">
                                     <label class="d-block py-2">CEP</label>
-                                    <input class="form-control" type="text" name="CEP"
+                                    <input class="form-control" type="text" name="CEP" oninput="this.value = this.value.replace(/[^0-9]/g, '')" maxlength="8" inputmode="numeric" placeholder="Só números"
                                         value="<?= htmlspecialchars($funcionario['CEP']) ?>" required>
                                 </div>
 

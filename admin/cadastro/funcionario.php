@@ -11,6 +11,7 @@ if (!isset($_SESSION['admin'])) {
 require_once(__DIR__ . '/../../config/config.php');
 require_once(__DIR__ . '/../../config/conexao.php');
 require_once(__DIR__ . '/../../includes/validar-cpf.php');
+require_once(__DIR__ . '/../../includes/validar-contato.php');
 require_once(__DIR__ . '/../../includes/validar-idade.php');
 
 // Devolve o valor digitado (mantém os dados no formulário após um erro)
@@ -56,7 +57,13 @@ if (isset($_POST['salvar'])) {
     )";
 
     // Validações: CPF, idade mínima (18 anos) e confirmação de senha
-    if (!validarCPF($_POST['CPF'] ?? '')) {
+    if (($_POST['RG'] ?? '') !== '' && !validarRG($_POST['RG'])) {
+        $mensagem = "<div class='alert alert-danger'>RG inválido. Digite só números (o último pode ser X), de 5 a 14 caracteres.</div>";
+    } elseif (!validarTelefone($_POST['telefone'] ?? '')) {
+        $mensagem = "<div class='alert alert-danger'>Telefone inválido. Digite apenas o DDD e o número.</div>";
+    } elseif (!validarCEP($_POST['CEP'] ?? '')) {
+        $mensagem = "<div class='alert alert-danger'>CEP inválido. Digite os 8 números do CEP, sem traço.</div>";
+    } elseif (!validarCPF($_POST['CPF'] ?? '')) {
         $mensagem = "<div class='alert alert-danger'>CPF inválido.</div>";
     } elseif (!maiorDeIdade($_POST['dataNascimento'] ?? '')) {
         $mensagem = "<div class='alert alert-danger'>O funcionário precisa ter 18 anos ou mais. Confira a data de nascimento.</div>";
@@ -140,7 +147,7 @@ $funcoes = ['Motorista', 'Agente de Viagens', 'Mecânico', 'Vendedor'];
 
                             <?php $semRG = isset($_POST['semRG']); ?>
                             <label class="d-block py-2">RG</label>
-                            <input class="form-control" type="text" name="RG" id="campoRG" placeholder="RG"
+                            <input class="form-control" type="text" name="RG" id="campoRG" placeholder="RG" oninput="this.value = this.value.replace(/[^0-9Xx]/g, '').toUpperCase()" maxlength="14" inputmode="text"
                                 value="<?= valor('RG') ?>" <?= $semRG ? 'disabled' : 'required' ?>>
                             <div class="form-check mt-1">
                                 <input class="form-check-input" type="checkbox" name="semRG" id="semRG"
@@ -152,8 +159,8 @@ $funcoes = ['Motorista', 'Agente de Viagens', 'Mecânico', 'Vendedor'];
                             <div class="row">
                                 <div class="col-md-6">
                                     <label class="form-label pt-2">Telefone</label>
-                                    <input class="form-control" type="text" name="telefone"
-                                        placeholder="Número de Telefone" value="<?= valor('telefone') ?>" required>
+                                    <input class="form-control" type="text" name="telefone" oninput="this.value = this.value.replace(/[^0-9]/g, '')" maxlength="11" inputmode="numeric"
+                                        placeholder="DDD + número (só números)" value="<?= valor('telefone') ?>" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label pt-2">E-Mail</label>
@@ -195,7 +202,7 @@ $funcoes = ['Motorista', 'Agente de Viagens', 'Mecânico', 'Vendedor'];
 
                                 <div class="col-auto">
                                     <label class="d-block py-2">CEP</label>
-                                    <input class="form-control" type="text" name="CEP" placeholder="CEP"
+                                    <input class="form-control" type="text" name="CEP" oninput="this.value = this.value.replace(/[^0-9]/g, '')" maxlength="8" inputmode="numeric" placeholder="Só números"
                                         value="<?= valor('CEP') ?>" required>
                                 </div>
 

@@ -177,7 +177,7 @@ $resultadoFuncionarios = mysqli_query($conexao, "SELECT * FROM tbFuncionario WHE
                                 <input type="hidden" id="destinoLat">
                                 <input type="hidden" id="destinoLon">
 
-                                <label class="form-label pt-2">Locais de Embarque</label>
+                                <label class="form-label pt-2">Local(is) de Embarque</label>
                                 <input class="form-control" type="text" name="locaisEmbarque" placeholder="Local(is) de Embarque" value="<?= valor('locaisEmbarque') ?>" required>
 
                                 <label class="form-label pt-2">Quantidade de Passageiros</label>

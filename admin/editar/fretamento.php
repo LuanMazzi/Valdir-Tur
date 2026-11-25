@@ -185,7 +185,7 @@ $resultadoFuncionarios = mysqli_query($conexao, "SELECT * FROM tbFuncionario WHE
                             <input type="hidden" id="cidadeOrigemLon">
                             <!-- <small class="text-muted">Se trocar origem ou destino, selecione um item da lista de sugestões pra recalcular o Km automaticamente</small> -->
 
-                            <label class="form-label pt-2">Locais de Embarque</label>
+                            <label class="form-label pt-2">Local(is) de Embarque</label>
                             <input class="form-control" type="text" name="locaisEmbarque"
                                 value="<?= htmlspecialchars($fretamento['locaisEmbarque']) ?>" required>
 

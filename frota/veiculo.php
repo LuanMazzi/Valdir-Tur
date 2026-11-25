@@ -35,7 +35,7 @@ $doisAndares = $veiculo && (!empty($veiculo['capacidadePrimeiroAndar']) || !empt
 
         <?php else: ?>
 
-            <!-- Caminho da página -->
+            <!-- Breadcrumb -->
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="/ValdirTur/index.php">Início</a></li>

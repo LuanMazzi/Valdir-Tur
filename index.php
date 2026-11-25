@@ -24,15 +24,15 @@ $resultado = mysqli_query($conexao, $sql);
 
     <br>
 
-  <?php if (isset($_SESSION['mensagemErro'])): ?>
-    <div class="container alert alert-danger">
-        <p><?php echo $_SESSION['mensagemErro']; ?></p>
-    </div>
-    <?php 
-    // Apaga a mensagem para que ela não reapareça se o usuário atualizar a página (F5)
-    unset($_SESSION['mensagemErro']); 
-    ?>
-<?php endif; ?>
+    <?php if (isset($_SESSION['mensagemErro'])): ?>
+        <div class="container alert alert-danger">
+            <p><?php echo $_SESSION['mensagemErro']; ?></p>
+        </div>
+        <?php
+        // Apaga a mensagem para que ela não reapareça se o usuário atualizar a página (F5)
+        unset($_SESSION['mensagemErro']);
+        ?>
+    <?php endif; ?>
 
     <div class="container card overflow-hidden p-0 shadow-sm">
         <div class="row align-items-center g-0">
@@ -57,7 +57,9 @@ $resultado = mysqli_query($conexao, $sql);
 
         <div class="row row-cols-1 row-cols-md-3 g-4">
             <?php if (mysqli_num_rows($resultado) === 0): ?>
-                <p class="text-center text-muted">Nenhum pacote disponível no momento.</p>
+                <div class="w-100">
+                    <h6 class="text-center text-muted">Nenhum pacote disponível no momento.</h6>
+                </div>
             <?php else: ?>
                 <?php while ($pacote = mysqli_fetch_array($resultado)): ?>
                     <a href="/ValdirTur/pacotes/pacote?id=<?= $pacote['idPacote'] ?>"
@@ -78,6 +80,22 @@ $resultado = mysqli_query($conexao, $sql);
                 <?php endwhile; ?>
             <?php endif; ?>
         </div>
+    </div>
+
+    <div class="container mt-5">
+
+ <h1 class="mb-4 text-center titulo-personalizado">Onde estamos localizados</h1>
+        <iframe src="https://www.google.com/maps/embed?pb=!4v1795613737057!6m8!1m7!1srxTDQR6yMjSJFVy2W3Qe2Q!2m2!1d-24.07952396819424!2d-54.25366963075644!3f57.821760695811356!4f13.447969308133736!5f0.7820865974627469" 
+            width="100%" 
+            height="450" 
+            style="border:0;" 
+            allowfullscreen="" 
+            loading="lazy" 
+            referrerpolicy="strict-origin-when-cross-origin"
+            
+            >
+        </iframe>
+
     </div>
 
     <br>

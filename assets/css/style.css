@@ -132,16 +132,11 @@ body {
     font-family: 'Montserrat', sans-serif;
 }
 
-/* Texto branco no item ativo da sidebar do admin.
-   O .link-body-emphasis do Bootstrap usa !important na cor,
-   então precisamos de outro !important com specificidade maior pra vencer. */
+
 .nav-pills .link-body-emphasis.active {
     color: #fff !important;
 }
 
-/* Trava o body das telas do admin em 100vh e impede que ele role.
-   Assim a sidebar (que também é 100vh) fica parada, e só o <main>
-   -- que tem overflow-y: auto -- rola por dentro. */
 body.d-flex.flex-nowrap {
     height: 100vh;
     overflow: hidden;
@@ -150,7 +145,7 @@ body.d-flex.flex-nowrap {
 .galeria-palco {
     aspect-ratio: 16 / 9;
     width: 100%;
-    max-height: 340px;
+    /* max-height: 340px; */
 }
 
 .galeria-miniatura {

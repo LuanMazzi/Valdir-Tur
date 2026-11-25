@@ -177,7 +177,7 @@ $resultadoFuncionarios = mysqli_query($conexao, "SELECT * FROM tbFuncionario WHE
                                 <input type="hidden" id="destinoLat">
                                 <input type="hidden" id="destinoLon">
 
-                                <label class="form-label pt-2">Locais de Embarque</label>
+                                <label class="form-label pt-2">Local(is) de Embarque</label>
                                 <input class="form-control" type="text" name="locaisEmbarque" placeholder="Local(is) de Embarque" value="<?= valor('locaisEmbarque') ?>" required>
 
                                 <label class="form-label pt-2">Quantidade de Passageiros</label>
@@ -372,7 +372,7 @@ $resultadoFuncionarios = mysqli_query($conexao, "SELECT * FROM tbFuncionario WHE
 
                 if (!respostaAgenda.conflito) {
                     avisoAgenda.className = 'alert alert-success py-2 mt-2 mb-0';
-                    avisoAgenda.textContent = '<i class="bi bi-check2"></i> Veículo disponível neste período. ';
+                    avisoAgenda.textContent = 'Veículo disponível neste período. ';
                     return;
                 }
 

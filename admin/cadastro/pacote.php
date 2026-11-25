@@ -139,8 +139,8 @@ if (isset($_POST["salvar"]) && dataNoPassado($_POST['dataHoraSaida'] ?? '')) {
                                 <label class="py-2">Destino</label>
                                 <input class="form-control" type="text" name="destino" value="<?= valor('destino') ?>" placeholder="Destino da Viagem" required>
 
-                                <label class="py-2">Locais de Embarque</label>
-                                <input class="form-control" type="text" name="locaisEmbarque" value="<?= valor('locaisEmbarque') ?>" placeholder="Locais de Embarque" required>
+                                <label class="py-2">Local(is) de Embarque</label>
+                                <input class="form-control" type="text" name="locaisEmbarque" value="<?= valor('locaisEmbarque') ?>" placeholder="Local(is) de Embarque" required>
 
                                 <label class="form-label pt-2">Data e Hora de Saída</label>
                                 <input type="datetime-local" class="form-control" id="dataHoraSaida" name="dataHoraSaida" value="<?= valor('dataHoraSaida') ?>" required>

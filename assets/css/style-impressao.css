@@ -1,0 +1,7 @@
+@media print {
+    /* Oculta a sidebar (ajuste o seletor conforme a tag/classe usada em sidebar-admin.php, ex: aside, nav, .sidebar) */
+    aside, 
+    .sidebar {
+        display: none !important;
+    }
+     }

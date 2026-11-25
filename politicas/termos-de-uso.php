@@ -33,7 +33,7 @@
             <h2>3. Sobre os serviços</h2>
             <p>A Valdir Tur atua no ramo de transporte e turismo, oferecendo:</p>
             <ul>
-                <li><strong>Pacotes de viagem</strong>: excursões com datas, roteiros, locais de embarque e valores pré-definidos;</li>
+                <li><strong>Pacotes de viagem</strong>: excursões com datas, roteiros, Local(is) de Embarque e valores pré-definidos;</li>
                 <li><strong>Fretamento</strong>: locação de veículos da frota para grupos, com roteiro definido pelo contratante;</li>
                 <li><strong>Apresentação da frota</strong>: informações sobre os veículos disponíveis.</li>
             </ul>

@@ -44,12 +44,15 @@ $resumoFretamentos = mysqli_fetch_assoc(mysqli_query($conexao, "SELECT COUNT(*) 
 <!DOCTYPE html>
 <html lang="pt-BR">
 <title>Relatórios</title>
+<link rel="stylesheet" href="../assets/css/style-impressao.css">
 <?php include(__DIR__ . '/../includes/head.php'); ?>
 
 <body class="d-flex flex-nowrap">
     <script src="/ValdirTur/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
-    <?php include(__DIR__ . '/../includes/sidebar-admin.php'); ?>
+    <div class="d-print-none">
+        <?php include(__DIR__ . '/../includes/sidebar-admin.php'); ?>
+    </div>
 
     <main class="w-100 p-4" style="overflow-y: auto;">
         <section class="container py-5">
@@ -71,19 +74,21 @@ $resumoFretamentos = mysqli_fetch_assoc(mysqli_query($conexao, "SELECT COUNT(*) 
                     <label class="form-label mb-1">Até</label>
                     <input type="date" class="form-control" name="dataFim" value="<?= htmlspecialchars($dataFim) ?>">
                 </div>
-                <button class="btn btn-dark" type="submit">Filtrar</button> 
+                <button class="btn btn-dark d-print-none" type="submit">Filtrar</button>
 
-                <button type="button" class="ms-auto text-decoration-none btn btn-dark my-1" onclick="window.print()">Imprimir relatório</button>
+                <button type="button" class="ms-auto text-decoration-none btn btn-dark my-1 d-print-none" onclick="window.print()">Imprimir relatório</button>
 
-<script>
-    function printReport() {
-        window.print();
-    }
-</script>
+                <!-- Função para imprimir o relatório -->
+
+                <script>
+                    function printReport() {
+                        window.print();
+                    }
+                </script>
 
             </form>
 
-            <div class="row g-4 mt-2">
+            <div class="row g-4 mt-2 d-print-none">
                 <div class="col-md-6">
                     <div class="card-desenho h-100">
                         <div class="card-informacoes">

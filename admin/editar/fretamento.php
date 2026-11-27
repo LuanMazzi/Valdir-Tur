@@ -338,7 +338,7 @@ $resultadoFuncionarios = mysqli_query($conexao, "SELECT * FROM tbFuncionario WHE
     <script>
         // Aviso de disponibilidade: consulta a agenda assim que veículo e datas estão preenchidos
         // (usa campoSaida e campoStatus, definidos no script acima)
-        const urlAgenda = '../api/disponibilidade-veiculo.php';
+        const urlAgenda = '../disponibilidade-veiculo.php';
         const campoVeiculo = document.querySelector('[name="idVeiculo"]');
         const campoRetorno = document.querySelector('[name="dataHoraRetorno"]');
         const avisoAgenda = document.getElementById('avisoAgenda');

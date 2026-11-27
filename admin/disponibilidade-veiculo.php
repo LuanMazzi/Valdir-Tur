@@ -8,10 +8,10 @@ if (!isset($_SESSION['admin'])) {
 }
 
 // Configurações e conexão com o banco
-require_once(__DIR__ . '/../../config/config.php');
-require_once(__DIR__ . '/../../config/conexao.php');
-require_once(__DIR__ . '/../../includes/agenda.php');
-require_once(__DIR__ . '/../../includes/validar-data.php');
+require_once(__DIR__ . '/../config/config.php');
+require_once(__DIR__ . '/../config/conexao.php');
+require_once(__DIR__ . '/../includes/agenda.php');
+require_once(__DIR__ . '/../includes/validar-data.php');
 
 // Responde se o veículo já está reservado no período
 header('Content-Type: application/json; charset=utf-8');

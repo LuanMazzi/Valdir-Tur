@@ -15,6 +15,29 @@ $dataFim    = trim($_GET['dataFim'] ?? date('Y-m-d'));
 $dataInicioRelatorio = mysqli_real_escape_string($conexao, $dataInicio);
 $dataFimRelato    = mysqli_real_escape_string($conexao, $dataFim);
 
+// Filtro de situação. Vendas e fretamentos usam status diferentes, então cada situação
+// vira uma lista de status para cada um (valores fixos, não vêm do usuário).
+$situacoes = [
+    'prontos'    => ['Prontos',    ['Concluído'],                ['Aprovado']],
+    'pendentes'  => ['Pendentes',  ['Em andamento'],             ['Orçamento', 'Rascunho']],
+    'cancelados' => ['Cancelados', ['Cancelado'],                ['Cancelado']],
+    'todos'      => ['Todos',      null,                         null],
+];
+$situacao = $_GET['situacao'] ?? 'prontos';
+if (!isset($situacoes[$situacao])) {
+    $situacao = 'prontos';
+}
+
+function filtroStatus($coluna, $lista)
+{
+    if ($lista === null) {
+        return '';
+    }
+    return " AND $coluna IN ('" . implode("','", $lista) . "')";
+}
+$filtroVenda      = filtroStatus('venda.status', $situacoes[$situacao][1]);
+$filtroFretamento = filtroStatus('fretamento.status', $situacoes[$situacao][2]);
+
 
 $sqlVendas = "SELECT
             venda.*,
@@ -22,7 +45,7 @@ $sqlVendas = "SELECT
         FROM tbvenda venda
         LEFT JOIN tbCliente cliente ON venda.idCliente = cliente.idCliente
         WHERE venda.dataVenda BETWEEN '$dataInicioRelatorio' AND '$dataFimRelato'
-        AND venda.status = 'Concluído'
+        $filtroVenda
         ORDER BY venda.dataVenda DESC";
 $resultadoVendas = mysqli_query($conexao, $sqlVendas);
 
@@ -32,13 +55,13 @@ $sqlFretamentos = "SELECT
         FROM tbFretamento fretamento
         LEFT JOIN tbCliente cliente ON fretamento.idCliente = cliente.idCliente
         WHERE DATE(fretamento.dataHoraSaida) BETWEEN '$dataInicioRelatorio' AND '$dataFimRelato'
-        AND fretamento.status = 'Concluído'
+        $filtroFretamento
         ORDER BY fretamento.dataHoraSaida DESC";
 $resultadoFretamentos = mysqli_query($conexao, $sqlFretamentos);
 
-$resumoVendas = mysqli_fetch_assoc(mysqli_query($conexao, "SELECT COUNT(*) AS total, COALESCE(SUM(valorRecebido), 0) AS soma FROM tbvenda WHERE dataVenda BETWEEN '$dataInicioRelatorio' AND '$dataFimRelato' AND tbvenda.status = 'Concluído'"));
+$resumoVendas = mysqli_fetch_assoc(mysqli_query($conexao, "SELECT COUNT(*) AS total, COALESCE(SUM(valorRecebido), 0) AS soma FROM tbvenda venda WHERE dataVenda BETWEEN '$dataInicioRelatorio' AND '$dataFimRelato' $filtroVenda"));
 
-$resumoFretamentos = mysqli_fetch_assoc(mysqli_query($conexao, "SELECT COUNT(*) AS total, COALESCE(SUM(preco), 0) AS soma FROM tbFretamento WHERE DATE(dataHoraSaida) BETWEEN '$dataInicioRelatorio' AND '$dataFimRelato' AND status = 'Concluído'"));
+$resumoFretamentos = mysqli_fetch_assoc(mysqli_query($conexao, "SELECT COUNT(*) AS total, COALESCE(SUM(preco), 0) AS soma FROM tbFretamento fretamento WHERE DATE(dataHoraSaida) BETWEEN '$dataInicioRelatorio' AND '$dataFimRelato' $filtroFretamento"));
 ?>
 
 <!DOCTYPE html>
@@ -74,6 +97,15 @@ $resumoFretamentos = mysqli_fetch_assoc(mysqli_query($conexao, "SELECT COUNT(*) 
                     <label class="form-label mb-1">Até</label>
                     <input type="date" class="form-control" name="dataFim" value="<?= htmlspecialchars($dataFim) ?>">
                 </div>
+                <div>
+                    <label class="form-label mb-1">Situação</label>
+                    <!-- Troca a situação e recarrega o relatório -->
+                    <select class="form-select" name="situacao" onchange="this.form.submit()">
+                        <?php foreach ($situacoes as $chave => $dados): ?>
+                            <option value="<?= $chave ?>" <?= $situacao === $chave ? 'selected' : '' ?>><?= $dados[0] ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
                 <button class="btn btn-dark d-print-none" type="submit">Filtrar</button>
 
                 <button type="button" class="ms-auto text-decoration-none btn btn-dark my-1 d-print-none" onclick="window.print()">Imprimir relatório</button>
@@ -92,7 +124,7 @@ $resumoFretamentos = mysqli_fetch_assoc(mysqli_query($conexao, "SELECT COUNT(*) 
                 <div class="col-md-6">
                     <div class="card-desenho h-100">
                         <div class="card-informacoes">
-                            <p><strong>Vendas no período</strong></p>
+                            <p><strong>Vendas no período (<?= strtolower($situacoes[$situacao][0]) ?>)</strong></p>
                             <h1 class="numero-total">R$ <?= number_format((float) $resumoVendas['soma'], 2, ',', '.') ?></h1>
                             <small><?= (int) $resumoVendas['total'] ?> venda(s)</small>
                         </div>
@@ -101,7 +133,7 @@ $resumoFretamentos = mysqli_fetch_assoc(mysqli_query($conexao, "SELECT COUNT(*) 
                 <div class="col-md-6">
                     <div class="card-desenho h-100">
                         <div class="card-informacoes">
-                            <p><strong>Fretamentos no período</strong></p>
+                            <p><strong>Fretamentos no período (<?= strtolower($situacoes[$situacao][0]) ?>)</strong></p>
                             <h1 class="numero-total">R$ <?= number_format((float) $resumoFretamentos['soma'], 2, ',', '.') ?></h1>
                             <small><?= (int) $resumoFretamentos['total'] ?> fretamento(s)</small>
                         </div>
